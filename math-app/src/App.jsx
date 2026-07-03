@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDailyProgress } from "./hooks/useDailyProgress";
+import { useDailyProgress, getStoredProfile, setStoredProfile } from "./hooks/useDailyProgress";
 import { getDayNumber, dayNumToDateKey } from "./data/curriculum";
 import Home from "./components/Home";
 import DailyLesson from "./components/DailyLesson";
@@ -18,14 +18,58 @@ const TASK_LABEL = {
   solution: "Solution Walkthrough",
 };
 
-export default function App() {
+function ProfileSetup({ onDone }) {
+  const [name, setName] = useState("");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    setStoredProfile(trimmed);
+    onDone(trimmed);
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-indigo-600 to-indigo-800 flex flex-col items-center justify-center px-6">
+      <div className="text-center mb-10">
+        <p className="text-6xl mb-4">📐</p>
+        <h1 className="text-3xl font-bold text-white">Daily Math</h1>
+      </div>
+
+      <form onSubmit={handleSubmit} className="w-full max-w-xs flex flex-col gap-4">
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Enter your name"
+          maxLength={12}
+          autoFocus
+          className="w-full px-4 py-4 rounded-2xl text-lg text-center font-medium focus:outline-none focus:ring-2 focus:ring-white"
+        />
+        <button
+          type="submit"
+          disabled={!name.trim()}
+          className="w-full py-4 bg-white text-indigo-700 font-bold text-lg rounded-2xl disabled:opacity-40 active:scale-95 transition-transform"
+        >
+          Start →
+        </button>
+      </form>
+
+      <p className="text-indigo-300 text-xs mt-8 text-center">
+        Same link, different name — each person's progress is tracked separately
+      </p>
+    </div>
+  );
+}
+
+function MainApp({ profile, onSwitchProfile }) {
   const [tab, setTab] = useState("home");
   const [activeLesson, setActiveLesson] = useState(null); // { task, dayNum }
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [dayPicker, setDayPicker] = useState(null); // { dayNum, dateKeyStr }
 
   const { daily, markTask, isTaskDone, getTodayDone, getStreak, getWeekStatus, dateKey } =
-    useDailyProgress();
+    useDailyProgress(profile);
 
   const todayDone = getTodayDone();
   const streak = getStreak();
@@ -77,11 +121,18 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-lg mx-auto px-4 py-3">
+        <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
           <h1 className="text-lg font-bold text-gray-800">
             {tab === "home" && "📐 Daily Math"}
             {tab === "library" && "Concept Library"}
           </h1>
+          <button
+            onClick={onSwitchProfile}
+            className="flex items-center gap-1.5 bg-indigo-50 border border-indigo-200 text-indigo-600 rounded-full px-3 py-1 text-sm font-medium"
+          >
+            <span>👤</span>
+            <span>{profile}</span>
+          </button>
         </div>
       </header>
 
@@ -130,4 +181,21 @@ export default function App() {
       )}
     </div>
   );
+}
+
+export default function App() {
+  const [profile, setProfile] = useState(() => getStoredProfile());
+
+  function handleSwitchProfile() {
+    if (window.confirm(`Switch profile?\nCurrent: ${profile}`)) {
+      setStoredProfile("");
+      setProfile(null);
+    }
+  }
+
+  if (!profile) {
+    return <ProfileSetup onDone={setProfile} />;
+  }
+
+  return <MainApp profile={profile} onSwitchProfile={handleSwitchProfile} />;
 }

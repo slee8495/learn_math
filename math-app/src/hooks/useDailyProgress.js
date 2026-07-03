@@ -1,32 +1,49 @@
 import { useState, useCallback } from "react";
 import { dateKey as todayKey } from "../data/curriculum";
 
-const STORAGE_KEY = "math_daily";
 export const TASKS = ["concept", "problem", "solution"];
 
-function loadAll() {
+// Profile is just a self-chosen display name, no auth. Progress is
+// stored per profile name so two people can share the same URL/phone
+// setup and get fully independent tracking, with zero backend.
+const PROFILE_KEY = "math_profile";
+
+export function getStoredProfile() {
+  return localStorage.getItem(PROFILE_KEY) || "";
+}
+
+export function setStoredProfile(name) {
+  if (name) localStorage.setItem(PROFILE_KEY, name);
+  else localStorage.removeItem(PROFILE_KEY);
+}
+
+function storageKeyFor(profile) {
+  return `math_daily_${profile}`;
+}
+
+function loadAll(profile) {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    return JSON.parse(localStorage.getItem(storageKeyFor(profile))) || {};
   } catch {
     return {};
   }
 }
 
-function saveAll(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+function saveAll(profile, data) {
+  localStorage.setItem(storageKeyFor(profile), JSON.stringify(data));
 }
 
-export function useDailyProgress() {
-  const [daily, setDaily] = useState(loadAll);
+export function useDailyProgress(profile) {
+  const [daily, setDaily] = useState(() => loadAll(profile));
 
   const markTask = useCallback((task, key) => {
     setDaily((prev) => {
       const day = { ...(prev[key] || {}), [task]: true };
       const next = { ...prev, [key]: day };
-      saveAll(next);
+      saveAll(profile, next);
       return next;
     });
-  }, []);
+  }, [profile]);
 
   const isTaskDone = useCallback(
     (task, key) => Boolean(daily[key]?.[task]),
