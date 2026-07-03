@@ -21,7 +21,7 @@ export default function ConceptLibrary() {
   return (
     <div className="px-4 pt-4 pb-6">
       <p className="text-sm text-gray-400 mb-4">
-        All {concepts.length} concepts in the curriculum, from arithmetic through Algebra I — tap any to review.
+        All {concepts.length} concepts in the curriculum, from pre-algebra through the start of Precalculus — tap any to review.
       </p>
       <div className="flex flex-col gap-5">
         {groups.map((g) => (

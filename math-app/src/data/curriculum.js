@@ -75,7 +75,7 @@ export function startDateKey() {
 // working indefinitely while more advanced units are authored later.
 const CONCEPT_SPAN_DAYS = 3;
 const TOTAL_NEW_DAYS = concepts.length * CONCEPT_SPAN_DAYS;
-const PROBLEMS_PER_DAY = 2;
+const PROBLEMS_PER_DAY = 4;
 
 function getConceptIndexForDay(dayNum) {
   if (dayNum <= TOTAL_NEW_DAYS) {
