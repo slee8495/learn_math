@@ -5,363 +5,447 @@
 
 export const problemsByConcept = {
   1: [
-    { q: "Order −5, 2, −1, −9 from least to greatest.", steps: ["Further left on the number line = smaller.", "−9 is smallest, then −5, then −1, then 2."], a: "−9, −5, −1, 2" },
-    { q: "Find |−12|.", steps: ["Absolute value = distance from 0, always positive."], a: "12" },
-    { q: "Which is smaller: −4 or −7?", steps: ["−7 is further left on the number line."], a: "−7" },
-    { q: "Order 6, −10, 0, −3 from least to greatest.", steps: ["Further left on the number line = smaller."], a: "−10, −3, 0, 6" },
-  ],
-  2: [
-    { q: "−9 + 3", steps: ["Different signs, subtract: 9−3=6.", "Keep sign of larger absolute value (−9): negative."], a: "−6" },
-    { q: "8 − (−5)", steps: ["Subtracting a negative = adding: 8 + 5."], a: "13" },
-    { q: "−4 + (−6)", steps: ["Same signs, add and keep sign: 4+6=10, negative."], a: "−10" },
-    { q: "6 − 9", steps: ["Subtracting a bigger number from a smaller one gives a negative result.", "9−6=3, so the answer is negative."], a: "−3" },
-  ],
-  3: [
-    { q: "(−8) × 5", steps: ["Different signs → negative result.", "8 × 5 = 40."], a: "−40" },
-    { q: "(−36) ÷ (−4)", steps: ["Same signs → positive result.", "36 ÷ 4 = 9."], a: "9" },
-    { q: "7 × (−6)", steps: ["Different signs → negative result.", "7 × 6 = 42."], a: "−42" },
-    { q: "(−12) ÷ 3", steps: ["Different signs → negative result.", "12÷3=4."], a: "−4" },
-  ],
-  4: [
-    { q: "Evaluate 3⁴.", steps: ["3×3=9.", "9×3=27.", "27×3=81."], a: "81" },
-    { q: "Evaluate 5⁰.", steps: ["Any nonzero number to the power 0 is 1."], a: "1" },
-    { q: "Evaluate 2⁻³.", steps: ["Negative exponent → reciprocal: 1/2³.", "2³=8."], a: "1/8" },
-    { q: "Evaluate 4³.", steps: ["4×4=16.", "16×4=64."], a: "64" },
-  ],
-  5: [
-    { q: "Find √49.", steps: ["7 × 7 = 49."], a: "7" },
-    { q: "Find √144.", steps: ["12 × 12 = 144."], a: "12" },
-    { q: "Find √121.", steps: ["11 × 11 = 121."], a: "11" },
-    { q: "Find √100.", steps: ["10 × 10 = 100."], a: "10" },
-  ],
-  6: [
-    { q: "Find the prime factorization of 84.", steps: ["84 = 4 × 21.", "4 = 2×2, 21 = 3×7.", "84 = 2² × 3 × 7."], a: "2² × 3 × 7" },
-    { q: "Find the prime factorization of 45.", steps: ["45 = 9 × 5.", "9 = 3×3.", "45 = 3² × 5."], a: "3² × 5" },
-    { q: "Find the prime factorization of 100.", steps: ["100 = 4 × 25.", "4 = 2², 25 = 5².", "100 = 2² × 5²."], a: "2² × 5²" },
-    { q: "Find the prime factorization of 36.", steps: ["36 = 6 × 6.", "6 = 2 × 3.", "36 = 2² × 3²."], a: "2² × 3²" },
-  ],
-  7: [
-    { q: "Find the GCF of 18 and 24.", steps: ["Factors of 18: 1,2,3,6,9,18.", "Factors of 24: 1,2,3,4,6,8,12,24.", "Largest shared factor: 6."], a: "6" },
-    { q: "Find the LCM of 6 and 8.", steps: ["Multiples of 6: 6,12,18,24...", "Multiples of 8: 8,16,24...", "Smallest shared: 24."], a: "24" },
-    { q: "Find the GCF of 12 and 30.", steps: ["Factors of 12: 1,2,3,4,6,12.", "Factors of 30: 1,2,3,5,6,10,15,30.", "Largest shared: 6."], a: "6" },
-    { q: "Find the LCM of 9 and 12.", steps: ["Multiples of 9: 9,18,27,36...", "Multiples of 12: 12,24,36...", "Smallest shared: 36."], a: "36" },
-  ],
-  8: [
-    { q: "Evaluate 5x − 3 when x = 6.", steps: ["Substitute: 5(6)−3.", "30−3."], a: "27" },
-    { q: "Evaluate 2x² when x = 3.", steps: ["Substitute: 2(3)².", "3²=9, 2×9=18."], a: "18" },
-    { q: "Evaluate (x + 4)/2 when x = 10.", steps: ["Substitute: (10+4)/2.", "14/2."], a: "7" },
-    { q: "Evaluate 4x − 5 when x = 3.", steps: ["Substitute: 4(3)−5.", "12−5."], a: "7" },
-  ],
-  9: [
-    { q: "Simplify 5x + 2x − 3.", steps: ["Combine like terms: 5x+2x=7x.", "7x − 3."], a: "7x − 3" },
-    { q: "Simplify 6y − 4 + 2y + 9.", steps: ["Group: (6y+2y) + (−4+9).", "8y + 5."], a: "8y + 5" },
-    { q: "Simplify 3x² + 5x − x² + 2x.", steps: ["Group: (3x²−x²) + (5x+2x).", "2x² + 7x."], a: "2x² + 7x" },
-    { q: "Simplify 7x − 3x + 5 − 2.", steps: ["Combine: (7x−3x)+(5−2).", "4x + 3."], a: "4x + 3" },
-  ],
-  10: [
-    { q: "Expand 5(x + 4).", steps: ["5×x=5x.", "5×4=20."], a: "5x + 20" },
-    { q: "Expand −2(3x − 6).", steps: ["−2×3x=−6x.", "−2×(−6)=12."], a: "−6x + 12" },
-    { q: "Expand 4(2x + 3y − 1).", steps: ["4×2x=8x.", "4×3y=12y.", "4×(−1)=−4."], a: "8x + 12y − 4" },
-    { q: "Expand 6(x − 2).", steps: ["6×x=6x.", "6×(−2)=−12."], a: "6x − 12" },
-  ],
-  11: [
-    { q: "Solve x + 9 = 15.", steps: ["Subtract 9 from both sides: x = 6."], a: "x = 6" },
-    { q: "Solve x/4 = 7.", steps: ["Multiply both sides by 4: x = 28."], a: "x = 28" },
-    { q: "Solve x − 11 = 3.", steps: ["Add 11 to both sides: x = 14."], a: "x = 14" },
-    { q: "Solve x + 5 = 12.", steps: ["Subtract 5 from both sides: x = 7."], a: "x = 7" },
-  ],
-  12: [
-    { q: "Solve 5x − 3 = 22.", steps: ["Add 3 to both sides: 5x = 25.", "Divide by 5: x = 5."], a: "x = 5" },
-    { q: "Solve 2x + 7 = 19.", steps: ["Subtract 7: 2x = 12.", "Divide by 2: x = 6."], a: "x = 6" },
-    { q: "Solve x/3 − 2 = 4.", steps: ["Add 2: x/3 = 6.", "Multiply by 3: x = 18."], a: "x = 18" },
-    { q: "Solve 4x − 5 = 11.", steps: ["Add 5: 4x = 16.", "Divide by 4: x = 4."], a: "x = 4" },
-  ],
-  13: [
-    { q: "Solve 3(x − 2) = x + 8.", steps: ["Distribute: 3x − 6 = x + 8.", "Subtract x: 2x − 6 = 8.", "Add 6: 2x = 14.", "Divide by 2: x = 7."], a: "x = 7" },
-    { q: "Solve 4x + 5 = 2x + 13.", steps: ["Subtract 2x: 2x + 5 = 13.", "Subtract 5: 2x = 8.", "Divide by 2: x = 4."], a: "x = 4" },
-    { q: "Solve 2(x + 1) − 3 = 9.", steps: ["Distribute: 2x + 2 − 3 = 9.", "Simplify: 2x − 1 = 9.", "Add 1: 2x = 10.", "Divide: x = 5."], a: "x = 5" },
-    { q: "Solve 5(x − 1) = 2x + 10.", steps: ["Distribute: 5x − 5 = 2x + 10.", "Subtract 2x: 3x − 5 = 10.", "Add 5: 3x = 15.", "Divide: x = 5."], a: "x = 5" },
-  ],
-  14: [
-    { q: "Solve x + 4 < 10.", steps: ["Subtract 4 from both sides: x < 6."], a: "x < 6" },
-    { q: "Solve −3x ≤ 12.", steps: ["Divide by −3, flip the sign: x ≥ −4."], a: "x ≥ −4" },
-    { q: "Solve 2x − 1 > 5.", steps: ["Add 1: 2x > 6.", "Divide by 2: x > 3."], a: "x > 3" },
-    { q: "Solve x/2 + 3 > 7.", steps: ["Subtract 3: x/2 > 4.", "Multiply by 2: x > 8."], a: "x > 8" },
-  ],
-  15: [
-    { q: "Solve x/5 = 8/10.", steps: ["Cross-multiply: 10x = 40.", "Divide by 10: x = 4."], a: "x = 4" },
-    { q: "Solve 3/x = 9/12.", steps: ["Cross-multiply: 9x = 36.", "Divide by 9: x = 4."], a: "x = 4" },
-    { q: "A map scale is 1 inch = 20 miles. How many miles is 3.5 inches?", steps: ["Set up proportion: 1/20 = 3.5/x.", "Cross-multiply: x = 20 × 3.5."], a: "70 miles" },
-    { q: "Solve 6/x = 2/5.", steps: ["Cross-multiply: 30 = 2x.", "Divide by 2: x = 15."], a: "x = 15" },
-  ],
-  16: [
-    { q: "A $80 jacket drops to $60. Find the percent decrease.", steps: ["Change = 80−60 = 20.", "20 ÷ 80 = 0.25.", "0.25 × 100 = 25%."], a: "25% decrease" },
-    { q: "A population grows from 200 to 250. Find the percent increase.", steps: ["Change = 50.", "50 ÷ 200 = 0.25 = 25%."], a: "25% increase" },
-    { q: "A $30 shirt is now $45. Find the percent increase.", steps: ["Change = 15.", "15 ÷ 30 = 0.5 = 50%."], a: "50% increase" },
-    { q: "A $200 phone increases to $250. Find the percent increase.", steps: ["Change = 50.", "50 ÷ 200 = 0.25 = 25%."], a: "25% increase" },
-  ],
-  17: [
-    { q: "Find the simple interest on $1,000 at 5% for 2 years.", steps: ["I = P×r×t = 1000 × 0.05 × 2.", "1000×0.05=50, 50×2=100."], a: "$100" },
-    { q: "Find the simple interest on $2,400 at 3% for 5 years.", steps: ["I = 2400 × 0.03 × 5.", "2400×0.03=72, 72×5=360."], a: "$360" },
-    { q: "Find the total amount owed on a $500 loan at 6% for 1 year.", steps: ["Interest = 500×0.06×1=30.", "Total = 500 + 30."], a: "$530" },
-    { q: "Find the simple interest on $800 at 2.5% for 4 years.", steps: ["I = 800 × 0.025 × 4.", "800×0.025=20.", "20×4."], a: "$80" },
-  ],
-  18: [
     { q: "Which quadrant is (4, −2) in?", steps: ["x positive (right), y negative (down).", "Right and down is Quadrant IV."], a: "Quadrant IV" },
     { q: "Which quadrant is (−6, −3) in?", steps: ["x negative (left), y negative (down).", "Left and down is Quadrant III."], a: "Quadrant III" },
     { q: "What are the coordinates of the origin?", steps: ["The origin is where both axes meet."], a: "(0, 0)" },
     { q: "Which quadrant is (5, 3) in?", steps: ["x positive (right), y positive (up).", "Right and up is Quadrant I."], a: "Quadrant I" },
   ],
-  19: [
+  2: [
     { q: "Describe the pattern: (1,3), (2,6), (3,9).", steps: ["Each y-value is 3 times the x-value."], a: "y = 3x" },
     { q: "Describe the pattern: (0,2), (1,3), (2,4).", steps: ["Each y-value is 2 more than the x-value."], a: "y = x + 2" },
     { q: "Describe the pattern: (1,1), (2,4), (3,9).", steps: ["Each y-value is the x-value squared."], a: "y = x²" },
     { q: "Describe the pattern: (1,5), (2,10), (3,15).", steps: ["Each y-value is 5 times the x-value."], a: "y = 5x" },
   ],
-  20: [
+  3: [
     { q: "Find the volume of a box 6 × 2 × 4.", steps: ["6×2=12.", "12×4=48."], a: "48 cubic units" },
     { q: "Find the volume of a cube with side 5.", steps: ["Volume = side³ = 5×5×5.", "5×5=25, 25×5=125."], a: "125 cubic units" },
     { q: "A box has volume 60 and base 6×5. Find its height.", steps: ["Base area = 6×5=30.", "Height = volume ÷ base area = 60÷30."], a: "2" },
     { q: "Find the volume of a box 3 × 3 × 3.", steps: ["3×3=9.", "9×3=27."], a: "27 cubic units" },
   ],
-  21: [
+  4: [
     { q: "Find the surface area of a rectangular prism 4×3×2.", steps: ["Faces: 2(4×3) + 2(4×2) + 2(3×2).", "2(12) + 2(8) + 2(6) = 24+16+12."], a: "52 square units" },
     { q: "Find the surface area of a cube with side 4.", steps: ["Each face: 4×4=16.", "6 faces: 6×16."], a: "96 square units" },
     { q: "Find the surface area of a cube with side 2.", steps: ["Each face: 2×2=4.", "6 faces: 6×4."], a: "24 square units" },
     { q: "Find the surface area of a rectangular prism 5×2×3.", steps: ["Faces: 2(5×2)+2(5×3)+2(2×3).", "2(10)+2(15)+2(6)=20+30+12."], a: "62 square units" },
   ],
-  22: [
+  5: [
     { q: "A right triangle has legs 6 and 8. Find the hypotenuse.", steps: ["6²+8²=36+64=100.", "√100=10."], a: "10" },
     { q: "A right triangle has legs 5 and 12. Find the hypotenuse.", steps: ["5²+12²=25+144=169.", "√169=13."], a: "13" },
     { q: "A right triangle has hypotenuse 10 and one leg 6. Find the other leg.", steps: ["6²+b²=10².", "36+b²=100 → b²=64.", "√64=8."], a: "8" },
     { q: "A right triangle has legs 9 and 12. Find the hypotenuse.", steps: ["9²+12²=81+144=225.", "√225=15."], a: "15" },
   ],
-  23: [
+  6: [
     { q: "Find the slope between (2,3) and (5,9).", steps: ["m=(9−3)/(5−2)=6/3."], a: "2" },
     { q: "Find the slope between (0,4) and (2,0).", steps: ["m=(0−4)/(2−0)=−4/2."], a: "−2" },
     { q: "Find the slope between (−1,2) and (3,10).", steps: ["m=(10−2)/(3−(−1))=8/4."], a: "2" },
     { q: "Find the slope between (3,1) and (3,8).", steps: ["m=(8−1)/(3−3)=7/0.", "Division by zero means the slope is undefined."], a: "Undefined (vertical line)" },
   ],
-  24: [
+  7: [
     { q: "A line has slope −3 and y-intercept 5. Write its equation.", steps: ["Plug into y=mx+b: m=−3, b=5."], a: "y = −3x + 5" },
     { q: "Find the slope and y-intercept of y = 4x − 7.", steps: ["Compare to y=mx+b: m=4, b=−7."], a: "slope 4, y-intercept −7" },
     { q: "A line has slope 1/2 and y-intercept −2. Write its equation.", steps: ["Plug in: m=1/2, b=−2."], a: "y = (1/2)x − 2" },
     { q: "Find the slope and y-intercept of y = −2x + 6.", steps: ["Compare to y=mx+b: m=−2, b=6."], a: "slope −2, y-intercept 6" },
   ],
-  25: [
+  8: [
     { q: "Describe how to graph y = 3x − 2.", steps: ["Start at y-intercept (0,−2).", "Slope 3 = 3/1: go up 3, right 1 to next point (1,1)."], a: "Line through (0,−2) and (1,1)" },
     { q: "Describe how to graph y = −x + 4.", steps: ["Start at y-intercept (0,4).", "Slope −1: go down 1, right 1 to (1,3)."], a: "Line through (0,4) and (1,3)" },
     { q: "Describe how to graph y = (2/3)x.", steps: ["Y-intercept is (0,0).", "Slope 2/3: go up 2, right 3 to (3,2)."], a: "Line through (0,0) and (3,2)" },
     { q: "Describe how to graph y = −(1/2)x + 3.", steps: ["Start at y-intercept (0,3).", "Slope −1/2: go down 1, right 2 to (2,2)."], a: "Line through (0,3) and (2,2)" },
   ],
-  26: [
+  9: [
     { q: "Write the equation of the line through (1,5) with slope 2.", steps: ["y−5=2(x−1).", "y−5=2x−2.", "y=2x+3."], a: "y = 2x + 3" },
     { q: "Write the equation of the line through (3,−2) with slope −1.", steps: ["y−(−2)=−1(x−3).", "y+2=−x+3.", "y=−x+1."], a: "y = −x + 1" },
     { q: "Write the equation of the line through (0,4) and (2,10).", steps: ["Slope = (10−4)/(2−0)=3.", "y-intercept is 4 (given the point (0,4))."], a: "y = 3x + 4" },
     { q: "Write the equation of the line through (−1,4) with slope 3.", steps: ["y−4=3(x−(−1)).", "y−4=3x+3.", "y=3x+7."], a: "y = 3x + 7" },
   ],
-  27: [
+  10: [
     { q: "Solve: y = 2x and x + y = 9.", steps: ["Substitute: x + 2x = 9.", "3x=9 → x=3.", "y=2(3)=6."], a: "x = 3, y = 6" },
     { q: "Solve: y = x − 1 and 3x + y = 11.", steps: ["Substitute: 3x + (x−1) = 11.", "4x−1=11 → 4x=12 → x=3.", "y=3−1=2."], a: "x = 3, y = 2" },
     { q: "Solve: x = y + 4 and 2y + x = 10.", steps: ["Substitute: 2y + (y+4) = 10.", "3y+4=10 → 3y=6 → y=2.", "x=2+4=6."], a: "x = 6, y = 2" },
     { q: "Solve: y = 3x − 1 and x + y = 11.", steps: ["Substitute: x + (3x−1)=11.", "4x−1=11 → 4x=12 → x=3.", "y=3(3)−1=8."], a: "x = 3, y = 8" },
   ],
-  28: [
+  11: [
     { q: "Solve: x + y = 8 and x − y = 2.", steps: ["Add the equations: 2x = 10 → x = 5.", "Plug in: 5 + y = 8 → y = 3."], a: "x = 5, y = 3" },
     { q: "Solve: 3x + y = 13 and x − y = 3.", steps: ["Add: 4x = 16 → x = 4.", "Plug in: 4 − y = 3 → y = 1."], a: "x = 4, y = 1" },
     { q: "Solve: 2x + y = 7 and 2x − y = 1.", steps: ["Add: 4x = 8 → x = 2.", "Plug in: 2(2)+y=7 → y=3."], a: "x = 2, y = 3" },
     { q: "Solve: x + 2y = 12 and x − y = 3.", steps: ["Subtract the equations: 3y = 9 → y = 3.", "Plug in: x − 3 = 3 → x = 6."], a: "x = 6, y = 3" },
   ],
-  29: [
+  12: [
     { q: "Lines y = 2x + 1 and y = 2x − 3 — how many solutions?", steps: ["Both have slope 2 (parallel).", "Different intercepts, so they never meet."], a: "No solution" },
     { q: "Lines y = x and y = 3x — where do they cross?", steps: ["Set equal: x = 3x → −2x = 0 → x = 0.", "y = 0."], a: "(0, 0)" },
     { q: "Lines y = x + 2 and y = x + 2 — how many solutions?", steps: ["Identical equations describe the same line.", "Every point on the line is a solution."], a: "Infinitely many solutions" },
     { q: "Lines y = −x + 5 and y = 2x − 1 — where do they cross?", steps: ["Set equal: −x+5=2x−1.", "6=3x → x=2.", "y=−2+5=3."], a: "(2, 3)" },
   ],
-  30: [
+  13: [
     { q: "Which side do you shade for y < x − 1?", steps: ["Test (0,0): is 0 < 0 − 1? 0 < −1 is false.", "Shade the side NOT containing (0,0)."], a: "Shade below the line" },
     { q: "Which side do you shade for y ≥ 2x?", steps: ["Test (0,1): is 1 ≥ 2(0)=0? True.", "Shade the side containing (0,1) — above the line."], a: "Shade above the line (solid boundary)" },
     { q: "Is the boundary line dashed or solid for y > x + 3?", steps: ["Strict inequality (> not ≥) means points on the line aren't included."], a: "Dashed" },
     { q: "Which side do you shade for y ≤ −x + 2?", steps: ["Test (0,0): is 0 ≤ 0+2? True.", "Shade the side containing (0,0), including the boundary line."], a: "Shade below/on the line (solid boundary)" },
   ],
-  31: [
+  14: [
     { q: "Is {(1,2), (2,2), (3,5)} a function?", steps: ["Each input (1, 2, 3) has exactly one output.", "Two inputs mapping to the same output (2) is fine — that's still a function."], a: "Yes — it's a function" },
     { q: "Does the graph of a circle pass the vertical line test?", steps: ["A vertical line through the middle crosses the circle twice."], a: "No — a circle is not a function" },
     { q: "Is {(1,3), (1,5)} a function?", steps: ["Input 1 maps to two different outputs (3 and 5)."], a: "No — not a function" },
     { q: "Is {(2,5), (3,5), (4,5)} a function?", steps: ["Each input has exactly one output (5)."], a: "Yes — it's a function" },
   ],
-  32: [
+  15: [
     { q: "If f(x) = 4x − 1, find f(2).", steps: ["Substitute: 4(2)−1.", "8−1."], a: "7" },
     { q: "If g(x) = x² + 3, find g(4).", steps: ["Substitute: 4²+3.", "16+3."], a: "19" },
     { q: "If f(x) = 2x + 7, find f(−3).", steps: ["Substitute: 2(−3)+7.", "−6+7."], a: "1" },
     { q: "If h(x) = 3x² − 2, find h(1).", steps: ["Substitute: 3(1)²−2.", "3−2."], a: "1" },
   ],
-  33: [
+  16: [
     { q: "(4x² + 3x) + (2x² − x)", steps: ["Combine like terms: (4x²+2x²) + (3x−x).", "6x² + 2x."], a: "6x² + 2x" },
     { q: "(5x + 2) − (3x − 4)", steps: ["Distribute negative: 5x+2−3x+4.", "Combine: (5x−3x)+(2+4)."], a: "2x + 6" },
     { q: "(x² − 2x + 3) + (2x² + x − 1)", steps: ["Combine like terms: (x²+2x²)+(−2x+x)+(3−1)."], a: "3x² − x + 2" },
     { q: "(6x² − 4x + 1) − (2x² + x − 3)", steps: ["Distribute negative: 6x²−4x+1−2x²−x+3.", "Combine: (6x²−2x²)+(−4x−x)+(1+3)."], a: "4x² − 5x + 4" },
   ],
-  34: [
+  17: [
     { q: "(x + 2)(x + 6)", steps: ["First: x·x=x².", "Outer: x·6=6x.", "Inner: 2·x=2x.", "Last: 2·6=12.", "Combine: x²+6x+2x+12."], a: "x² + 8x + 12" },
     { q: "(x − 3)(x + 5)", steps: ["First: x².", "Outer: 5x.", "Inner: −3x.", "Last: −15.", "Combine: x²+5x−3x−15."], a: "x² + 2x − 15" },
     { q: "(2x + 1)(x + 4)", steps: ["First: 2x².", "Outer: 8x.", "Inner: x.", "Last: 4.", "Combine: 2x²+8x+x+4."], a: "2x² + 9x + 4" },
     { q: "(x − 2)(x − 7)", steps: ["First: x².", "Outer: −7x.", "Inner: −2x.", "Last: 14.", "Combine: x²−7x−2x+14."], a: "x² − 9x + 14" },
   ],
-  35: [
+  18: [
     { q: "Factor 8x² + 12x.", steps: ["GCF of 8x² and 12x is 4x.", "8x²÷4x=2x, 12x÷4x=3."], a: "4x(2x + 3)" },
     { q: "Factor 15x³ − 5x².", steps: ["GCF is 5x².", "15x³÷5x²=3x, 5x²÷5x²=1."], a: "5x²(3x − 1)" },
     { q: "Factor 6x + 9.", steps: ["GCF of 6 and 9 is 3.", "6x÷3=2x, 9÷3=3."], a: "3(2x + 3)" },
     { q: "Factor 10x² − 4x.", steps: ["GCF of 10x² and 4x is 2x.", "10x²÷2x=5x, 4x÷2x=2."], a: "2x(5x − 2)" },
   ],
-  36: [
+  19: [
     { q: "Factor x² + 9x + 20.", steps: ["Need two numbers multiplying to 20, adding to 9.", "4 and 5 work: 4×5=20, 4+5=9."], a: "(x + 4)(x + 5)" },
     { q: "Factor x² − 2x − 15.", steps: ["Need two numbers multiplying to −15, adding to −2.", "−5 and 3 work: −5×3=−15, −5+3=−2."], a: "(x − 5)(x + 3)" },
     { q: "Factor x² − 8x + 15.", steps: ["Need two numbers multiplying to 15, adding to −8.", "−3 and −5 work."], a: "(x − 3)(x − 5)" },
     { q: "Factor x² + 4x − 21.", steps: ["Need two numbers multiplying to −21, adding to 4.", "7 and −3 work: 7×(−3)=−21, 7+(−3)=4."], a: "(x + 7)(x − 3)" },
   ],
-  37: [
+  20: [
     { q: "Factor x² − 25.", steps: ["x² and 25 are both perfect squares (x·x, 5·5).", "Apply the pattern: (x+5)(x−5)."], a: "(x + 5)(x − 5)" },
     { q: "Factor 4x² − 9.", steps: ["4x² = (2x)², 9 = 3².", "(2x+3)(2x−3)."], a: "(2x + 3)(2x − 3)" },
     { q: "Factor x² − 1.", steps: ["x² = x², 1 = 1².", "(x+1)(x−1)."], a: "(x + 1)(x − 1)" },
     { q: "Factor 9x² − 25.", steps: ["9x²=(3x)², 25=5².", "(3x+5)(3x−5)."], a: "(3x + 5)(3x − 5)" },
   ],
-  38: [
+  21: [
     { q: "Solve x² − x − 6 = 0.", steps: ["Factor: (x−3)(x+2)=0.", "x−3=0 or x+2=0."], a: "x = 3 or x = −2" },
     { q: "Solve x² + 6x + 8 = 0.", steps: ["Factor: (x+2)(x+4)=0.", "x+2=0 or x+4=0."], a: "x = −2 or x = −4" },
     { q: "Solve x² − 9 = 0.", steps: ["Factor: (x+3)(x−3)=0.", "x+3=0 or x−3=0."], a: "x = −3 or x = 3" },
     { q: "Solve x² − 5x = 0.", steps: ["Factor out x: x(x−5)=0.", "x=0 or x−5=0."], a: "x = 0 or x = 5" },
   ],
-  39: [
+  22: [
     { q: "Solve x² + 3x − 4 = 0 using the quadratic formula.", steps: ["a=1,b=3,c=−4.", "Discriminant: 9+16=25.", "x=(−3±5)/2."], a: "x = 1 or x = −4" },
     { q: "Solve 2x² − 5x + 2 = 0 using the quadratic formula.", steps: ["a=2,b=−5,c=2.", "Discriminant: 25−16=9.", "x=(5±3)/4."], a: "x = 2 or x = 1/2" },
     { q: "Solve x² − 4x + 4 = 0 using the quadratic formula.", steps: ["a=1,b=−4,c=4.", "Discriminant: 16−16=0.", "x=(4±0)/2."], a: "x = 2 (one repeated solution)" },
     { q: "Solve x² + x − 6 = 0 using the quadratic formula.", steps: ["a=1,b=1,c=−6.", "Discriminant: 1+24=25.", "x=(−1±5)/2."], a: "x = 2 or x = −3" },
   ],
-  40: [
+  23: [
     { q: "Find the vertex x-coordinate of y = x² + 6x + 5.", steps: ["a=1,b=6.", "x=−6/(2·1)=−3."], a: "x = −3" },
     { q: "Does y = −2x² + x + 1 open up or down?", steps: ["a=−2, which is negative."], a: "Opens downward" },
     { q: "Find the vertex x-coordinate of y = 2x² − 8x + 3.", steps: ["a=2,b=−8.", "x=8/(2·2)=8/4."], a: "x = 2" },
     { q: "Find the vertex x-coordinate of y = −x² + 4x + 2.", steps: ["a=−1,b=4.", "x=−4/(2·(−1))=−4/−2."], a: "x = 2" },
   ],
-  41: [
+  24: [
     { q: "Simplify x⁶ / x².", steps: ["Same base, subtract exponents: 6−2."], a: "x⁴" },
     { q: "Simplify (x³)⁴.", steps: ["Power to a power, multiply exponents: 3×4."], a: "x¹²" },
     { q: "Simplify x² · x⁷.", steps: ["Same base, add exponents: 2+7."], a: "x⁹" },
     { q: "Simplify x⁴ · x⁻².", steps: ["Same base, add exponents: 4+(−2)."], a: "x²" },
   ],
-  42: [
+  25: [
     { q: "Simplify √72.", steps: ["72 = 36 × 2, and 36 is a perfect square.", "√72 = √36 · √2 = 6√2."], a: "6√2" },
     { q: "Simplify √32.", steps: ["32 = 16 × 2.", "√32 = √16 · √2 = 4√2."], a: "4√2" },
     { q: "Simplify √98.", steps: ["98 = 49 × 2.", "√98 = √49 · √2 = 7√2."], a: "7√2" },
     { q: "Simplify √200.", steps: ["200 = 100 × 2, and 100 is a perfect square.", "√200 = √100 · √2 = 10√2."], a: "10√2" },
   ],
-  43: [
+  26: [
     { q: "Two similar triangles have a scale factor of 3. A side of the smaller triangle is 4. Find the corresponding side of the larger triangle.", steps: ["Multiply by the scale factor: 4 × 3."], a: "12" },
     { q: "Two triangles both have angles 40° and 70°. Are they similar?", steps: ["If two angles match, the third angle must also match (180° total).", "Matching angles (AA) means the triangles are similar."], a: "Yes, similar (AA)" },
     { q: "A triangle has sides 6, 8, 10. A similar triangle has its shortest side equal to 9. Find its longest side.", steps: ["Scale factor = 9/6 = 1.5.", "Longest side: 10 × 1.5."], a: "15" },
     { q: "Two congruent triangles both have a side of length 7. What is the corresponding side in the second triangle?", steps: ["Congruent triangles have identical corresponding sides."], a: "7" },
   ],
-  44: [
+  27: [
     { q: "A 45-45-90 triangle has legs of length 9. Find the hypotenuse.", steps: ["Hypotenuse = leg × √2.", "9 × √2."], a: "9√2" },
     { q: "A 30-60-90 triangle has a short leg of 5. Find the hypotenuse.", steps: ["Hypotenuse = short leg × 2.", "5 × 2."], a: "10" },
     { q: "A 30-60-90 triangle has a short leg of 4. Find the long leg.", steps: ["Long leg = short leg × √3.", "4 × √3."], a: "4√3" },
     { q: "A 45-45-90 triangle has a hypotenuse of 10√2. Find each leg.", steps: ["Leg = hypotenuse ÷ √2.", "10√2 ÷ √2 = 10."], a: "10" },
   ],
-  45: [
+  28: [
     { q: "A right triangle has angle 45°, adjacent side 5, and hypotenuse h. Find h using cosine.", steps: ["cos(45°) = adjacent/hypotenuse = 5/h.", "cos(45°) ≈ 0.707, so h = 5/0.707."], a: "≈ 7.07" },
     { q: "A right triangle has opposite side 3 and adjacent side 4. Find tan of that angle.", steps: ["tan = opposite/adjacent = 3/4."], a: "3/4 (0.75)" },
     { q: "A right triangle has hypotenuse 10 and angle 30°. Find the opposite side using sine.", steps: ["sin(30°) = opposite/hypotenuse.", "0.5 = opposite/10 → opposite = 5."], a: "5" },
     { q: "A ladder makes a 60° angle with the ground and is 8 ft long. Find the height it reaches using sine.", steps: ["sin(60°) = height/8.", "sin(60°) ≈ 0.866, height = 8 × 0.866."], a: "≈ 6.93 ft" },
   ],
-  46: [
+  29: [
     { q: "Find the arc measure cut off by a 70° central angle.", steps: ["A central angle's measure equals its arc's measure."], a: "70°" },
     { q: "An inscribed angle cuts off an arc of 80°. Find the inscribed angle.", steps: ["Inscribed angle = half the arc = 80/2."], a: "40°" },
     { q: "Find the area of a sector with radius 4 and central angle 180° (π ≈ 3.14).", steps: ["Sector area = (180/360) × πr² = 0.5 × 3.14 × 16.", "0.5 × 50.24."], a: "25.12" },
     { q: "A central angle is 120°. What fraction of the whole circle's area does its sector cover?", steps: ["120/360 simplifies to 1/3."], a: "1/3" },
   ],
-  47: [
+  30: [
     { q: "Find the volume of a cone with radius 3 and height 4 (π ≈ 3.14).", steps: ["Volume = (1/3)πr²h = (1/3)(3.14)(9)(4).", "3.14×9=28.26, 28.26×4=113.04.", "113.04 ÷ 3."], a: "37.68" },
     { q: "Find the volume of a sphere with radius 3 (π ≈ 3.14).", steps: ["Volume = (4/3)πr³ = (4/3)(3.14)(27).", "3.14×27=84.78.", "(4/3)×84.78."], a: "113.04" },
     { q: "Find the surface area of a sphere with radius 5 (π ≈ 3.14).", steps: ["Surface area = 4πr² = 4 × 3.14 × 25.", "4×3.14=12.56, 12.56×25."], a: "314" },
     { q: "Find the surface area of a cylinder with radius 2 and height 6 (π ≈ 3.14).", steps: ["SA = 2πr² + 2πrh = 2(3.14)(4) + 2(3.14)(2)(6).", "25.12 + 75.36."], a: "100.48" },
   ],
-  48: [
+  31: [
     { q: "Find the distance between (0,0) and (3,4).", steps: ["d = √[(3−0)² + (4−0)²] = √[9+16].", "√25."], a: "5" },
     { q: "Find the midpoint of (2,3) and (8,7).", steps: ["M = ((2+8)/2, (3+7)/2) = (10/2, 10/2)."], a: "(5, 5)" },
     { q: "Find the distance between (−2,1) and (3,1).", steps: ["d = √[(3−(−2))² + (1−1)²] = √[5² + 0²].", "√25."], a: "5" },
     { q: "Find the midpoint of (−4,6) and (2,−2).", steps: ["M = ((−4+2)/2, (6+(−2))/2) = (−2/2, 4/2)."], a: "(−1, 2)" },
   ],
-  49: [
+  32: [
     { q: "Evaluate 16^(1/2).", steps: ["16^(1/2) means the square root of 16."], a: "4" },
     { q: "Evaluate 27^(2/3).", steps: ["27^(1/3) = 3 (cube root of 27).", "3² = 9."], a: "9" },
     { q: "Solve √(x + 3) = 5.", steps: ["Square both sides: x + 3 = 25.", "x = 22."], a: "x = 22" },
     { q: "Evaluate 4^(3/2).", steps: ["4^(1/2) = 2 (square root of 4).", "2³ = 8."], a: "8" },
   ],
-  50: [
+  33: [
     { q: "Simplify (4 + i) + (2 + 3i).", steps: ["Real parts: 4+2=6.", "Imaginary parts: i+3i=4i."], a: "6 + 4i" },
     { q: "Simplify (5 − 2i) − (1 − i).", steps: ["Real parts: 5−1=4.", "Imaginary parts: −2i−(−i)=−i."], a: "4 − i" },
     { q: "Simplify i².", steps: ["By definition, i² = −1."], a: "−1" },
     { q: "Simplify (2 + i) + (3 − 4i).", steps: ["Real parts: 2+3=5.", "Imaginary parts: i−4i=−3i."], a: "5 − 3i" },
   ],
-  51: [
+  34: [
     { q: "Solve x² + 8x + 7 = 0 by completing the square.", steps: ["Move constant: x² + 8x = −7.", "Add (8/2)²=16: x² + 8x + 16 = 9.", "(x+4)² = 9 → x+4 = ±3."], a: "x = −1 or x = −7" },
     { q: "Solve x² − 4x − 5 = 0 by completing the square.", steps: ["Move constant: x² − 4x = 5.", "Add (−4/2)²=4: x² − 4x + 4 = 9.", "(x−2)² = 9 → x−2 = ±3."], a: "x = 5 or x = −1" },
     { q: "What number completes the square for x² + 10x?", steps: ["Take half of 10, then square it: (10/2)² = 5²."], a: "25" },
     { q: "Solve x² + 2x − 8 = 0 by completing the square.", steps: ["Move constant: x² + 2x = 8.", "Add (2/2)²=1: x² + 2x + 1 = 9.", "(x+1)² = 9 → x+1 = ±3."], a: "x = 2 or x = −4" },
   ],
-  52: [
+  35: [
     { q: "Divide x² + 7x + 12 by x + 3.", steps: ["x² ÷ x = x; x(x+3)=x²+3x; subtract: 4x+12.", "4x ÷ x = 4; 4(x+3)=4x+12; subtract: 0."], a: "x + 4 (no remainder)" },
     { q: "Divide x² − x − 6 by x − 3.", steps: ["x² ÷ x = x; x(x−3)=x²−3x; subtract: 2x−6.", "2x ÷ x = 2; 2(x−3)=2x−6; subtract: 0."], a: "x + 2 (no remainder)" },
     { q: "Divide x² + 5x + 6 by x + 3.", steps: ["x² ÷ x = x; x(x+3)=x²+3x; subtract: 2x+6.", "2x ÷ x = 2; 2(x+3)=2x+6; subtract: 0."], a: "x + 2 (no remainder)" },
     { q: "Divide x² − 9 by x − 3.", steps: ["x² ÷ x = x; x(x−3)=x²−3x; subtract: 3x−9.", "3x ÷ x = 3; 3(x−3)=3x−9; subtract: 0."], a: "x + 3 (no remainder)" },
   ],
-  53: [
+  36: [
     { q: "Find the vertical asymptote of f(x) = 5/(x + 2).", steps: ["Set denominator to 0: x + 2 = 0."], a: "x = −2" },
     { q: "Find the vertical asymptote of f(x) = 1/(x − 7).", steps: ["Set denominator to 0: x − 7 = 0."], a: "x = 7" },
     { q: "For f(x) = 2x/(x − 1), what x-value is excluded from the domain?", steps: ["The function is undefined where the denominator is 0: x − 1 = 0."], a: "x = 1" },
     { q: "Find the vertical asymptote of f(x) = 4/(2x − 6).", steps: ["Set denominator to 0: 2x − 6 = 0.", "2x = 6 → x = 3."], a: "x = 3" },
   ],
-  54: [
+  37: [
     { q: "A $1000 investment grows 5% per year. Find its value after 2 years.", steps: ["y = 1000(1.05)².", "1.05² = 1.1025.", "1000 × 1.1025."], a: "$1,102.50" },
     { q: "A car worth $20,000 depreciates 10% per year. Find its value after 1 year.", steps: ["y = 20000(0.9)¹.", "20000 × 0.9."], a: "$18,000" },
     { q: "A bacteria colony of 50 doubles every hour. Find the population after 3 hours.", steps: ["y = 50(2)³.", "2³ = 8.", "50 × 8."], a: "400" },
     { q: "A population of 200 decays 5% per year. Find the population after 2 years.", steps: ["y = 200(0.95)².", "0.95² = 0.9025.", "200 × 0.9025."], a: "≈ 180.5" },
   ],
-  55: [
+  38: [
     { q: "Evaluate log₃(9).", steps: ["Ask: 3 to what power gives 9?", "3² = 9."], a: "2" },
     { q: "Evaluate log₅(125).", steps: ["Ask: 5 to what power gives 125?", "5³ = 125."], a: "3" },
     { q: "Simplify log₂(4) + log₂(8).", steps: ["log₂(4)=2, log₂(8)=3.", "2 + 3."], a: "5" },
     { q: "Evaluate log₁₀(1000).", steps: ["Ask: 10 to what power gives 1000?", "10³ = 1000."], a: "3" },
   ],
-  56: [
+  39: [
     { q: "Solve 3^x = 81.", steps: ["Rewrite 81 as a power of 3: 81 = 3⁴.", "So x = 4."], a: "x = 4" },
     { q: "Solve log₂(x) = 5.", steps: ["Rewrite in exponential form: 2⁵ = x.", "2⁵ = 32."], a: "x = 32" },
     { q: "Solve 5^x = 125.", steps: ["Rewrite 125 as a power of 5: 125 = 5³.", "So x = 3."], a: "x = 3" },
     { q: "Solve log₄(x) = 3.", steps: ["Rewrite in exponential form: 4³ = x.", "4³ = 64."], a: "x = 64" },
   ],
-  57: [
+  40: [
     { q: "Find the 4th term of the geometric sequence 2, 6, 18...", steps: ["Common ratio r = 3.", "a₄ = 2 × 3³ = 2 × 27."], a: "54" },
     { q: "Find the 10th term of the arithmetic sequence 5, 8, 11...", steps: ["a₁=5, d=3.", "a₁₀ = 5 + (10−1)(3) = 5 + 27."], a: "32" },
     { q: "Is 4, 8, 16, 32... arithmetic or geometric?", steps: ["Check the ratio between terms: 8/4=2, 16/8=2, 32/16=2 — constant ratio."], a: "Geometric (r = 2)" },
     { q: "Find the common difference of the sequence 20, 14, 8, 2...", steps: ["Subtract consecutive terms: 14−20=−6."], a: "−6" },
   ],
-  58: [
+  41: [
     { q: "Find the sum of the first 4 terms of 1, 2, 3, 4.", steps: ["S_n = n(a₁+aₙ)/2 = 4(1+4)/2.", "4 × 5 / 2."], a: "10" },
     { q: "Find the sum of the first 6 terms of the arithmetic sequence 3, 5, 7...", steps: ["a₆ = 3+(6−1)(2)=13.", "S₆ = 6(3+13)/2 = 6×16/2."], a: "48" },
     { q: "Find the sum of the first 3 terms of the geometric sequence 2, 6, 18.", steps: ["Just add them directly: 2+6+18."], a: "26" },
     { q: "Find the sum of the first 5 terms of 10, 20, 30, 40, 50.", steps: ["S_n = n(a₁+aₙ)/2 = 5(10+50)/2.", "5 × 60 / 2."], a: "150" },
   ],
-  59: [
+  42: [
     { q: "Convert 180° to radians.", steps: ["Multiply by π/180: 180 × π/180."], a: "π radians" },
     { q: "Convert 45° to radians.", steps: ["Multiply by π/180: 45 × π/180."], a: "π/4 radians" },
     { q: "Convert π/3 radians to degrees.", steps: ["Multiply by 180/π: (π/3) × (180/π)."], a: "60°" },
     { q: "Convert 270° to radians.", steps: ["Multiply by π/180: 270 × π/180."], a: "3π/2 radians" },
   ],
-  60: [
+  43: [
     { q: "What is the amplitude and period of y = cos(x)?", steps: ["Amplitude: max distance from midline = 1.", "Period: length before it repeats = 2π."], a: "Amplitude 1, period 2π" },
     { q: "At x = 0, what is the value of sin(x)?", steps: ["sin(0) = 0, and the graph is rising there."], a: "0" },
     { q: "At x = 0, what is the value of cos(x)?", steps: ["cos(0) = 1, and the graph is at its maximum there."], a: "1" },
     { q: "What is the maximum value that both sin(x) and cos(x) ever reach?", steps: ["Both oscillate between −1 and 1 — their amplitude is 1."], a: "1" },
+  ],
+  44: [
+    { q: "If cos(x) = 4/5, find sin(x) using the Pythagorean identity (x in quadrant I).", steps: ["sin²(x) + cos²(x) = 1.", "sin²(x) + (4/5)² = 1 → sin²(x) = 1 − 16/25 = 9/25.", "sin(x) = 3/5."], a: "3/5" },
+    { q: "Simplify sin²(x) + cos²(x).", steps: ["This is the Pythagorean identity — it always equals 1."], a: "1" },
+    { q: "If tan(x) = 3, find sec²(x).", steps: ["tan²(x) + 1 = sec²(x).", "3² + 1 = 9 + 1."], a: "10" },
+    { q: "If csc²(x) = 5, find cot²(x).", steps: ["1 + cot²(x) = csc²(x).", "cot²(x) = 5 − 1."], a: "4" },
+  ],
+  45: [
+    { q: "Find cos⁻¹(1/2).", steps: ["Ask: what angle has a cosine of 1/2?", "cos(60°) = 1/2."], a: "60°" },
+    { q: "Find tan⁻¹(1).", steps: ["Ask: what angle has a tangent of 1?", "tan(45°) = 1."], a: "45°" },
+    { q: "Find sin⁻¹(0).", steps: ["Ask: what angle has a sine of 0?", "sin(0°) = 0."], a: "0°" },
+    { q: "Find cos⁻¹(1).", steps: ["Ask: what angle has a cosine of 1?", "cos(0°) = 1."], a: "0°" },
+  ],
+  46: [
+    { q: "A triangle has angle A = 45°, angle B = 60°, and side a = 8. Find side b using the Law of Sines.", steps: ["a/sin(A) = b/sin(B).", "8/sin(45°) = b/sin(60°).", "8/0.707 ≈ b/0.866 → b ≈ 11.31 × 0.866."], a: "≈ 9.8" },
+    { q: "A triangle has angle A = 30°, angle C = 90°, and side c = 20. Find side a.", steps: ["a/sin(A) = c/sin(C).", "a/sin(30°) = 20/sin(90°).", "a/0.5 = 20/1 → a = 0.5 × 20."], a: "10" },
+    { q: "In a triangle, angle A = 90°, angle B = 45°, side a = 10. Find side b.", steps: ["a/sin(A) = b/sin(B).", "10/sin(90°) = b/sin(45°).", "10/1 = b/0.707 → b = 10 × 0.707."], a: "≈ 7.07" },
+    { q: "A triangle has angles A = 40°, B = 60°, C = 80°. Which side is the longest?", steps: ["The largest angle is opposite the longest side.", "Angle C = 80° is the largest."], a: "Side c (opposite angle C)" },
+  ],
+  47: [
+    { q: "A triangle has sides a=7, b=9, and included angle C=60°. Find side c (cos 60°=0.5).", steps: ["c² = 7² + 9² − 2(7)(9)cos(60°).", "= 49 + 81 − 126(0.5) = 130 − 63.", "c² = 67 → c = √67."], a: "√67 ≈ 8.2" },
+    { q: "A triangle has sides a=3, b=4, c=5. Find angle C using the Law of Cosines (is it 90°?).", steps: ["cos(C) = (a²+b²−c²)/(2ab) = (9+16−25)/(2·3·4).", "= 0/24 = 0.", "cos(C)=0 means C=90°."], a: "90°" },
+    { q: "A triangle has sides a=5, b=5, included angle C=120° (cos 120° = −0.5). Find c².", steps: ["c² = 5² + 5² − 2(5)(5)(−0.5).", "= 25+25+25."], a: "75" },
+    { q: "When should you use the Law of Cosines instead of the Law of Sines?", steps: ["When you know all three sides (SSS), or two sides and the included angle (SAS) — cases the Law of Sines can't handle directly."], a: "SSS or SAS cases" },
+  ],
+  48: [
+    { q: "Add the vectors ⟨2, 5⟩ and ⟨4, −3⟩.", steps: ["Add x-components: 2+4=6.", "Add y-components: 5+(−3)=2."], a: "⟨6, 2⟩" },
+    { q: "Find the magnitude of the vector ⟨3, 4⟩.", steps: ["Magnitude = √(x²+y²) = √(9+16).", "√25."], a: "5" },
+    { q: "Subtract ⟨5, 1⟩ − ⟨2, 3⟩.", steps: ["Subtract x-components: 5−2=3.", "Subtract y-components: 1−3=−2."], a: "⟨3, −2⟩" },
+    { q: "Multiply the vector ⟨2, −1⟩ by the scalar 3.", steps: ["Multiply each component by 3: 3×2=6, 3×(−1)=−3."], a: "⟨6, −3⟩" },
+  ],
+  49: [
+    { q: "Add the matrices [[2,0],[1,3]] and [[1,4],[2,2]].", steps: ["Add corresponding entries: 2+1, 0+4, 1+2, 3+2."], a: "[[3,4],[3,5]]" },
+    { q: "Multiply the matrix [[1,2],[3,4]] by the scalar 2.", steps: ["Multiply every entry by 2: 2,4,6,8."], a: "[[2,4],[6,8]]" },
+    { q: "What is the size (dimensions) of the matrix [[1,2,3],[4,5,6]]?", steps: ["Count rows (2) and columns (3)."], a: "2 × 3" },
+    { q: "Subtract [[5,6],[7,8]] − [[1,1],[1,1]].", steps: ["Subtract corresponding entries: 5−1,6−1,7−1,8−1."], a: "[[4,5],[6,7]]" },
+  ],
+  50: [
+    { q: "Find the center and radius of the circle (x+3)² + (y−4)² = 49.", steps: ["Compare to (x−h)²+(y−k)²=r²: h=−3, k=4, r²=49.", "r = √49 = 7."], a: "Center (−3, 4), radius 7" },
+    { q: "Write the equation of a circle centered at (0,0) with radius 5.", steps: ["(x−h)²+(y−k)²=r² with h=0, k=0, r=5."], a: "x² + y² = 25" },
+    { q: "For the ellipse x²/16 + y²/9 = 1, find a and b.", steps: ["Compare to x²/a² + y²/b² = 1: a²=16, b²=9.", "a=4, b=3."], a: "a = 4, b = 3" },
+    { q: "Is x² + y² = 100 a circle or an ellipse?", steps: ["The coefficients under x² and y² are equal (both effectively 1 after dividing by 100).", "Equal a and b means it's a circle."], a: "Circle (radius 10)" },
+  ],
+  51: [
+    { q: "Does y = 2(x−1)² + 3 open up or down?", steps: ["The coefficient a=2 is positive."], a: "Opens upward" },
+    { q: "Find the vertex of the parabola y = (x−4)² + 7.", steps: ["Compare to y=a(x−h)²+k: h=4, k=7."], a: "(4, 7)" },
+    { q: "Does x²/25 − y²/9 = 1 describe an ellipse or a hyperbola?", steps: ["The two squared terms are separated by a minus sign."], a: "Hyperbola" },
+    { q: "Does x²/4 + y²/9 = 1 describe an ellipse or a hyperbola?", steps: ["The two squared terms are separated by a plus sign."], a: "Ellipse" },
+  ],
+  52: [
+    { q: "Find lim(x→3) (x + 5).", steps: ["This function is continuous everywhere, so just substitute: 3 + 5."], a: "8" },
+    { q: "Find lim(x→1) (x² − 1)/(x − 1).", steps: ["Direct substitution gives 0/0 — factor instead.", "(x−1)(x+1)/(x−1) = x+1 for x≠1.", "As x→1, x+1 → 2."], a: "2" },
+    { q: "Find lim(x→0) 5.", steps: ["The limit of a constant is just that constant, regardless of x."], a: "5" },
+    { q: "Find lim(x→5) (x² − 25)/(x − 5).", steps: ["Factor: (x−5)(x+5)/(x−5) = x+5 for x≠5.", "As x→5, x+5 → 10."], a: "10" },
+  ],
+  53: [
+    { q: "Is f(x) = x² + 1 continuous at x = 2?", steps: ["Polynomials are continuous everywhere, including x=2."], a: "Yes" },
+    { q: "Is f(x) = 1/x continuous at x = 0?", steps: ["f(0) is undefined (division by zero)."], a: "No — discontinuous at x = 0" },
+    { q: "Where is f(x) = 1/(x+4) discontinuous?", steps: ["The denominator is 0 when x+4=0.", "x = −4."], a: "x = −4" },
+    { q: "Is every polynomial function continuous everywhere?", steps: ["Polynomials have no denominators or breaks — they're defined and smooth for every real x."], a: "Yes" },
+  ],
+  54: [
+    { q: "What does f'(a) represent about the graph of f at x=a?", steps: ["It's the slope of the line tangent to the graph at that point."], a: "The slope of the tangent line at x = a" },
+    { q: "If f'(x) = 0 at a point, what does that suggest about the tangent line there?", steps: ["A slope of 0 means the tangent line is horizontal."], a: "The tangent line is horizontal" },
+    { q: "Which notations represent the same thing: f'(x), dy/dx, dx/dy?", steps: ["f'(x) and dy/dx both mean the derivative of y with respect to x.", "dx/dy is a different derivative (x with respect to y)."], a: "f'(x) and dy/dx" },
+    { q: "True or false: the derivative measures average rate of change over an interval.", steps: ["The derivative measures the instantaneous rate of change at a single point, not an average over an interval."], a: "False" },
+  ],
+  55: [
+    { q: "Find the derivative of f(x) = x⁵.", steps: ["Power rule: bring down the exponent, subtract 1 from it.", "5x⁴."], a: "f'(x) = 5x⁴" },
+    { q: "Find the derivative of f(x) = 7x² − 3x + 10.", steps: ["d/dx[7x²]=14x.", "d/dx[−3x]=−3.", "d/dx[10]=0."], a: "f'(x) = 14x − 3" },
+    { q: "Find the derivative of f(x) = 6.", steps: ["The derivative of any constant is 0."], a: "f'(x) = 0" },
+    { q: "Find the derivative of f(x) = x³ − 4x² + x.", steps: ["d/dx[x³]=3x².", "d/dx[−4x²]=−8x.", "d/dx[x]=1."], a: "f'(x) = 3x² − 8x + 1" },
+  ],
+  56: [
+    { q: "Find the derivative of f(x) = x·eˣ using the product rule.", steps: ["u=x (u'=1), v=eˣ (v'=eˣ).", "Product rule: u'v + uv' = 1·eˣ + x·eˣ."], a: "eˣ + x·eˣ" },
+    { q: "Find the derivative of f(x) = x²·cos(x) using the product rule.", steps: ["u=x² (u'=2x), v=cos(x) (v'=−sin(x)).", "u'v + uv' = 2x·cos(x) + x²·(−sin(x))."], a: "2x·cos(x) − x²·sin(x)" },
+    { q: "Find the derivative of f(x) = x/(x+1) using the quotient rule.", steps: ["u=x (u'=1), v=x+1 (v'=1).", "(u'v−uv')/v² = (1(x+1) − x(1))/(x+1)²."], a: "1/(x+1)²" },
+    { q: "Find the derivative of f(x) = sin(x)/x using the quotient rule.", steps: ["u=sin(x) (u'=cos(x)), v=x (v'=1).", "(u'v−uv')/v² = (x·cos(x) − sin(x))/x²."], a: "(x·cos(x) − sin(x))/x²" },
+  ],
+  57: [
+    { q: "Find the derivative of f(x) = (x² + 1)³.", steps: ["Outside: (...)³, derivative 3(...)².", "Inside: x²+1, derivative 2x.", "Chain rule: 3(x²+1)²·2x."], a: "6x(x² + 1)²" },
+    { q: "Find the derivative of f(x) = sin(2x).", steps: ["Outside: sin(...), derivative cos(...).", "Inside: 2x, derivative 2.", "Chain rule: cos(2x)·2."], a: "2cos(2x)" },
+    { q: "Find the derivative of f(x) = e^(5x).", steps: ["Outside: e^(...), derivative e^(...).", "Inside: 5x, derivative 5.", "Chain rule: e^(5x)·5."], a: "5e^(5x)" },
+    { q: "Find the derivative of f(x) = √(x² + 4).", steps: ["Rewrite as (x²+4)^(1/2).", "Outside derivative: (1/2)(...)^(−1/2). Inside derivative: 2x.", "Chain rule: (1/2)(x²+4)^(−1/2)·2x = x/√(x²+4)."], a: "x/√(x² + 4)" },
+  ],
+  58: [
+    { q: "Find the derivative of f(x) = 2sin(x) + 3cos(x).", steps: ["d/dx[2sin(x)]=2cos(x).", "d/dx[3cos(x)]=−3sin(x)."], a: "2cos(x) − 3sin(x)" },
+    { q: "Find the derivative of f(x) = 5eˣ.", steps: ["d/dx[eˣ]=eˣ, so d/dx[5eˣ]=5eˣ."], a: "5eˣ" },
+    { q: "Find the derivative of f(x) = 4ln(x).", steps: ["d/dx[ln(x)]=1/x, so d/dx[4ln(x)]=4/x."], a: "4/x" },
+    { q: "Find the derivative of f(x) = tan(x). (Given d/dx[tan(x)] = sec²(x).)", steps: ["This is a standard derivative to memorize: sec²(x)."], a: "sec²(x)" },
+  ],
+  59: [
+    { q: "Find dy/dx for x + y² = 10.", steps: ["Differentiate both sides: 1 + 2y(dy/dx) = 0.", "Solve: dy/dx = −1/(2y)."], a: "dy/dx = −1/(2y)" },
+    { q: "Find dy/dx for y² = 4x.", steps: ["Differentiate both sides: 2y(dy/dx) = 4.", "dy/dx = 4/(2y) = 2/y."], a: "dy/dx = 2/y" },
+    { q: "Find dy/dx for xy = 6.", steps: ["Product rule on the left: 1·y + x(dy/dx) = 0.", "Solve: dy/dx = −y/x."], a: "dy/dx = −y/x" },
+    { q: "Find dy/dx for x² + y² = 1 at the point (0,1).", steps: ["Differentiate: 2x + 2y(dy/dx) = 0 → dy/dx = −x/y.", "Plug in (0,1): dy/dx = −0/1."], a: "dy/dx = 0" },
+  ],
+  60: [
+    { q: "A square's side grows at 3 cm/s. Find how fast the area grows when the side is 4 cm (A = s²).", steps: ["dA/dt = 2s(ds/dt).", "Plug in s=4, ds/dt=3: dA/dt = 2(4)(3)."], a: "24 cm²/s" },
+    { q: "A sphere's radius grows at 1 cm/s. Find how fast the volume grows when r = 3 cm (V = (4/3)πr³).", steps: ["dV/dt = 4πr²(dr/dt).", "Plug in r=3, dr/dt=1: dV/dt = 4π(9)(1)."], a: "36π cm³/s" },
+    { q: "A ladder 10 ft long slides down a wall. If the base moves away at 2 ft/s, what equation relates the base x and height y?", steps: ["The ladder, wall, and ground form a right triangle: x² + y² = 10²."], a: "x² + y² = 100" },
+    { q: "For x² + y² = 100 (a sliding ladder), differentiate both sides with respect to time t.", steps: ["Differentiate: 2x(dx/dt) + 2y(dy/dt) = 0."], a: "2x(dx/dt) + 2y(dy/dt) = 0" },
+  ],
+  61: [
+    { q: "Find the critical point of f(x) = x² − 8x + 10.", steps: ["f'(x) = 2x − 8.", "Set to 0: 2x − 8 = 0 → x = 4."], a: "x = 4" },
+    { q: "Find the critical point of f(x) = −x² + 6x.", steps: ["f'(x) = −2x + 6.", "Set to 0: −2x + 6 = 0 → x = 3."], a: "x = 3 (a maximum, since the parabola opens downward)" },
+    { q: "A rectangle's perimeter is fixed at 20. If the width is w, the length is 10−w. Write the area as a function of w.", steps: ["Area = width × length = w(10−w)."], a: "A(w) = 10w − w²" },
+    { q: "For A(w) = 10w − w², find the width that maximizes the area.", steps: ["A'(w) = 10 − 2w.", "Set to 0: 10 − 2w = 0 → w = 5."], a: "w = 5" },
+  ],
+  62: [
+    { q: "f'(x) = x − 3. On what interval is f decreasing?", steps: ["f is decreasing where f'(x) < 0: x − 3 < 0."], a: "x < 3" },
+    { q: "f''(x) = 2 (a positive constant). Is the graph concave up or down everywhere?", steps: ["f''(x) > 0 everywhere means concave up everywhere."], a: "Concave up" },
+    { q: "f'(x) changes from positive to negative at x = 2. Is x=2 a local max or min?", steps: ["Increasing then decreasing means the function peaks there."], a: "Local maximum" },
+    { q: "f'(x) changes from negative to positive at x = −1. Is x=−1 a local max or min?", steps: ["Decreasing then increasing means the function bottoms out there."], a: "Local minimum" },
+  ],
+  63: [
+    { q: "Find ∫5x⁴ dx.", steps: ["Power rule for integrals: ∫5x⁴ dx = 5·(x⁵/5)."], a: "x⁵ + C" },
+    { q: "Find ∫(4x + 3) dx.", steps: ["∫4x dx = 4·(x²/2) = 2x².", "∫3 dx = 3x."], a: "2x² + 3x + C" },
+    { q: "Find ∫7 dx.", steps: ["The antiderivative of a constant c is c·x."], a: "7x + C" },
+    { q: "Find ∫x^(−2) dx (for x ≠ 0).", steps: ["Power rule: x^(−2+1)/(−2+1) = x^(−1)/(−1)."], a: "−1/x + C" },
+  ],
+  64: [
+    { q: "Evaluate ∫[0 to 3] x dx using the Fundamental Theorem.", steps: ["Antiderivative: F(x) = x²/2.", "F(3) − F(0) = 9/2 − 0."], a: "9/2" },
+    { q: "Evaluate ∫[1 to 4] 1 dx.", steps: ["Antiderivative: F(x) = x.", "F(4) − F(1) = 4 − 1."], a: "3" },
+    { q: "Evaluate ∫[0 to 2] 3x² dx.", steps: ["Antiderivative: F(x) = x³.", "F(2) − F(0) = 8 − 0."], a: "8" },
+    { q: "Evaluate ∫[2 to 2] f(x) dx for any continuous f.", steps: ["Integrating over an interval of zero width gives 0, regardless of f."], a: "0" },
+  ],
+  65: [
+    { q: "Evaluate ∫[0 to 4] x dx and interpret it as an area.", steps: ["Antiderivative: x²/2.", "F(4) − F(0) = 8 − 0.", "This equals the area of the triangle under y=x from 0 to 4."], a: "8" },
+    { q: "Evaluate ∫[−2 to 2] x³ dx.", steps: ["x³ is an odd function, so equal positive and negative areas cancel out over a symmetric interval."], a: "0" },
+    { q: "Evaluate ∫[0 to 5] 4 dx.", steps: ["This is the area of a rectangle with height 4 and width 5."], a: "20" },
+    { q: "Evaluate ∫[1 to 3] 2x dx.", steps: ["Antiderivative: x².", "F(3) − F(1) = 9 − 1."], a: "8" },
+  ],
+  66: [
+    { q: "Find ∫3x²(x³ + 5)⁴ dx using u-substitution.", steps: ["Let u = x³ + 5, du = 3x² dx.", "Integral becomes ∫u⁴ du = u⁵/5.", "Substitute back: (x³+5)⁵/5."], a: "(x³ + 5)⁵/5 + C" },
+    { q: "Find ∫cos(x)·sin⁴(x) dx using u-substitution.", steps: ["Let u = sin(x), du = cos(x) dx.", "Integral becomes ∫u⁴ du = u⁵/5.", "Substitute back: sin⁵(x)/5."], a: "sin⁵(x)/5 + C" },
+    { q: "Find ∫2x·e^(x²) dx using u-substitution.", steps: ["Let u = x², du = 2x dx.", "Integral becomes ∫eᵘ du = eᵘ.", "Substitute back: e^(x²)."], a: "e^(x²) + C" },
+    { q: "What u would you choose for ∫x/(x²+1) dx?", steps: ["Choosing u = x² + 1 gives du = 2x dx, which matches the x in the numerator (up to a constant)."], a: "u = x² + 1" },
+  ],
+  67: [
+    { q: "Find ∫x·cos(x) dx using integration by parts.", steps: ["Let u = x (du = dx), dv = cos(x) dx (v = sin(x)).", "uv − ∫v du = x·sin(x) − ∫sin(x) dx.", "= x·sin(x) + cos(x)."], a: "x·sin(x) + cos(x) + C" },
+    { q: "Find ∫ln(x) dx using integration by parts.", steps: ["Let u = ln(x) (du = 1/x dx), dv = dx (v = x).", "uv − ∫v du = x·ln(x) − ∫x·(1/x) dx.", "= x·ln(x) − ∫1 dx = x·ln(x) − x."], a: "x·ln(x) − x + C" },
+    { q: "In ∫x·eˣ dx, why is u = x chosen instead of u = eˣ?", steps: ["Differentiating u=x gives 1 (simpler); differentiating eˣ keeps it the same (no simpler).", "Choosing u to be the part that gets simpler makes the remaining integral easier."], a: "Because differentiating x simplifies it, while eˣ stays the same" },
+    { q: "Find ∫x·e^(2x) dx using integration by parts (dv = e^(2x) dx, v = (1/2)e^(2x)).", steps: ["u=x (du=dx).", "uv − ∫v du = x·(1/2)e^(2x) − ∫(1/2)e^(2x) dx.", "= (x/2)e^(2x) − (1/4)e^(2x)."], a: "(x/2)e^(2x) − (1/4)e^(2x) + C" },
+  ],
+  68: [
+    { q: "Does the series Σ(1/3)ⁿ converge or diverge?", steps: ["Geometric series with ratio r = 1/3.", "|r| < 1, so it converges."], a: "Converges" },
+    { q: "Does the series Σ2ⁿ converge or diverge?", steps: ["Geometric series with ratio r = 2.", "|r| ≥ 1, so it diverges."], a: "Diverges" },
+    { q: "Using the divergence test, does Σ(n/(n+1)) converge?", steps: ["As n→∞, n/(n+1) → 1, not 0.", "Since the terms don't approach 0, the series diverges."], a: "Diverges" },
+    { q: "For a geometric series Σarⁿ, what is the condition for convergence?", steps: ["A geometric series converges exactly when the common ratio's absolute value is less than 1."], a: "|r| < 1" },
+  ],
+  69: [
+    { q: "Write the first three terms of the Maclaurin series for sin(x). (sin(x) = x − x³/3! + x⁵/5! − ...)", steps: ["The pattern alternates sign and uses odd powers divided by factorials."], a: "x − x³/6 + x⁵/120" },
+    { q: "What point is a Maclaurin series always centered at?", steps: ["By definition, a Maclaurin series is a Taylor series centered at a = 0."], a: "a = 0" },
+    { q: "Write the first two terms of the Taylor series for cos(x) around a=0. (cos(x) = 1 − x²/2! + ...)", steps: ["The constant term is cos(0)=1; the next term involves x²."], a: "1 − x²/2" },
+    { q: "As you add more terms to a Taylor series, what generally happens to the approximation near the center point?", steps: ["More terms generally make the polynomial approximation closer to the true function value, at least near a."], a: "It gets more accurate" },
+  ],
+  70: [
+    { q: "Write the system 3x + 2y = 7, x − y = 1 in matrix form Ax = b.", steps: ["A = [[3,2],[1,−1]], x = [x,y]ᵀ, b = [7,1]ᵀ."], a: "A=[[3,2],[1,−1]], b=[7,1]" },
+    { q: "How many equations are needed, in general, to solve for 3 unknowns using a linear system?", steps: ["Generally you need as many independent equations as unknowns to get a unique solution."], a: "3" },
+    { q: "A system has matrix A = [[1,0],[0,1]] (the identity matrix) and b = [4,5]ᵀ. Solve Ax = b.", steps: ["The identity matrix leaves x unchanged: Ax = x.", "So x = b = [4,5]ᵀ."], a: "x = 4, y = 5" },
+    { q: "What does it mean if a system Ax = b has no solution?", steps: ["It means the equations are inconsistent — no values of x satisfy all equations simultaneously."], a: "The equations are inconsistent" },
+  ],
+  71: [
+    { q: "Find the determinant of [[4,1],[2,3]].", steps: ["ad − bc = (4)(3) − (1)(2).", "12 − 2."], a: "10" },
+    { q: "Find the determinant of [[5,0],[0,5]].", steps: ["ad − bc = (5)(5) − (0)(0).", "25 − 0."], a: "25" },
+    { q: "Find the determinant of [[2,4],[1,2]].", steps: ["ad − bc = (2)(2) − (4)(1).", "4 − 4."], a: "0" },
+    { q: "If a matrix has determinant 0, does it have an inverse?", steps: ["A matrix has an inverse only if its determinant is nonzero."], a: "No" },
+  ],
+  72: [
+    { q: "Find the eigenvalues of [[4,0],[0,−1]].", steps: ["For a diagonal matrix, the eigenvalues are the diagonal entries."], a: "λ = 4 and λ = −1" },
+    { q: "Find the eigenvalues of [[7,0],[0,7]].", steps: ["Diagonal matrix: eigenvalues are the diagonal entries, both 7."], a: "λ = 7 (repeated)" },
+    { q: "What equation is used to find the eigenvalues of a matrix A?", steps: ["Eigenvalues satisfy det(A − λI) = 0."], a: "det(A − λI) = 0" },
+    { q: "If Av = λv and v is nonzero, what does λ represent?", steps: ["λ is the eigenvalue — the scalar amount by which A stretches or shrinks the eigenvector v."], a: "The eigenvalue (scaling factor)" },
+  ],
+  73: [
+    { q: "A fair coin is flipped twice. Find the probability of getting two heads.", steps: ["Each flip is independent: P(H) = 1/2.", "P(H and H) = 1/2 × 1/2."], a: "1/4" },
+    { q: "A bag has 3 red and 2 blue marbles. Find the probability of picking a red marble.", steps: ["Favorable outcomes: 3 red.", "Total: 5 marbles.", "Probability = 3/5."], a: "3/5" },
+    { q: "A fair six-sided die is rolled. Find the probability of NOT rolling a 6.", steps: ["P(rolling a 6) = 1/6.", "P(not rolling a 6) = 1 − 1/6."], a: "5/6" },
+    { q: "Two independent events have probabilities 0.4 and 0.5. Find the probability both occur.", steps: ["Multiply independent probabilities: 0.4 × 0.5."], a: "0.2" },
+  ],
+  74: [
+    { q: "Find the mean of the data set 3, 7, 8, 2.", steps: ["Sum = 3+7+8+2 = 20.", "Mean = 20/4."], a: "5" },
+    { q: "Find the standard deviation of 2, 4, 6 given the variance is 8/3.", steps: ["Standard deviation = √variance = √(8/3)."], a: "≈ 1.63" },
+    { q: "In a normal distribution, what shape does the graph have?", steps: ["A normal distribution is symmetric and bell-shaped, centered at the mean."], a: "Symmetric, bell-shaped" },
+    { q: "Find the variance of the data set 1, 1, 1, 1 (mean = 1).", steps: ["Every value equals the mean, so every squared difference is 0.", "Average of all zeros is 0."], a: "0" },
   ],
 };

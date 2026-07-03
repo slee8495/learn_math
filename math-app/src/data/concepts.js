@@ -1,172 +1,14 @@
 // ── Concept sequence ──────────────────────────────────────────
-// Ordered from pre-algebra through the start of Precalculus.
+// Ordered from middle-school geometry through intro college math
+// (Calculus II, linear algebra basics, probability & statistics) —
+// the full range this app covers, start to finish.
 // Each concept is taught once (see curriculum.js for day-mapping),
 // then reinforced via problems + worked solutions on the following days.
-//
-// Planned future units (not yet authored — natural next expansion):
-//   Precalculus, continued (trig identities, inverse trig, vectors, matrices, conics, limits)
-//   Calculus I (derivatives, applications, intro integrals)
-//   Calculus II / intro college math (integration techniques, series, linear algebra, probability)
 
 export const concepts = [
-  // ── Unit 1: Negative Numbers & Exponents ─────────────────────
+  // ── Unit 1: Coordinate Plane & Solids ────────────────────────
   {
-    id: 1, unit: "Negative Numbers & Exponents", level: "Middle School", title: "Negative Numbers & the Number Line",
-    explain: [
-      "Negative numbers sit to the left of zero on the number line.",
-      "The further left a number is, the smaller its value.",
-      "Absolute value is a number's distance from zero, always positive: |−5| = 5.",
-    ],
-    example: { problem: "Order −3, 5, −8, 0 from least to greatest.", steps: ["Picture the number line: further left = smaller.", "−8 is furthest left, then −3, then 0, then 5."], answer: "−8, −3, 0, 5" },
-  },
-  {
-    id: 2, unit: "Negative Numbers & Exponents", level: "Middle School", title: "Adding & Subtracting Negative Numbers",
-    explain: [
-      "Adding a negative is the same as subtracting: 5 + (−3) = 5 − 3.",
-      "Subtracting a negative is the same as adding: 5 − (−3) = 5 + 3.",
-      "Same signs → add and keep the sign. Different signs → subtract and keep the sign of the larger absolute value.",
-    ],
-    example: { problem: "−7 + 4", steps: ["Different signs, so subtract: 7 − 4 = 3.", "Keep the sign of the larger absolute value (−7), so the answer is negative."], answer: "−3" },
-  },
-  {
-    id: 3, unit: "Negative Numbers & Exponents", level: "Middle School", title: "Multiplying & Dividing Negative Numbers",
-    explain: [
-      "Same signs (both positive or both negative) → the result is positive.",
-      "Different signs → the result is negative.",
-      "This rule applies to both multiplication and division.",
-    ],
-    example: { problem: "(−6) × (−3)", steps: ["Same signs (both negative).", "6 × 3 = 18, result is positive."], answer: "18" },
-  },
-  {
-    id: 4, unit: "Negative Numbers & Exponents", level: "Middle School", title: "Exponents & Powers",
-    explain: [
-      "An exponent tells you how many times to multiply the base by itself: 2⁴ = 2×2×2×2.",
-      "Any nonzero number to the power of 0 equals 1.",
-      "A negative exponent means 'take the reciprocal': x⁻ⁿ = 1/xⁿ.",
-    ],
-    example: { problem: "Evaluate 2⁵.", steps: ["2×2 = 4.", "4×2 = 8.", "8×2 = 16.", "16×2 = 32."], answer: "32" },
-  },
-  {
-    id: 5, unit: "Negative Numbers & Exponents", level: "Middle School", title: "Square Roots",
-    explain: [
-      "The square root of x is the number that, multiplied by itself, gives x.",
-      "√25 = 5 because 5×5 = 25.",
-      "Perfect squares (1, 4, 9, 16, 25, 36...) have whole-number square roots.",
-    ],
-    example: { problem: "Find √81.", steps: ["Think: what number times itself is 81?", "9 × 9 = 81."], answer: "9" },
-  },
-  {
-    id: 6, unit: "Negative Numbers & Exponents", level: "Middle School", title: "Prime Factorization",
-    explain: [
-      "A prime number has exactly two factors: 1 and itself (2, 3, 5, 7, 11...).",
-      "Prime factorization breaks a number down into a product of only prime numbers.",
-      "A factor tree is a common way to find it.",
-    ],
-    example: { problem: "Find the prime factorization of 60.", steps: ["60 = 6 × 10.", "6 = 2 × 3, 10 = 2 × 5.", "60 = 2 × 3 × 2 × 5 = 2² × 3 × 5."], answer: "2² × 3 × 5" },
-  },
-  {
-    id: 7, unit: "Negative Numbers & Exponents", level: "Middle School", title: "GCF & LCM",
-    explain: [
-      "GCF (greatest common factor) is the largest number that divides evenly into two or more numbers.",
-      "LCM (least common multiple) is the smallest number that two or more numbers all divide into evenly.",
-      "Prime factorization makes both easy to find for larger numbers.",
-    ],
-    example: { problem: "Find the LCM of 4 and 6.", steps: ["Multiples of 4: 4, 8, 12, 16...", "Multiples of 6: 6, 12, 18...", "Smallest shared multiple: 12."], answer: "12" },
-  },
-
-  // ── Unit 2: Expressions & Equations ──────────────────────────
-  {
-    id: 8, unit: "Expressions & Equations", level: "Middle School", title: "Variables & Expressions",
-    explain: [
-      "A variable is a letter that stands for an unknown number (commonly x or y).",
-      "An expression combines numbers, variables, and operations, but has no equals sign (e.g. 3x + 2).",
-      "'Evaluating' an expression means substituting a number for the variable and simplifying.",
-    ],
-    example: { problem: "Evaluate 3x + 2 when x = 4.", steps: ["Substitute: 3(4) + 2.", "3×4 = 12.", "12 + 2 = 14."], answer: "14" },
-  },
-  {
-    id: 9, unit: "Expressions & Equations", level: "Middle School", title: "Combining Like Terms",
-    explain: [
-      "Like terms have the exact same variable part (3x and 5x are like terms; 3x and 3x² are not).",
-      "Add or subtract the coefficients of like terms, keep the variable part unchanged.",
-      "Simplifying an expression usually means combining all like terms.",
-    ],
-    example: { problem: "Simplify 4x + 3 − 2x + 7.", steps: ["Group like terms: (4x − 2x) + (3 + 7).", "4x − 2x = 2x.", "3 + 7 = 10."], answer: "2x + 10" },
-  },
-  {
-    id: 10, unit: "Expressions & Equations", level: "Middle School", title: "The Distributive Property",
-    explain: [
-      "a(b + c) = ab + ac — multiply the outside term by everything inside the parentheses.",
-      "This works for subtraction too: a(b − c) = ab − ac.",
-      "Watch signs carefully when the outside term is negative.",
-    ],
-    example: { problem: "Expand 3(2x − 5).", steps: ["3 × 2x = 6x.", "3 × (−5) = −15."], answer: "6x − 15" },
-  },
-  {
-    id: 11, unit: "Expressions & Equations", level: "Middle School", title: "Solving One-Step Equations",
-    explain: [
-      "An equation says two expressions are equal; solving means finding the value of the variable.",
-      "Whatever you do to one side, you must do to the other, to keep it balanced.",
-      "Undo the operation: if x + 5 = 9, subtract 5 from both sides.",
-    ],
-    example: { problem: "Solve x − 7 = 12.", steps: ["Add 7 to both sides: x − 7 + 7 = 12 + 7."], answer: "x = 19" },
-  },
-  {
-    id: 12, unit: "Expressions & Equations", level: "Middle School", title: "Solving Two-Step Equations",
-    explain: [
-      "Undo addition/subtraction first, then undo multiplication/division (reverse order of operations).",
-      "Keep both sides balanced at every step.",
-    ],
-    example: { problem: "Solve 3x + 4 = 19.", steps: ["Subtract 4 from both sides: 3x = 15.", "Divide both sides by 3: x = 5."], answer: "x = 5" },
-  },
-  {
-    id: 13, unit: "Expressions & Equations", level: "Middle School", title: "Solving Multi-Step Equations",
-    explain: [
-      "First distribute and combine like terms on each side.",
-      "Then get all variable terms on one side and constants on the other.",
-      "Finally divide to isolate the variable.",
-    ],
-    example: { problem: "Solve 2(x + 3) = 4x − 2.", steps: ["Distribute: 2x + 6 = 4x − 2.", "Subtract 2x from both sides: 6 = 2x − 2.", "Add 2: 8 = 2x.", "Divide by 2: 4 = x."], answer: "x = 4" },
-  },
-  {
-    id: 14, unit: "Expressions & Equations", level: "Middle School", title: "Solving & Graphing Inequalities",
-    explain: [
-      "Inequalities use <, >, ≤, ≥ instead of =, and are solved just like equations.",
-      "Key rule: if you multiply or divide both sides by a negative number, flip the inequality sign.",
-      "On a number line, use an open circle for < or > and a filled circle for ≤ or ≥.",
-    ],
-    example: { problem: "Solve −2x > 6.", steps: ["Divide both sides by −2 (flip the sign): x < −3."], answer: "x < −3" },
-  },
-  {
-    id: 15, unit: "Expressions & Equations", level: "Middle School", title: "Proportions",
-    explain: [
-      "A proportion says two ratios are equal: a/b = c/d.",
-      "Cross-multiply to solve: a×d = b×c.",
-      "Proportions are used to scale recipes, maps, models, and more.",
-    ],
-    example: { problem: "Solve x/4 = 6/8.", steps: ["Cross-multiply: 8x = 4×6 = 24.", "Divide by 8: x = 3."], answer: "x = 3" },
-  },
-  {
-    id: 16, unit: "Expressions & Equations", level: "Middle School", title: "Percent Change",
-    explain: [
-      "Percent change = (change in value ÷ original value) × 100.",
-      "If the new value is bigger, it's a percent increase; if smaller, a percent decrease.",
-    ],
-    example: { problem: "A $40 item increases to $50. Find the percent increase.", steps: ["Change = 50 − 40 = 10.", "10 ÷ 40 = 0.25.", "0.25 × 100 = 25%."], answer: "25% increase" },
-  },
-  {
-    id: 17, unit: "Expressions & Equations", level: "Middle School", title: "Simple Interest",
-    explain: [
-      "Simple interest formula: I = P × r × t (Principal × rate × time).",
-      "Rate must be written as a decimal (5% = 0.05).",
-      "Total amount owed/earned = Principal + Interest.",
-    ],
-    example: { problem: "Find the interest on $500 at 4% for 3 years.", steps: ["I = P × r × t = 500 × 0.04 × 3.", "500 × 0.04 = 20.", "20 × 3 = 60."], answer: "$60" },
-  },
-
-  // ── Unit 3: Coordinate Plane & Solids ────────────────────────
-  {
-    id: 18, unit: "Coordinate Plane & Solids", level: "Middle School", title: "The Coordinate Plane",
+    id: 1, unit: "Coordinate Plane & Solids", level: "Middle School", title: "The Coordinate Plane",
     explain: [
       "The coordinate plane has a horizontal x-axis and vertical y-axis meeting at the origin (0,0).",
       "A point is written (x, y): move x units horizontally, then y units vertically.",
@@ -175,7 +17,7 @@ export const concepts = [
     example: { problem: "Which quadrant is the point (−3, 5) in?", steps: ["x is negative (left), y is positive (up).", "Left and up is the top-left region: Quadrant II."], answer: "Quadrant II" },
   },
   {
-    id: 19, unit: "Coordinate Plane & Solids", level: "Middle School", title: "Graphing Points & Basic Relations",
+    id: 2, unit: "Coordinate Plane & Solids", level: "Middle School", title: "Graphing Points & Basic Relations",
     explain: [
       "To plot (x, y), start at the origin, move x units left/right, then y units up/down.",
       "A set of ordered pairs can be graphed to see patterns or relationships between two quantities.",
@@ -183,7 +25,7 @@ export const concepts = [
     example: { problem: "Plot and describe the pattern: (1,2), (2,4), (3,6).", steps: ["Each y-value is double the x-value.", "This is a straight-line pattern through the origin."], answer: "y = 2x" },
   },
   {
-    id: 20, unit: "Coordinate Plane & Solids", level: "Middle School", title: "Volume of Rectangular Prisms",
+    id: 3, unit: "Coordinate Plane & Solids", level: "Middle School", title: "Volume of Rectangular Prisms",
     explain: [
       "Volume of a rectangular prism = length × width × height.",
       "Volume is measured in cubic units (like cm³ or ft³).",
@@ -191,7 +33,7 @@ export const concepts = [
     example: { problem: "Find the volume of a box 4 × 3 × 5.", steps: ["4 × 3 = 12.", "12 × 5 = 60."], answer: "60 cubic units" },
   },
   {
-    id: 21, unit: "Coordinate Plane & Solids", level: "Middle School", title: "Surface Area",
+    id: 4, unit: "Coordinate Plane & Solids", level: "Middle School", title: "Surface Area",
     explain: [
       "Surface area is the total area of all the faces of a 3D shape added together.",
       "For a rectangular prism, there are 3 pairs of identical faces: top/bottom, front/back, left/right.",
@@ -199,7 +41,7 @@ export const concepts = [
     example: { problem: "Find the surface area of a cube with side 3.", steps: ["Each face area = 3×3 = 9.", "A cube has 6 identical faces: 6 × 9 = 54."], answer: "54 square units" },
   },
   {
-    id: 22, unit: "Coordinate Plane & Solids", level: "Middle School", title: "Pythagorean Theorem",
+    id: 5, unit: "Coordinate Plane & Solids", level: "Middle School", title: "Pythagorean Theorem",
     explain: [
       "For a right triangle with legs a, b and hypotenuse c: a² + b² = c².",
       "The hypotenuse is always the longest side, opposite the right angle.",
@@ -208,9 +50,9 @@ export const concepts = [
     example: { problem: "A right triangle has legs 3 and 4. Find the hypotenuse.", steps: ["a² + b² = c²: 3² + 4² = c².", "9 + 16 = 25 = c².", "√25 = 5."], answer: "5" },
   },
 
-  // ── Unit 4: Linear Equations & Functions ─────────────────────
+  // ── Unit 2: Linear Equations & Functions ─────────────────────
   {
-    id: 23, unit: "Linear Equations & Functions", level: "Algebra I", title: "Slope",
+    id: 6, unit: "Linear Equations & Functions", level: "Algebra I", title: "Slope",
     explain: [
       "Slope measures steepness: rise over run, or (change in y) ÷ (change in x).",
       "Formula from two points (x₁,y₁) and (x₂,y₂): m = (y₂ − y₁)/(x₂ − x₁).",
@@ -219,7 +61,7 @@ export const concepts = [
     example: { problem: "Find the slope between (1,2) and (4,11).", steps: ["m = (11 − 2)/(4 − 1) = 9/3."], answer: "3" },
   },
   {
-    id: 24, unit: "Linear Equations & Functions", level: "Algebra I", title: "Slope-Intercept Form",
+    id: 7, unit: "Linear Equations & Functions", level: "Algebra I", title: "Slope-Intercept Form",
     explain: [
       "y = mx + b, where m is the slope and b is the y-intercept (where the line crosses the y-axis).",
       "This is the most common way to write a linear equation.",
@@ -227,7 +69,7 @@ export const concepts = [
     example: { problem: "A line has slope 2 and y-intercept −3. Write its equation.", steps: ["Plug into y = mx + b: m=2, b=−3."], answer: "y = 2x − 3" },
   },
   {
-    id: 25, unit: "Linear Equations & Functions", level: "Algebra I", title: "Graphing Linear Equations",
+    id: 8, unit: "Linear Equations & Functions", level: "Algebra I", title: "Graphing Linear Equations",
     explain: [
       "Plot the y-intercept first, then use the slope (rise/run) to find a second point.",
       "Draw a straight line through the two points, extending in both directions.",
@@ -235,7 +77,7 @@ export const concepts = [
     example: { problem: "Describe how to graph y = (1/2)x + 1.", steps: ["Start at (0,1) — the y-intercept.", "Slope 1/2 means: from that point, go up 1, right 2.", "Plot that point and draw the line through both."], answer: "Line through (0,1) and (2,2)" },
   },
   {
-    id: 26, unit: "Linear Equations & Functions", level: "Algebra I", title: "Writing Equations of Lines",
+    id: 9, unit: "Linear Equations & Functions", level: "Algebra I", title: "Writing Equations of Lines",
     explain: [
       "Point-slope form: y − y₁ = m(x − x₁), useful when you know a point and the slope.",
       "To write an equation from two points: find the slope first, then use point-slope form.",
@@ -243,7 +85,7 @@ export const concepts = [
     example: { problem: "Write the equation of the line through (2,3) with slope 4.", steps: ["y − 3 = 4(x − 2).", "Distribute: y − 3 = 4x − 8.", "Add 3: y = 4x − 5."], answer: "y = 4x − 5" },
   },
   {
-    id: 27, unit: "Linear Equations & Functions", level: "Algebra I", title: "Systems of Equations: Substitution",
+    id: 10, unit: "Linear Equations & Functions", level: "Algebra I", title: "Systems of Equations: Substitution",
     explain: [
       "A system of equations is two or more equations with the same variables, solved together.",
       "Substitution: solve one equation for a variable, then plug that expression into the other equation.",
@@ -251,7 +93,7 @@ export const concepts = [
     example: { problem: "Solve: y = x + 2 and 2x + y = 11.", steps: ["Substitute y: 2x + (x + 2) = 11.", "3x + 2 = 11 → 3x = 9 → x = 3.", "y = 3 + 2 = 5."], answer: "x = 3, y = 5" },
   },
   {
-    id: 28, unit: "Linear Equations & Functions", level: "Algebra I", title: "Systems of Equations: Elimination",
+    id: 11, unit: "Linear Equations & Functions", level: "Algebra I", title: "Systems of Equations: Elimination",
     explain: [
       "Elimination: add or subtract the equations to cancel out one variable.",
       "You may need to multiply one or both equations first so the coefficients match.",
@@ -259,7 +101,7 @@ export const concepts = [
     example: { problem: "Solve: 2x + y = 10 and x − y = 2.", steps: ["Add the equations: (2x + x) + (y − y) = 10 + 2.", "3x = 12 → x = 4.", "Plug in: 4 − y = 2 → y = 2."], answer: "x = 4, y = 2" },
   },
   {
-    id: 29, unit: "Linear Equations & Functions", level: "Algebra I", title: "Graphing Systems of Equations",
+    id: 12, unit: "Linear Equations & Functions", level: "Algebra I", title: "Graphing Systems of Equations",
     explain: [
       "Graph both lines — the solution is the point where they cross.",
       "Parallel lines (same slope, different intercept) mean no solution.",
@@ -268,7 +110,7 @@ export const concepts = [
     example: { problem: "Lines y = x + 1 and y = x − 2 — how many solutions?", steps: ["Both have slope 1 (parallel).", "Different y-intercepts, so they never cross."], answer: "No solution" },
   },
   {
-    id: 30, unit: "Linear Equations & Functions", level: "Algebra I", title: "Linear Inequalities in Two Variables",
+    id: 13, unit: "Linear Equations & Functions", level: "Algebra I", title: "Linear Inequalities in Two Variables",
     explain: [
       "Graph the boundary line as if it were an equation (dashed for < or >, solid for ≤ or ≥).",
       "Shade the side of the line that makes the inequality true — test the point (0,0) if it's not on the line.",
@@ -276,7 +118,7 @@ export const concepts = [
     example: { problem: "Which side do you shade for y > x + 1?", steps: ["Test (0,0): is 0 > 0 + 1? 0 > 1 is false.", "Since it's false, shade the side NOT containing (0,0)."], answer: "Shade above the line" },
   },
   {
-    id: 31, unit: "Linear Equations & Functions", level: "Algebra I", title: "Introduction to Functions",
+    id: 14, unit: "Linear Equations & Functions", level: "Algebra I", title: "Introduction to Functions",
     explain: [
       "A function assigns exactly one output to each input.",
       "The vertical line test: if a vertical line crosses a graph more than once, it's not a function.",
@@ -285,7 +127,7 @@ export const concepts = [
     example: { problem: "Is {(1,2), (2,4), (1,5)} a function?", steps: ["Input 1 has two different outputs (2 and 5)."], answer: "No — not a function" },
   },
   {
-    id: 32, unit: "Linear Equations & Functions", level: "Algebra I", title: "Function Notation",
+    id: 15, unit: "Linear Equations & Functions", level: "Algebra I", title: "Function Notation",
     explain: [
       "f(x) is read 'f of x' and means 'the output of function f when the input is x'.",
       "To evaluate f(3), substitute 3 everywhere you see x in the function's rule.",
@@ -293,9 +135,9 @@ export const concepts = [
     example: { problem: "If f(x) = 2x + 5, find f(3).", steps: ["Substitute: f(3) = 2(3) + 5.", "= 6 + 5."], answer: "11" },
   },
 
-  // ── Unit 5: Polynomials & Factoring ───────────────────────────
+  // ── Unit 3: Polynomials & Factoring ───────────────────────────
   {
-    id: 33, unit: "Polynomials & Factoring", level: "Algebra I", title: "Adding & Subtracting Polynomials",
+    id: 16, unit: "Polynomials & Factoring", level: "Algebra I", title: "Adding & Subtracting Polynomials",
     explain: [
       "A polynomial is a sum of terms with whole-number exponents (e.g. 3x² + 2x − 1).",
       "Add or subtract polynomials by combining like terms.",
@@ -304,7 +146,7 @@ export const concepts = [
     example: { problem: "(3x² + 2x) − (x² − 5)", steps: ["Distribute the negative: 3x² + 2x − x² + 5.", "Combine like terms: (3x² − x²) + 2x + 5."], answer: "2x² + 2x + 5" },
   },
   {
-    id: 34, unit: "Polynomials & Factoring", level: "Algebra I", title: "Multiplying Polynomials (FOIL)",
+    id: 17, unit: "Polynomials & Factoring", level: "Algebra I", title: "Multiplying Polynomials (FOIL)",
     explain: [
       "FOIL stands for First, Outer, Inner, Last — the four products when multiplying two binomials.",
       "Multiply each term in the first polynomial by each term in the second, then combine like terms.",
@@ -312,7 +154,7 @@ export const concepts = [
     example: { problem: "(x + 3)(x + 5)", steps: ["First: x·x = x².", "Outer: x·5 = 5x.", "Inner: 3·x = 3x.", "Last: 3·5 = 15.", "Combine: x² + 5x + 3x + 15."], answer: "x² + 8x + 15" },
   },
   {
-    id: 35, unit: "Polynomials & Factoring", level: "Algebra I", title: "Factoring: Greatest Common Factor",
+    id: 18, unit: "Polynomials & Factoring", level: "Algebra I", title: "Factoring: Greatest Common Factor",
     explain: [
       "Find the GCF of all terms, then divide it out of each term.",
       "Write as GCF times the remaining expression in parentheses.",
@@ -320,7 +162,7 @@ export const concepts = [
     example: { problem: "Factor 6x² + 9x.", steps: ["GCF of 6x² and 9x is 3x.", "6x² ÷ 3x = 2x, 9x ÷ 3x = 3."], answer: "3x(2x + 3)" },
   },
   {
-    id: 36, unit: "Polynomials & Factoring", level: "Algebra I", title: "Factoring Trinomials",
+    id: 19, unit: "Polynomials & Factoring", level: "Algebra I", title: "Factoring Trinomials",
     explain: [
       "For x² + bx + c, find two numbers that multiply to c and add to b.",
       "Write as (x + first number)(x + second number).",
@@ -328,7 +170,7 @@ export const concepts = [
     example: { problem: "Factor x² + 7x + 12.", steps: ["Need two numbers that multiply to 12 and add to 7.", "3 and 4 work: 3×4=12, 3+4=7."], answer: "(x + 3)(x + 4)" },
   },
   {
-    id: 37, unit: "Polynomials & Factoring", level: "Algebra I", title: "Difference of Squares",
+    id: 20, unit: "Polynomials & Factoring", level: "Algebra I", title: "Difference of Squares",
     explain: [
       "a² − b² always factors as (a + b)(a − b).",
       "Recognize it by two perfect-square terms separated by a minus sign.",
@@ -336,7 +178,7 @@ export const concepts = [
     example: { problem: "Factor x² − 16.", steps: ["x² is a square (x·x), 16 is a square (4·4).", "Apply the pattern: (x + 4)(x − 4)."], answer: "(x + 4)(x − 4)" },
   },
   {
-    id: 38, unit: "Polynomials & Factoring", level: "Algebra I", title: "Solving Quadratics by Factoring",
+    id: 21, unit: "Polynomials & Factoring", level: "Algebra I", title: "Solving Quadratics by Factoring",
     explain: [
       "Set the equation equal to 0, factor the left side, then use the zero product property.",
       "Zero product property: if A × B = 0, then A = 0 or B = 0.",
@@ -344,9 +186,9 @@ export const concepts = [
     example: { problem: "Solve x² + 7x + 12 = 0.", steps: ["Factor: (x + 3)(x + 4) = 0.", "Set each factor to 0: x + 3 = 0 or x + 4 = 0."], answer: "x = −3 or x = −4" },
   },
 
-  // ── Unit 6: Quadratics, Exponents & Radicals ──────────────────
+  // ── Unit 4: Quadratics, Exponents & Radicals ──────────────────
   {
-    id: 39, unit: "Quadratics, Exponents & Radicals", level: "Algebra I", title: "The Quadratic Formula",
+    id: 22, unit: "Quadratics, Exponents & Radicals", level: "Algebra I", title: "The Quadratic Formula",
     explain: [
       "For ax² + bx + c = 0, x = (−b ± √(b² − 4ac)) / (2a).",
       "Works for every quadratic, even ones that don't factor nicely.",
@@ -355,7 +197,7 @@ export const concepts = [
     example: { problem: "Solve x² − 5x + 6 = 0 using the quadratic formula.", steps: ["a=1, b=−5, c=6.", "Discriminant: (−5)² − 4(1)(6) = 25 − 24 = 1.", "x = (5 ± √1)/2 = (5 ± 1)/2."], answer: "x = 3 or x = 2" },
   },
   {
-    id: 40, unit: "Quadratics, Exponents & Radicals", level: "Algebra I", title: "Graphing Quadratics (Parabolas)",
+    id: 23, unit: "Quadratics, Exponents & Radicals", level: "Algebra I", title: "Graphing Quadratics (Parabolas)",
     explain: [
       "The graph of y = ax² + bx + c is a U-shaped curve called a parabola.",
       "If a > 0, it opens upward; if a < 0, it opens downward.",
@@ -364,7 +206,7 @@ export const concepts = [
     example: { problem: "Find the vertex x-coordinate of y = x² − 4x + 1.", steps: ["a=1, b=−4.", "x = −(−4)/(2·1) = 4/2."], answer: "x = 2" },
   },
   {
-    id: 41, unit: "Quadratics, Exponents & Radicals", level: "Algebra I", title: "Exponent Rules",
+    id: 24, unit: "Quadratics, Exponents & Radicals", level: "Algebra I", title: "Exponent Rules",
     explain: [
       "Multiplying same base: xᵃ · xᵇ = xᵃ⁺ᵇ.",
       "Dividing same base: xᵃ / xᵇ = xᵃ⁻ᵇ.",
@@ -373,7 +215,7 @@ export const concepts = [
     example: { problem: "Simplify x⁵ · x³.", steps: ["Same base, add exponents: 5 + 3 = 8."], answer: "x⁸" },
   },
   {
-    id: 42, unit: "Quadratics, Exponents & Radicals", level: "Algebra I", title: "Simplifying Radical Expressions",
+    id: 25, unit: "Quadratics, Exponents & Radicals", level: "Algebra I", title: "Simplifying Radical Expressions",
     explain: [
       "Break the number under the root into a perfect square times a remainder, then pull the perfect square out.",
       "√(a·b) = √a · √b — this is the key rule used to simplify.",
@@ -381,9 +223,9 @@ export const concepts = [
     example: { problem: "Simplify √50.", steps: ["50 = 25 × 2, and 25 is a perfect square.", "√50 = √25 · √2 = 5√2."], answer: "5√2" },
   },
 
-  // ── Unit 7: Geometry ───────────────────────────────────────────
+  // ── Unit 5: Geometry ───────────────────────────────────────────
   {
-    id: 43, unit: "Geometry", level: "Geometry", title: "Triangle Congruence & Similarity",
+    id: 26, unit: "Geometry", level: "Geometry", title: "Triangle Congruence & Similarity",
     explain: [
       "Congruent triangles are identical in shape and size — all corresponding sides and angles match.",
       "Similar triangles have the same shape but not necessarily the same size — corresponding angles are equal and sides are proportional.",
@@ -392,7 +234,7 @@ export const concepts = [
     example: { problem: "Two triangles are similar with a scale factor of 2. One side of the smaller triangle is 5. Find the corresponding side of the larger triangle.", steps: ["Similar triangles scale every side by the same factor.", "5 × 2 = 10."], answer: "10" },
   },
   {
-    id: 44, unit: "Geometry", level: "Geometry", title: "Special Right Triangles",
+    id: 27, unit: "Geometry", level: "Geometry", title: "Special Right Triangles",
     explain: [
       "45-45-90 triangle: legs are equal, and the hypotenuse = leg × √2.",
       "30-60-90 triangle: sides are in the ratio 1 : √3 : 2 (short leg : long leg : hypotenuse).",
@@ -401,7 +243,7 @@ export const concepts = [
     example: { problem: "A 45-45-90 triangle has legs of length 6. Find the hypotenuse.", steps: ["Hypotenuse = leg × √2.", "6 × √2."], answer: "6√2" },
   },
   {
-    id: 45, unit: "Geometry", level: "Geometry", title: "Trigonometric Ratios (SOH-CAH-TOA)",
+    id: 28, unit: "Geometry", level: "Geometry", title: "Trigonometric Ratios (SOH-CAH-TOA)",
     explain: [
       "In a right triangle, sine = opposite/hypotenuse, cosine = adjacent/hypotenuse, tangent = opposite/adjacent.",
       "SOH-CAH-TOA is a memory trick for these three ratios.",
@@ -410,7 +252,7 @@ export const concepts = [
     example: { problem: "A right triangle has an angle of 30°, opposite side 4, and hypotenuse h. Find h using sine.", steps: ["sin(30°) = opposite/hypotenuse = 4/h.", "sin(30°) = 0.5, so 0.5 = 4/h.", "h = 4/0.5."], answer: "8" },
   },
   {
-    id: 46, unit: "Geometry", level: "Geometry", title: "Circles: Arcs, Angles & Sectors",
+    id: 29, unit: "Geometry", level: "Geometry", title: "Circles: Arcs, Angles & Sectors",
     explain: [
       "A central angle's measure equals the measure of the arc it cuts off.",
       "An inscribed angle is half the measure of the arc it cuts off.",
@@ -419,7 +261,7 @@ export const concepts = [
     example: { problem: "Find the area of a sector with radius 6 and central angle 90° (π ≈ 3.14).", steps: ["Sector area = (angle/360) × πr².", "(90/360) × 3.14 × 36 = 0.25 × 113.04."], answer: "28.26" },
   },
   {
-    id: 47, unit: "Geometry", level: "Geometry", title: "Volume & Surface Area of Cylinders, Cones & Spheres",
+    id: 30, unit: "Geometry", level: "Geometry", title: "Volume & Surface Area of Cylinders, Cones & Spheres",
     explain: [
       "Cylinder: volume = πr²h, surface area = 2πr² + 2πrh.",
       "Cone: volume = (1/3)πr²h.",
@@ -428,7 +270,7 @@ export const concepts = [
     example: { problem: "Find the volume of a cylinder with radius 3 and height 5 (π ≈ 3.14).", steps: ["Volume = πr²h = 3.14 × 3² × 5.", "3.14 × 9 = 28.26.", "28.26 × 5."], answer: "141.3" },
   },
   {
-    id: 48, unit: "Geometry", level: "Geometry", title: "Coordinate Geometry: Distance & Midpoint",
+    id: 31, unit: "Geometry", level: "Geometry", title: "Coordinate Geometry: Distance & Midpoint",
     explain: [
       "Distance formula between (x₁,y₁) and (x₂,y₂): d = √[(x₂−x₁)² + (y₂−y₁)²] — it's the Pythagorean theorem in disguise.",
       "Midpoint formula: M = ((x₁+x₂)/2, (y₁+y₂)/2) — average the x's and average the y's.",
@@ -436,9 +278,9 @@ export const concepts = [
     example: { problem: "Find the distance between (1,2) and (4,6).", steps: ["d = √[(4−1)² + (6−2)²] = √[3² + 4²].", "= √[9+16] = √25."], answer: "5" },
   },
 
-  // ── Unit 8: Algebra II ───────────────────────────────────────────
+  // ── Unit 6: Algebra II ───────────────────────────────────────────
   {
-    id: 49, unit: "Algebra II", level: "Algebra II", title: "Rational Exponents & Radical Equations",
+    id: 32, unit: "Algebra II", level: "Algebra II", title: "Rational Exponents & Radical Equations",
     explain: [
       "A rational exponent x^(a/b) means the b-th root of x, raised to the a-th power: x^(1/2) = √x.",
       "To solve an equation with a radical, isolate the radical, then raise both sides to the matching power to remove it.",
@@ -447,7 +289,7 @@ export const concepts = [
     example: { problem: "Evaluate 8^(2/3).", steps: ["8^(1/3) = 2 (cube root of 8).", "Then square it: 2² = 4."], answer: "4" },
   },
   {
-    id: 50, unit: "Algebra II", level: "Algebra II", title: "Complex Numbers",
+    id: 33, unit: "Algebra II", level: "Algebra II", title: "Complex Numbers",
     explain: [
       "i is defined as √−1, so i² = −1.",
       "A complex number has the form a + bi, where a is the real part and b is the imaginary part.",
@@ -456,7 +298,7 @@ export const concepts = [
     example: { problem: "Simplify (3 + 2i) + (1 − 5i).", steps: ["Combine real parts: 3 + 1 = 4.", "Combine imaginary parts: 2i − 5i = −3i."], answer: "4 − 3i" },
   },
   {
-    id: 51, unit: "Algebra II", level: "Algebra II", title: "Completing the Square",
+    id: 34, unit: "Algebra II", level: "Algebra II", title: "Completing the Square",
     explain: [
       "To turn x² + bx into a perfect square, add (b/2)² — then it factors as (x + b/2)².",
       "Used to solve quadratics, and to convert a quadratic into vertex form.",
@@ -465,7 +307,7 @@ export const concepts = [
     example: { problem: "Solve x² + 6x + 5 = 0 by completing the square.", steps: ["Move constant: x² + 6x = −5.", "Add (6/2)²=9 to both sides: x² + 6x + 9 = 4.", "(x+3)² = 4 → x + 3 = ±2."], answer: "x = −1 or x = −5" },
   },
   {
-    id: 52, unit: "Algebra II", level: "Algebra II", title: "Polynomial Long Division",
+    id: 35, unit: "Algebra II", level: "Algebra II", title: "Polynomial Long Division",
     explain: [
       "Divide polynomials the same way you divide numbers: divide, multiply, subtract, bring down.",
       "The result is a quotient plus a remainder over the divisor.",
@@ -474,7 +316,7 @@ export const concepts = [
     example: { problem: "Divide x² + 5x + 6 by x + 2.", steps: ["x² ÷ x = x; multiply: x(x+2)=x²+2x; subtract: 3x+6.", "3x ÷ x = 3; multiply: 3(x+2)=3x+6; subtract: 0."], answer: "x + 3 (no remainder)" },
   },
   {
-    id: 53, unit: "Algebra II", level: "Algebra II", title: "Rational Functions & Asymptotes",
+    id: 36, unit: "Algebra II", level: "Algebra II", title: "Rational Functions & Asymptotes",
     explain: [
       "A rational function is a ratio of two polynomials, like f(x) = 1/(x−2).",
       "A vertical asymptote occurs where the denominator equals zero (and the numerator doesn't).",
@@ -483,7 +325,7 @@ export const concepts = [
     example: { problem: "Find the vertical asymptote of f(x) = 3/(x − 4).", steps: ["Set the denominator to 0: x − 4 = 0."], answer: "x = 4" },
   },
   {
-    id: 54, unit: "Algebra II", level: "Algebra II", title: "Exponential Functions: Growth & Decay",
+    id: 37, unit: "Algebra II", level: "Algebra II", title: "Exponential Functions: Growth & Decay",
     explain: [
       "Exponential growth/decay has the form y = a(1 + r)ᵗ (growth) or y = a(1 − r)ᵗ (decay), where a is the starting amount.",
       "The base being greater than 1 means growth; between 0 and 1 means decay.",
@@ -492,7 +334,7 @@ export const concepts = [
     example: { problem: "A population of 100 grows 20% per year. Find the population after 2 years.", steps: ["y = 100(1.2)².", "1.2² = 1.44.", "100 × 1.44."], answer: "144" },
   },
   {
-    id: 55, unit: "Algebra II", level: "Algebra II", title: "Logarithms: Introduction & Rules",
+    id: 38, unit: "Algebra II", level: "Algebra II", title: "Logarithms: Introduction & Rules",
     explain: [
       "A logarithm answers 'what exponent gives this result': log_b(x) = y means bʸ = x.",
       "log_b(mn) = log_b(m) + log_b(n), and log_b(m/n) = log_b(m) − log_b(n).",
@@ -501,7 +343,7 @@ export const concepts = [
     example: { problem: "Evaluate log₂(8).", steps: ["Ask: 2 to what power gives 8?", "2³ = 8."], answer: "3" },
   },
   {
-    id: 56, unit: "Algebra II", level: "Algebra II", title: "Solving Exponential & Logarithmic Equations",
+    id: 39, unit: "Algebra II", level: "Algebra II", title: "Solving Exponential & Logarithmic Equations",
     explain: [
       "To solve an exponential equation, take the log of both sides (or match bases if possible).",
       "To solve a logarithmic equation, rewrite it in exponential form.",
@@ -510,9 +352,9 @@ export const concepts = [
     example: { problem: "Solve 2^x = 32.", steps: ["Rewrite 32 as a power of 2: 32 = 2⁵.", "So 2^x = 2⁵ means x = 5."], answer: "x = 5" },
   },
 
-  // ── Unit 9: Precalculus Foundations ───────────────────────────────
+  // ── Unit 7: Precalculus Foundations ───────────────────────────────
   {
-    id: 57, unit: "Precalculus Foundations", level: "Precalculus", title: "Arithmetic & Geometric Sequences",
+    id: 40, unit: "Precalculus Foundations", level: "Precalculus", title: "Arithmetic & Geometric Sequences",
     explain: [
       "An arithmetic sequence adds the same amount (common difference d) each step: aₙ = a₁ + (n−1)d.",
       "A geometric sequence multiplies by the same amount (common ratio r) each step: aₙ = a₁·r^(n−1).",
@@ -521,7 +363,7 @@ export const concepts = [
     example: { problem: "Find the 6th term of the arithmetic sequence 3, 7, 11, 15...", steps: ["First term a₁=3, common difference d=4.", "a₆ = 3 + (6−1)(4) = 3 + 20."], answer: "23" },
   },
   {
-    id: 58, unit: "Precalculus Foundations", level: "Precalculus", title: "Series & Summation Notation",
+    id: 41, unit: "Precalculus Foundations", level: "Precalculus", title: "Series & Summation Notation",
     explain: [
       "A series is the sum of the terms of a sequence.",
       "Sigma notation Σ compactly represents a sum: Σ (from i=1 to n) of a term expression.",
@@ -530,7 +372,7 @@ export const concepts = [
     example: { problem: "Find the sum of the first 5 terms of 2, 4, 6, 8, 10.", steps: ["S_n = n(a₁+aₙ)/2 = 5(2+10)/2.", "5 × 12 / 2."], answer: "30" },
   },
   {
-    id: 59, unit: "Precalculus Foundations", level: "Precalculus", title: "The Unit Circle & Radian Measure",
+    id: 42, unit: "Precalculus Foundations", level: "Precalculus", title: "The Unit Circle & Radian Measure",
     explain: [
       "The unit circle has radius 1, centered at the origin — it's the foundation for defining trig functions for any angle.",
       "Radians measure angles by arc length: 360° = 2π radians, so 180° = π radians.",
@@ -539,12 +381,286 @@ export const concepts = [
     example: { problem: "Convert 90° to radians.", steps: ["Multiply by π/180: 90 × π/180.", "= π/2."], answer: "π/2 radians" },
   },
   {
-    id: 60, unit: "Precalculus Foundations", level: "Precalculus", title: "Graphing Sine & Cosine Functions",
+    id: 43, unit: "Precalculus Foundations", level: "Precalculus", title: "Graphing Sine & Cosine Functions",
     explain: [
       "y = sin(x) and y = cos(x) are wave-shaped, repeating every 2π (their period).",
       "Both oscillate between −1 and 1 (their amplitude is 1).",
       "sin(0) = 0 and starts rising; cos(0) = 1 and starts falling — that's the key difference between the two graphs.",
     ],
     example: { problem: "What is the amplitude and period of y = sin(x)?", steps: ["Amplitude is the max distance from the midline: 1.", "Period is how long before the pattern repeats: 2π."], answer: "Amplitude 1, period 2π" },
+  },
+
+  // ── Unit 8: Precalculus, Continued ────────────────────────────
+  {
+    id: 44, unit: "Precalculus, Continued", level: "Precalculus", title: "Trig Identities",
+    explain: [
+      "The Pythagorean identity: sin²(x) + cos²(x) = 1 — true for every angle x.",
+      "From it: tan²(x) + 1 = sec²(x), and 1 + cot²(x) = csc²(x).",
+      "Identities let you rewrite a trig expression in a different, often simpler, form.",
+    ],
+    example: { problem: "If sin(x) = 3/5, find cos(x) using the Pythagorean identity (x in quadrant I).", steps: ["sin²(x) + cos²(x) = 1.", "(3/5)² + cos²(x) = 1 → 9/25 + cos²(x) = 1.", "cos²(x) = 16/25 → cos(x) = 4/5."], answer: "4/5" },
+  },
+  {
+    id: 45, unit: "Precalculus, Continued", level: "Precalculus", title: "Inverse Trigonometric Functions",
+    explain: [
+      "Inverse trig functions (sin⁻¹, cos⁻¹, tan⁻¹) undo the trig functions — they return an angle from a ratio.",
+      "sin⁻¹(x) is also written arcsin(x); same idea for arccos and arctan.",
+      "Each has a restricted output range so it's a true function (e.g. sin⁻¹ only outputs angles from −90° to 90°).",
+    ],
+    example: { problem: "Find sin⁻¹(1/2).", steps: ["Ask: what angle has a sine of 1/2?", "sin(30°) = 1/2."], answer: "30°" },
+  },
+  {
+    id: 46, unit: "Precalculus, Continued", level: "Precalculus", title: "Law of Sines",
+    explain: [
+      "For any triangle: a/sin(A) = b/sin(B) = c/sin(C), where lowercase letters are sides and uppercase are the opposite angles.",
+      "Use it when you know two angles and a side (AAS/ASA), or two sides and a non-included angle (SSA).",
+    ],
+    example: { problem: "A triangle has angle A = 30°, angle B = 90°, and side a = 5. Find side b.", steps: ["a/sin(A) = b/sin(B).", "5/sin(30°) = b/sin(90°).", "5/0.5 = b/1 → b = 10."], answer: "10" },
+  },
+  {
+    id: 47, unit: "Precalculus, Continued", level: "Precalculus", title: "Law of Cosines",
+    explain: [
+      "c² = a² + b² − 2ab·cos(C) — a generalization of the Pythagorean theorem for any triangle.",
+      "Use it when you know all three sides (SSS), or two sides and the included angle (SAS).",
+    ],
+    example: { problem: "A triangle has sides a=4, b=5, and included angle C=90°. Find side c.", steps: ["c² = 4² + 5² − 2(4)(5)cos(90°).", "cos(90°)=0, so c² = 16+25−0 = 41.", "c = √41."], answer: "√41 ≈ 6.4" },
+  },
+  {
+    id: 48, unit: "Precalculus, Continued", level: "Precalculus", title: "Vectors: Introduction",
+    explain: [
+      "A vector has both magnitude (length) and direction, unlike a plain number.",
+      "Written as ⟨x, y⟩ (component form) or drawn as an arrow.",
+      "Add vectors by adding corresponding components: ⟨a,b⟩ + ⟨c,d⟩ = ⟨a+c, b+d⟩.",
+    ],
+    example: { problem: "Add the vectors ⟨3, 2⟩ and ⟨−1, 4⟩.", steps: ["Add x-components: 3 + (−1) = 2.", "Add y-components: 2 + 4 = 6."], answer: "⟨2, 6⟩" },
+  },
+  {
+    id: 49, unit: "Precalculus, Continued", level: "Precalculus", title: "Matrices: Introduction",
+    explain: [
+      "A matrix is a rectangular grid of numbers, described by its size (rows × columns).",
+      "Add or subtract matrices of the same size by combining corresponding entries.",
+      "Multiply a matrix by a scalar (a plain number) by multiplying every entry by it.",
+    ],
+    example: { problem: "Add the matrices [[1,2],[3,4]] and [[5,6],[7,8]].", steps: ["Add corresponding entries: 1+5, 2+6, 3+7, 4+8."], answer: "[[6,8],[10,12]]" },
+  },
+  {
+    id: 50, unit: "Precalculus, Continued", level: "Precalculus", title: "Conic Sections: Circles & Ellipses",
+    explain: [
+      "A circle centered at (h,k) with radius r: (x−h)² + (y−k)² = r².",
+      "An ellipse centered at (h,k): (x−h)²/a² + (y−k)²/b² = 1, where a and b are the horizontal/vertical stretch amounts.",
+      "A circle is really just an ellipse where a = b.",
+    ],
+    example: { problem: "Find the radius of the circle (x−2)² + (y+1)² = 36.", steps: ["Compare to (x−h)²+(y−k)²=r²: r²=36.", "r = √36."], answer: "6" },
+  },
+  {
+    id: 51, unit: "Precalculus, Continued", level: "Precalculus", title: "Conic Sections: Parabolas & Hyperbolas",
+    explain: [
+      "A parabola y = a(x−h)² + k opens up/down; x = a(y−k)² + h opens left/right.",
+      "A hyperbola (x−h)²/a² − (y−k)²/b² = 1 has two separate branches opening left/right (or up/down if the terms are swapped).",
+      "The sign between the two squared terms is what tells an ellipse (+) apart from a hyperbola (−).",
+    ],
+    example: { problem: "Does (x²/9) − (y²/4) = 1 describe an ellipse or a hyperbola?", steps: ["The two squared terms are separated by a minus sign."], answer: "Hyperbola" },
+  },
+  {
+    id: 52, unit: "Precalculus, Continued", level: "Precalculus", title: "Limits: Intuitive Introduction",
+    explain: [
+      "The limit of f(x) as x approaches a value describes what f(x) gets close to, even if f isn't defined exactly there.",
+      "Written lim(x→a) f(x) = L, meaning f(x) gets arbitrarily close to L as x gets close to a.",
+      "Limits can be estimated from a table of values, a graph, or found algebraically.",
+    ],
+    example: { problem: "Find lim(x→2) (x² − 4)/(x − 2).", steps: ["Direct substitution gives 0/0 (undefined) — factor instead.", "(x²−4)/(x−2) = (x−2)(x+2)/(x−2) = x+2 for x≠2.", "As x→2, x+2 → 4."], answer: "4" },
+  },
+  {
+    id: 53, unit: "Precalculus, Continued", level: "Precalculus", title: "Continuity",
+    explain: [
+      "A function is continuous at x=a if the limit as x→a exists, f(a) is defined, and they're equal.",
+      "Graphically: a continuous function has no breaks, holes, or jumps — you could draw it without lifting your pencil.",
+      "Polynomials are continuous everywhere; rational functions are continuous except where the denominator is 0.",
+    ],
+    example: { problem: "Is f(x) = 1/(x−3) continuous at x = 3?", steps: ["f(3) is undefined (division by zero).", "Since f(3) isn't defined, the function is not continuous there."], answer: "No — discontinuous at x = 3" },
+  },
+
+  // ── Unit 9: Calculus I ─────────────────────────────────────────
+  {
+    id: 54, unit: "Calculus I", level: "Calculus", title: "The Derivative: Definition & Notation",
+    explain: [
+      "The derivative f'(x) measures the instantaneous rate of change (slope of the tangent line) at a point.",
+      "Formal definition: f'(x) = lim(h→0) [f(x+h) − f(x)] / h.",
+      "Common notations: f'(x), dy/dx, and d/dx[f(x)] all mean the same thing.",
+    ],
+    example: { problem: "Using the definition, what does f'(x) represent geometrically at a point?", steps: ["It's the limit of slopes of secant lines through the point as they get closer together.", "That limiting slope is the slope of the tangent line."], answer: "The slope of the tangent line at that point" },
+  },
+  {
+    id: 55, unit: "Calculus I", level: "Calculus", title: "The Power Rule",
+    explain: [
+      "For f(x) = xⁿ, the derivative is f'(x) = n·x^(n−1).",
+      "The derivative of a constant is 0. The derivative of a constant times a function scales along: d/dx[c·f(x)] = c·f'(x).",
+      "The derivative of a sum is the sum of the derivatives.",
+    ],
+    example: { problem: "Find the derivative of f(x) = 4x³ + 2x − 5.", steps: ["d/dx[4x³] = 4·3x² = 12x².", "d/dx[2x] = 2.", "d/dx[−5] = 0."], answer: "f'(x) = 12x² + 2" },
+  },
+  {
+    id: 56, unit: "Calculus I", level: "Calculus", title: "Product & Quotient Rules",
+    explain: [
+      "Product rule: d/dx[f·g] = f'·g + f·g'.",
+      "Quotient rule: d/dx[f/g] = (f'·g − f·g') / g².",
+      "You need these whenever two functions are multiplied or divided — the power rule alone isn't enough.",
+    ],
+    example: { problem: "Find the derivative of f(x) = x²·sin(x) using the product rule.", steps: ["f' part: d/dx[x²]=2x. g part: sin(x), g'=cos(x).", "Product rule: 2x·sin(x) + x²·cos(x)."], answer: "2x·sin(x) + x²·cos(x)" },
+  },
+  {
+    id: 57, unit: "Calculus I", level: "Calculus", title: "The Chain Rule",
+    explain: [
+      "For a composite function f(g(x)), the derivative is f'(g(x))·g'(x) — derivative of the outside times derivative of the inside.",
+      "This is the most commonly used rule once functions get more complex.",
+    ],
+    example: { problem: "Find the derivative of f(x) = (3x + 1)⁵.", steps: ["Outside function: (...)⁵, derivative 5(...)⁴.", "Inside function: 3x+1, derivative 3.", "Chain rule: 5(3x+1)⁴ · 3."], answer: "15(3x + 1)⁴" },
+  },
+  {
+    id: 58, unit: "Calculus I", level: "Calculus", title: "Derivatives of Trig, Exponential & Log Functions",
+    explain: [
+      "d/dx[sin(x)] = cos(x), and d/dx[cos(x)] = −sin(x).",
+      "d/dx[eˣ] = eˣ — it's its own derivative.",
+      "d/dx[ln(x)] = 1/x.",
+    ],
+    example: { problem: "Find the derivative of f(x) = 3eˣ − cos(x).", steps: ["d/dx[3eˣ] = 3eˣ.", "d/dx[−cos(x)] = −(−sin(x)) = sin(x)."], answer: "f'(x) = 3eˣ + sin(x)" },
+  },
+  {
+    id: 59, unit: "Calculus I", level: "Calculus", title: "Implicit Differentiation",
+    explain: [
+      "Used when y isn't isolated (e.g. x² + y² = 25) — differentiate both sides with respect to x, treating y as a function of x.",
+      "Every time you differentiate a y term, multiply by dy/dx (chain rule), then solve for dy/dx.",
+    ],
+    example: { problem: "Find dy/dx for x² + y² = 25.", steps: ["Differentiate both sides: 2x + 2y(dy/dx) = 0.", "Solve for dy/dx: 2y(dy/dx) = −2x.", "dy/dx = −2x/2y = −x/y."], answer: "dy/dx = −x/y" },
+  },
+  {
+    id: 60, unit: "Calculus I", level: "Calculus", title: "Related Rates",
+    explain: [
+      "Related rates problems connect the rates of change of two or more quantities using an equation relating them.",
+      "Steps: write an equation relating the quantities, differentiate both sides with respect to time, then plug in known values.",
+    ],
+    example: { problem: "A circle's radius grows at 2 cm/s. Find how fast the area grows when r = 5 cm (A = πr²).", steps: ["Differentiate: dA/dt = 2πr(dr/dt).", "Plug in r=5, dr/dt=2: dA/dt = 2π(5)(2)."], answer: "20π cm²/s" },
+  },
+  {
+    id: 61, unit: "Calculus I", level: "Calculus", title: "Applications: Optimization",
+    explain: [
+      "To find a maximum or minimum, take the derivative, set it equal to 0, and solve for critical points.",
+      "Check whether each critical point is a max or min (using a sign chart or the second derivative).",
+      "Common setup: write a formula for the quantity to optimize in terms of one variable, then optimize it.",
+    ],
+    example: { problem: "Find the critical point of f(x) = x² − 6x + 5.", steps: ["f'(x) = 2x − 6.", "Set f'(x)=0: 2x − 6 = 0 → x = 3."], answer: "x = 3 (a minimum, since the parabola opens upward)" },
+  },
+  {
+    id: 62, unit: "Calculus I", level: "Calculus", title: "Curve Sketching with Derivatives",
+    explain: [
+      "f'(x) > 0 means f is increasing; f'(x) < 0 means f is decreasing.",
+      "f''(x) > 0 means the graph is concave up; f''(x) < 0 means concave down.",
+      "A critical point where f' changes sign is a local max or min.",
+    ],
+    example: { problem: "f'(x) = 2x − 4. On what interval is f increasing?", steps: ["f is increasing where f'(x) > 0: 2x − 4 > 0.", "x > 2."], answer: "x > 2" },
+  },
+  {
+    id: 63, unit: "Calculus I", level: "Calculus", title: "Antiderivatives & Indefinite Integrals",
+    explain: [
+      "An antiderivative reverses differentiation: if F'(x) = f(x), then F is an antiderivative of f.",
+      "Power rule for integrals: ∫xⁿ dx = x^(n+1)/(n+1) + C (for n ≠ −1).",
+      "Always add + C — antiderivatives aren't unique, they differ by a constant.",
+    ],
+    example: { problem: "Find ∫(3x² + 2) dx.", steps: ["∫3x² dx = 3·(x³/3) = x³.", "∫2 dx = 2x.", "Add the constant of integration."], answer: "x³ + 2x + C" },
+  },
+  {
+    id: 64, unit: "Calculus I", level: "Calculus", title: "The Fundamental Theorem of Calculus",
+    explain: [
+      "Part 1: if F is an antiderivative of f, then ∫[a to b] f(x) dx = F(b) − F(a).",
+      "Part 2: differentiating an integral with a variable upper limit gives back the original function.",
+      "This theorem is what connects derivatives and integrals as inverse operations.",
+    ],
+    example: { problem: "Evaluate ∫[0 to 2] x² dx.", steps: ["Antiderivative: F(x) = x³/3.", "F(2) − F(0) = 8/3 − 0."], answer: "8/3" },
+  },
+  {
+    id: 65, unit: "Calculus I", level: "Calculus", title: "Definite Integrals & Area Under a Curve",
+    explain: [
+      "A definite integral ∫[a to b] f(x) dx represents the signed area between f(x) and the x-axis from a to b.",
+      "Area above the x-axis counts positive; area below counts negative.",
+    ],
+    example: { problem: "Evaluate ∫[1 to 3] 2x dx.", steps: ["Antiderivative: x².", "F(3) − F(1) = 9 − 1."], answer: "8" },
+  },
+  {
+    id: 66, unit: "Calculus I", level: "Calculus", title: "U-Substitution",
+    explain: [
+      "U-substitution reverses the chain rule for integration — pick u = (inner function), find du, and rewrite the integral in terms of u.",
+      "Change the limits of integration too if it's a definite integral (or substitute back at the end for an indefinite integral).",
+    ],
+    example: { problem: "Find ∫2x(x² + 1)⁴ dx using u-substitution.", steps: ["Let u = x² + 1, so du = 2x dx.", "Integral becomes ∫u⁴ du = u⁵/5.", "Substitute back: (x²+1)⁵/5."], answer: "(x² + 1)⁵/5 + C" },
+  },
+
+  // ── Unit 10: Calculus II & Intro College Math ─────────────────
+  {
+    id: 67, unit: "Calculus II & Intro College Math", level: "College", title: "Integration by Parts",
+    explain: [
+      "Reverses the product rule for integration: ∫u dv = uv − ∫v du.",
+      "Choose u to be the part that gets simpler when differentiated (often using the order: Logs, Inverse trig, Polynomials, Exponentials, Trig — 'LIPET').",
+    ],
+    example: { problem: "Find ∫x·eˣ dx using integration by parts.", steps: ["Let u = x (du = dx), dv = eˣ dx (v = eˣ).", "∫u dv = uv − ∫v du = x·eˣ − ∫eˣ dx.", "= x·eˣ − eˣ."], answer: "x·eˣ − eˣ + C" },
+  },
+  {
+    id: 68, unit: "Calculus II & Intro College Math", level: "College", title: "Series Convergence Tests",
+    explain: [
+      "A series Σaₙ converges if its partial sums approach a finite limit; otherwise it diverges.",
+      "Common tests: the ratio test (look at aₙ₊₁/aₙ), the comparison test (compare to a known series), and the divergence test (if aₙ doesn't approach 0, the series diverges).",
+    ],
+    example: { problem: "Does the series Σ(1/2)ⁿ converge or diverge?", steps: ["This is a geometric series with ratio r = 1/2.", "A geometric series converges when |r| < 1."], answer: "Converges" },
+  },
+  {
+    id: 69, unit: "Calculus II & Intro College Math", level: "College", title: "Taylor Series",
+    explain: [
+      "A Taylor series approximates a function as an infinite polynomial built from its derivatives at a single point: f(x) ≈ Σ f⁽ⁿ⁾(a)/n! · (x−a)ⁿ.",
+      "A Maclaurin series is just a Taylor series centered at a = 0.",
+      "More terms generally give a better approximation, at least near the center point a.",
+    ],
+    example: { problem: "Write the first two nonzero terms of the Maclaurin series for eˣ.", steps: ["eˣ = Σ xⁿ/n! = 1 + x + x²/2! + ...", "The first two terms are 1 and x."], answer: "1 + x + ..." },
+  },
+  {
+    id: 70, unit: "Calculus II & Intro College Math", level: "College", title: "Systems of Linear Equations (Matrix Form)",
+    explain: [
+      "A system of linear equations can be written as a matrix equation Ax = b, where A holds the coefficients, x the variables, and b the constants.",
+      "Row reduction (Gaussian elimination) transforms the matrix into a simpler form to read off the solution.",
+    ],
+    example: { problem: "Write the system 2x + y = 5, x − y = 1 as a matrix equation Ax = b.", steps: ["Coefficients form A = [[2,1],[1,−1]].", "Variables form x = [x,y]ᵀ.", "Constants form b = [5,1]ᵀ."], answer: "A=[[2,1],[1,−1]], b=[5,1]" },
+  },
+  {
+    id: 71, unit: "Calculus II & Intro College Math", level: "College", title: "Determinants",
+    explain: [
+      "For a 2×2 matrix [[a,b],[c,d]], the determinant is ad − bc.",
+      "A matrix has an inverse only if its determinant is nonzero.",
+      "Determinants also tell you the scaling factor a matrix applies to area/volume.",
+    ],
+    example: { problem: "Find the determinant of [[3,2],[1,4]].", steps: ["ad − bc = (3)(4) − (2)(1).", "12 − 2."], answer: "10" },
+  },
+  {
+    id: 72, unit: "Calculus II & Intro College Math", level: "College", title: "Eigenvalues & Eigenvectors (Introduction)",
+    explain: [
+      "An eigenvector v of a matrix A satisfies Av = λv for some scalar λ (the eigenvalue) — the matrix only stretches/shrinks it, without changing its direction.",
+      "Eigenvalues are found by solving det(A − λI) = 0.",
+    ],
+    example: { problem: "Find the eigenvalues of [[2,0],[0,3]].", steps: ["This matrix is diagonal, so the eigenvalues are just the diagonal entries."], answer: "λ = 2 and λ = 3" },
+  },
+  {
+    id: 73, unit: "Calculus II & Intro College Math", level: "College", title: "Introduction to Probability",
+    explain: [
+      "Probability of an event = (favorable outcomes) / (total possible outcomes), a number between 0 and 1.",
+      "For independent events, multiply their individual probabilities to get the probability of both happening.",
+      "The probability of an event NOT happening is 1 minus the probability that it does.",
+    ],
+    example: { problem: "A fair six-sided die is rolled. Find the probability of rolling a number greater than 4.", steps: ["Favorable outcomes: 5, 6 (2 outcomes).", "Total outcomes: 6.", "Probability = 2/6."], answer: "1/3" },
+  },
+  {
+    id: 74, unit: "Calculus II & Intro College Math", level: "College", title: "Introduction to Statistics: Mean, Variance & Distributions",
+    explain: [
+      "Variance measures how spread out data is: average of the squared differences from the mean.",
+      "Standard deviation is the square root of the variance, in the same units as the original data.",
+      "A normal distribution is a symmetric, bell-shaped distribution common in real-world data.",
+    ],
+    example: { problem: "Find the variance of the data set 2, 4, 6 (mean = 4).", steps: ["Squared differences from the mean: (2−4)²=4, (4−4)²=0, (6−4)²=4.", "Average them: (4+0+4)/3."], answer: "8/3 ≈ 2.67" },
   },
 ];
