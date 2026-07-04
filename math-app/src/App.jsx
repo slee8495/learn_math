@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useDailyProgress, getStoredProfile, setStoredProfile } from "./hooks/useDailyProgress";
-import { getDayNumber, dayNumToDateKey } from "./data/curriculum";
+import { getDayNumber, dayNumToDateKey, getDayLesson } from "./data/curriculum";
 import Home from "./components/Home";
 import DailyLesson from "./components/DailyLesson";
 import ConceptLibrary from "./components/ConceptLibrary";
 import CalendarView from "./components/CalendarView";
 import DayTaskPicker from "./components/DayTaskPicker";
+import ChatWidget from "./components/ChatWidget";
 
 const BOTTOM_TABS = [
   { id: "home", icon: "🏠", label: "Home" },
@@ -98,6 +99,15 @@ function MainApp({ profile, onSwitchProfile }) {
 
   if (activeLesson) {
     const isToday = activeLesson.dayNum === getDayNumber();
+    const lesson = getDayLesson(activeLesson.dayNum);
+    const chatContext = {
+      profile,
+      view: activeLesson.task,
+      dayNum: activeLesson.dayNum,
+      isReview: lesson.isReview,
+      concept: lesson.concept,
+      problems: lesson.problems,
+    };
     return (
       <div className="min-h-screen bg-gray-50">
         <header
@@ -117,9 +127,19 @@ function MainApp({ profile, onSwitchProfile }) {
         <main className="max-w-lg mx-auto">
           <DailyLesson task={activeLesson.task} dayNum={activeLesson.dayNum} onDone={handleTaskDone} />
         </main>
+        <ChatWidget context={chatContext} />
       </div>
     );
   }
+
+  const todayLesson = getDayLesson(getDayNumber());
+  const homeChatContext = {
+    profile,
+    view: tab,
+    dayNum: getDayNumber(),
+    isReview: todayLesson.isReview,
+    concept: todayLesson.concept,
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -188,6 +208,7 @@ function MainApp({ profile, onSwitchProfile }) {
           onClose={() => setDayPicker(null)}
         />
       )}
+      <ChatWidget context={homeChatContext} />
     </div>
   );
 }
