@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { concepts } from "../data/concepts";
+import Diagram from "./Diagram";
 
 function groupByUnit(list) {
   const groups = [];
@@ -52,6 +53,7 @@ export default function ConceptLibrary() {
                           ))}
                         </ul>
                         <div className="bg-indigo-50 rounded-xl p-3">
+                          {c.example.diagram && <Diagram {...c.example.diagram} />}
                           <p className="text-sm font-medium text-gray-800">{c.example.problem}</p>
                           <p className="text-sm text-green-700 font-semibold mt-1">
                             Answer: {c.example.answer}

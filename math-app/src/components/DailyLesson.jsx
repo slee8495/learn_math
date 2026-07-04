@@ -1,4 +1,5 @@
 import { getDayLesson } from "../data/curriculum";
+import Diagram from "./Diagram";
 
 function ConceptView({ lesson, onDone }) {
   const { concept } = lesson;
@@ -19,6 +20,7 @@ function ConceptView({ lesson, onDone }) {
       <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 mb-5">
         <p className="text-xs font-semibold text-indigo-500 mb-2">WORKED EXAMPLE</p>
         <p className="font-medium text-gray-800 mb-3">{concept.example.problem}</p>
+        {concept.example.diagram && <Diagram {...concept.example.diagram} />}
         <ol className="flex flex-col gap-1.5 mb-3">
           {concept.example.steps.map((s, i) => (
             <li key={i} className="text-sm text-gray-600">
@@ -51,6 +53,7 @@ function ProblemView({ lesson, onDone }) {
           <div key={i} className="bg-white border border-gray-200 rounded-2xl p-4">
             <p className="text-xs font-semibold text-gray-400 mb-1">PROBLEM {i + 1}</p>
             <p className="font-medium text-gray-800">{p.q}</p>
+            {p.diagram && <div className="mt-3"><Diagram {...p.diagram} /></div>}
           </div>
         ))}
       </div>
@@ -76,6 +79,7 @@ function SolutionView({ lesson, onDone }) {
           <div key={i} className="bg-white border border-gray-200 rounded-2xl p-4">
             <p className="text-xs font-semibold text-gray-400 mb-1">PROBLEM {i + 1}</p>
             <p className="font-medium text-gray-800 mb-3">{p.q}</p>
+            {p.diagram && <Diagram {...p.diagram} />}
             <ol className="flex flex-col gap-1.5 mb-2">
               {p.steps.map((s, j) => (
                 <li key={j} className="text-sm text-gray-600">

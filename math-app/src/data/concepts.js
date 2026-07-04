@@ -14,7 +14,7 @@ export const concepts = [
       "A point is written (x, y): move x units horizontally, then y units vertically.",
       "The plane is divided into 4 quadrants, numbered counterclockwise starting from the top-right.",
     ],
-    example: { problem: "Which quadrant is the point (−3, 5) in?", steps: ["x is negative (left), y is positive (up).", "Left and up is the top-left region: Quadrant II."], answer: "Quadrant II" },
+    example: { problem: "Which quadrant is the point (−3, 5) in?", steps: ["x is negative (left), y is positive (up).", "Left and up is the top-left region: Quadrant II."], answer: "Quadrant II", diagram: { type: "coordinatePlane", points: [{ x: -3, y: 5, label: "(−3, 5)" }], quadrantHighlight: "II" } },
   },
   {
     id: 2, unit: "Coordinate Plane & Solids", level: "Middle School", title: "Graphing Points & Basic Relations",
@@ -22,7 +22,7 @@ export const concepts = [
       "To plot (x, y), start at the origin, move x units left/right, then y units up/down.",
       "A set of ordered pairs can be graphed to see patterns or relationships between two quantities.",
     ],
-    example: { problem: "Plot and describe the pattern: (1,2), (2,4), (3,6).", steps: ["Each y-value is double the x-value.", "This is a straight-line pattern through the origin."], answer: "y = 2x" },
+    example: { problem: "Plot and describe the pattern: (1,2), (2,4), (3,6).", steps: ["Each y-value is double the x-value.", "This is a straight-line pattern through the origin."], answer: "y = 2x", diagram: { type: "coordinatePlane", points: [{ x: 1, y: 2 }, { x: 2, y: 4 }, { x: 3, y: 6 }] } },
   },
   {
     id: 3, unit: "Coordinate Plane & Solids", level: "Middle School", title: "Volume of Rectangular Prisms",
@@ -30,7 +30,7 @@ export const concepts = [
       "Volume of a rectangular prism = length × width × height.",
       "Volume is measured in cubic units (like cm³ or ft³).",
     ],
-    example: { problem: "Find the volume of a box 4 × 3 × 5.", steps: ["4 × 3 = 12.", "12 × 5 = 60."], answer: "60 cubic units" },
+    example: { problem: "Find the volume of a box 4 × 3 × 5.", steps: ["4 × 3 = 12.", "12 × 5 = 60."], answer: "60 cubic units", diagram: { type: "box", l: 4, w: 3, h: 5 } },
   },
   {
     id: 4, unit: "Coordinate Plane & Solids", level: "Middle School", title: "Surface Area",
@@ -38,7 +38,7 @@ export const concepts = [
       "Surface area is the total area of all the faces of a 3D shape added together.",
       "For a rectangular prism, there are 3 pairs of identical faces: top/bottom, front/back, left/right.",
     ],
-    example: { problem: "Find the surface area of a cube with side 3.", steps: ["Each face area = 3×3 = 9.", "A cube has 6 identical faces: 6 × 9 = 54."], answer: "54 square units" },
+    example: { problem: "Find the surface area of a cube with side 3.", steps: ["Each face area = 3×3 = 9.", "A cube has 6 identical faces: 6 × 9 = 54."], answer: "54 square units", diagram: { type: "box", l: 3, w: 3, h: 3 } },
   },
   {
     id: 5, unit: "Coordinate Plane & Solids", level: "Middle School", title: "Pythagorean Theorem",
@@ -47,7 +47,7 @@ export const concepts = [
       "The hypotenuse is always the longest side, opposite the right angle.",
       "Used to find a missing side when the other two are known.",
     ],
-    example: { problem: "A right triangle has legs 3 and 4. Find the hypotenuse.", steps: ["a² + b² = c²: 3² + 4² = c².", "9 + 16 = 25 = c².", "√25 = 5."], answer: "5" },
+    example: { problem: "A right triangle has legs 3 and 4. Find the hypotenuse.", steps: ["a² + b² = c²: 3² + 4² = c².", "9 + 16 = 25 = c².", "√25 = 5."], answer: "5", diagram: { type: "rightTriangle", legs: [3, 4], hyp: 5 } },
   },
 
   // ── Unit 2: Linear Equations & Functions ─────────────────────
@@ -203,7 +203,7 @@ export const concepts = [
       "If a > 0, it opens upward; if a < 0, it opens downward.",
       "The vertex (turning point) x-coordinate is at x = −b/(2a).",
     ],
-    example: { problem: "Find the vertex x-coordinate of y = x² − 4x + 1.", steps: ["a=1, b=−4.", "x = −(−4)/(2·1) = 4/2."], answer: "x = 2" },
+    example: { problem: "Find the vertex x-coordinate of y = x² − 4x + 1.", steps: ["a=1, b=−4.", "x = −(−4)/(2·1) = 4/2."], answer: "x = 2", diagram: { type: "parabola", direction: "up", vertexLabel: "(2, −3)" } },
   },
   {
     id: 24, unit: "Quadratics, Exponents & Radicals", level: "Algebra I", title: "Exponent Rules",
@@ -231,7 +231,7 @@ export const concepts = [
       "Similar triangles have the same shape but not necessarily the same size — corresponding angles are equal and sides are proportional.",
       "Common congruence tests: SSS, SAS, ASA. Common similarity test: AA (two matching angles).",
     ],
-    example: { problem: "Two triangles are similar with a scale factor of 2. One side of the smaller triangle is 5. Find the corresponding side of the larger triangle.", steps: ["Similar triangles scale every side by the same factor.", "5 × 2 = 10."], answer: "10" },
+    example: { problem: "Two triangles are similar with a scale factor of 2. One side of the smaller triangle is 5. Find the corresponding side of the larger triangle.", steps: ["Similar triangles scale every side by the same factor.", "5 × 2 = 10."], answer: "10", diagram: { type: "triangle", sideA: "a", sideB: "b", sideC: "c" } },
   },
   {
     id: 27, unit: "Geometry", level: "Geometry", title: "Special Right Triangles",
@@ -240,7 +240,7 @@ export const concepts = [
       "30-60-90 triangle: sides are in the ratio 1 : √3 : 2 (short leg : long leg : hypotenuse).",
       "These patterns let you find all sides instantly once you know the triangle type and one side.",
     ],
-    example: { problem: "A 45-45-90 triangle has legs of length 6. Find the hypotenuse.", steps: ["Hypotenuse = leg × √2.", "6 × √2."], answer: "6√2" },
+    example: { problem: "A 45-45-90 triangle has legs of length 6. Find the hypotenuse.", steps: ["Hypotenuse = leg × √2.", "6 × √2."], answer: "6√2", diagram: { type: "specialRightTriangle", kind: "45-45-90", short: "6" } },
   },
   {
     id: 28, unit: "Geometry", level: "Geometry", title: "Trigonometric Ratios (SOH-CAH-TOA)",
@@ -249,7 +249,7 @@ export const concepts = [
       "SOH-CAH-TOA is a memory trick for these three ratios.",
       "Used to find a missing side or angle in any right triangle.",
     ],
-    example: { problem: "A right triangle has an angle of 30°, opposite side 4, and hypotenuse h. Find h using sine.", steps: ["sin(30°) = opposite/hypotenuse = 4/h.", "sin(30°) = 0.5, so 0.5 = 4/h.", "h = 4/0.5."], answer: "8" },
+    example: { problem: "A right triangle has an angle of 30°, opposite side 4, and hypotenuse h. Find h using sine.", steps: ["sin(30°) = opposite/hypotenuse = 4/h.", "sin(30°) = 0.5, so 0.5 = 4/h.", "h = 4/0.5."], answer: "8", diagram: { type: "trigRatio", angleLabel: "30°", opposite: "4", hyp: "h" } },
   },
   {
     id: 29, unit: "Geometry", level: "Geometry", title: "Circles: Arcs, Angles & Sectors",
@@ -258,7 +258,7 @@ export const concepts = [
       "An inscribed angle is half the measure of the arc it cuts off.",
       "A sector's area = (central angle/360°) × πr².",
     ],
-    example: { problem: "Find the area of a sector with radius 6 and central angle 90° (π ≈ 3.14).", steps: ["Sector area = (angle/360) × πr².", "(90/360) × 3.14 × 36 = 0.25 × 113.04."], answer: "28.26" },
+    example: { problem: "Find the area of a sector with radius 6 and central angle 90° (π ≈ 3.14).", steps: ["Sector area = (angle/360) × πr².", "(90/360) × 3.14 × 36 = 0.25 × 113.04."], answer: "28.26", diagram: { type: "circle", radius: "6", sectorDeg: 90 } },
   },
   {
     id: 30, unit: "Geometry", level: "Geometry", title: "Volume & Surface Area of Cylinders, Cones & Spheres",
@@ -267,7 +267,7 @@ export const concepts = [
       "Cone: volume = (1/3)πr²h.",
       "Sphere: volume = (4/3)πr³, surface area = 4πr².",
     ],
-    example: { problem: "Find the volume of a cylinder with radius 3 and height 5 (π ≈ 3.14).", steps: ["Volume = πr²h = 3.14 × 3² × 5.", "3.14 × 9 = 28.26.", "28.26 × 5."], answer: "141.3" },
+    example: { problem: "Find the volume of a cylinder with radius 3 and height 5 (π ≈ 3.14).", steps: ["Volume = πr²h = 3.14 × 3² × 5.", "3.14 × 9 = 28.26.", "28.26 × 5."], answer: "141.3", diagram: { type: "cylinder", r: 3, h: 5 } },
   },
   {
     id: 31, unit: "Geometry", level: "Geometry", title: "Coordinate Geometry: Distance & Midpoint",
@@ -275,7 +275,7 @@ export const concepts = [
       "Distance formula between (x₁,y₁) and (x₂,y₂): d = √[(x₂−x₁)² + (y₂−y₁)²] — it's the Pythagorean theorem in disguise.",
       "Midpoint formula: M = ((x₁+x₂)/2, (y₁+y₂)/2) — average the x's and average the y's.",
     ],
-    example: { problem: "Find the distance between (1,2) and (4,6).", steps: ["d = √[(4−1)² + (6−2)²] = √[3² + 4²].", "= √[9+16] = √25."], answer: "5" },
+    example: { problem: "Find the distance between (1,2) and (4,6).", steps: ["d = √[(4−1)² + (6−2)²] = √[3² + 4²].", "= √[9+16] = √25."], answer: "5", diagram: { type: "coordinatePlane", points: [{ x: 1, y: 2 }, { x: 4, y: 6 }], segment: [[1, 2], [4, 6]] } },
   },
 
   // ── Unit 6: Algebra II ───────────────────────────────────────────
@@ -378,7 +378,7 @@ export const concepts = [
       "Radians measure angles by arc length: 360° = 2π radians, so 180° = π radians.",
       "To convert degrees to radians, multiply by π/180. To convert radians to degrees, multiply by 180/π.",
     ],
-    example: { problem: "Convert 90° to radians.", steps: ["Multiply by π/180: 90 × π/180.", "= π/2."], answer: "π/2 radians" },
+    example: { problem: "Convert 90° to radians.", steps: ["Multiply by π/180: 90 × π/180.", "= π/2."], answer: "π/2 radians", diagram: { type: "unitCircle", angleDeg: 90 } },
   },
   {
     id: 43, unit: "Precalculus Foundations", level: "Precalculus", title: "Graphing Sine & Cosine Functions",
@@ -387,7 +387,7 @@ export const concepts = [
       "Both oscillate between −1 and 1 (their amplitude is 1).",
       "sin(0) = 0 and starts rising; cos(0) = 1 and starts falling — that's the key difference between the two graphs.",
     ],
-    example: { problem: "What is the amplitude and period of y = sin(x)?", steps: ["Amplitude is the max distance from the midline: 1.", "Period is how long before the pattern repeats: 2π."], answer: "Amplitude 1, period 2π" },
+    example: { problem: "What is the amplitude and period of y = sin(x)?", steps: ["Amplitude is the max distance from the midline: 1.", "Period is how long before the pattern repeats: 2π."], answer: "Amplitude 1, period 2π", diagram: { type: "sineCosine", which: "sin" } },
   },
 
   // ── Unit 8: Precalculus, Continued ────────────────────────────
@@ -415,7 +415,7 @@ export const concepts = [
       "For any triangle: a/sin(A) = b/sin(B) = c/sin(C), where lowercase letters are sides and uppercase are the opposite angles.",
       "Use it when you know two angles and a side (AAS/ASA), or two sides and a non-included angle (SSA).",
     ],
-    example: { problem: "A triangle has angle A = 30°, angle B = 90°, and side a = 5. Find side b.", steps: ["a/sin(A) = b/sin(B).", "5/sin(30°) = b/sin(90°).", "5/0.5 = b/1 → b = 10."], answer: "10" },
+    example: { problem: "A triangle has angle A = 30°, angle B = 90°, and side a = 5. Find side b.", steps: ["a/sin(A) = b/sin(B).", "5/sin(30°) = b/sin(90°).", "5/0.5 = b/1 → b = 10."], answer: "10", diagram: { type: "triangle", sideA: "5", sideB: "b", sideC: "c" } },
   },
   {
     id: 47, unit: "Precalculus, Continued", level: "Precalculus", title: "Law of Cosines",
@@ -423,7 +423,7 @@ export const concepts = [
       "c² = a² + b² − 2ab·cos(C) — a generalization of the Pythagorean theorem for any triangle.",
       "Use it when you know all three sides (SSS), or two sides and the included angle (SAS).",
     ],
-    example: { problem: "A triangle has sides a=4, b=5, and included angle C=90°. Find side c.", steps: ["c² = 4² + 5² − 2(4)(5)cos(90°).", "cos(90°)=0, so c² = 16+25−0 = 41.", "c = √41."], answer: "√41 ≈ 6.4" },
+    example: { problem: "A triangle has sides a=4, b=5, and included angle C=90°. Find side c.", steps: ["c² = 4² + 5² − 2(4)(5)cos(90°).", "cos(90°)=0, so c² = 16+25−0 = 41.", "c = √41."], answer: "√41 ≈ 6.4", diagram: { type: "triangle", sideA: "4", sideB: "5", sideC: "c", angleC: "90°" } },
   },
   {
     id: 48, unit: "Precalculus, Continued", level: "Precalculus", title: "Vectors: Introduction",
@@ -432,7 +432,7 @@ export const concepts = [
       "Written as ⟨x, y⟩ (component form) or drawn as an arrow.",
       "Add vectors by adding corresponding components: ⟨a,b⟩ + ⟨c,d⟩ = ⟨a+c, b+d⟩.",
     ],
-    example: { problem: "Add the vectors ⟨3, 2⟩ and ⟨−1, 4⟩.", steps: ["Add x-components: 3 + (−1) = 2.", "Add y-components: 2 + 4 = 6."], answer: "⟨2, 6⟩" },
+    example: { problem: "Add the vectors ⟨3, 2⟩ and ⟨−1, 4⟩.", steps: ["Add x-components: 3 + (−1) = 2.", "Add y-components: 2 + 4 = 6."], answer: "⟨2, 6⟩", diagram: { type: "vector", x: 2, y: 6 } },
   },
   {
     id: 49, unit: "Precalculus, Continued", level: "Precalculus", title: "Matrices: Introduction",
@@ -450,7 +450,7 @@ export const concepts = [
       "An ellipse centered at (h,k): (x−h)²/a² + (y−k)²/b² = 1, where a and b are the horizontal/vertical stretch amounts.",
       "A circle is really just an ellipse where a = b.",
     ],
-    example: { problem: "Find the radius of the circle (x−2)² + (y+1)² = 36.", steps: ["Compare to (x−h)²+(y−k)²=r²: r²=36.", "r = √36."], answer: "6" },
+    example: { problem: "Find the radius of the circle (x−2)² + (y+1)² = 36.", steps: ["Compare to (x−h)²+(y−k)²=r²: r²=36.", "r = √36."], answer: "6", diagram: { type: "conic", kind: "circle" } },
   },
   {
     id: 51, unit: "Precalculus, Continued", level: "Precalculus", title: "Conic Sections: Parabolas & Hyperbolas",
@@ -459,7 +459,7 @@ export const concepts = [
       "A hyperbola (x−h)²/a² − (y−k)²/b² = 1 has two separate branches opening left/right (or up/down if the terms are swapped).",
       "The sign between the two squared terms is what tells an ellipse (+) apart from a hyperbola (−).",
     ],
-    example: { problem: "Does (x²/9) − (y²/4) = 1 describe an ellipse or a hyperbola?", steps: ["The two squared terms are separated by a minus sign."], answer: "Hyperbola" },
+    example: { problem: "Does (x²/9) − (y²/4) = 1 describe an ellipse or a hyperbola?", steps: ["The two squared terms are separated by a minus sign."], answer: "Hyperbola", diagram: { type: "conic", kind: "hyperbola" } },
   },
   {
     id: 52, unit: "Precalculus, Continued", level: "Precalculus", title: "Limits: Intuitive Introduction",
