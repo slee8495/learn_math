@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(mkdir -p /private/tmp/claude-501/-Users-stanlee-Desktop-Desktop---Sangho-MacBook-Pro-QuantLee-Capital-learn-math/11d5988f-2b31-472a-bce6-ba456e91759f/scratchpad/icongen)",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(npm create *)",
+      "Bash(rm -f App.css assets/react.svg assets/vite.svg assets/hero.png)",
+      "Bash(rmdir assets *)",
+      "Bash(node -e ' *)",
+      "Bash(npm run *)",
+      "Read(//tmp/**)",
+      "Bash(curl -s http://localhost:5183/)",
+      "Skill(run)",
+      "Bash(npm ls *)",
+      "Bash(npx playwright *)",
+      "Bash(node verify.js)",
+      "Bash(pkill -f \"vite --port 5183\")",
+      "Bash(npx vercel *)",
+      "Bash(curl *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(node verify_profile.js)",
+      "Bash(node *)",
+      "Bash(pkill -f \"vite --port 5185\")"
+    ]
+  }
+}
