@@ -100,7 +100,10 @@ function MainApp({ profile, onSwitchProfile }) {
     const isToday = activeLesson.dayNum === getDayNumber();
     return (
       <div className="min-h-screen bg-gray-50">
-        <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <header
+          className="bg-white border-b border-gray-200 sticky top-0 z-10"
+          style={{ paddingTop: "env(safe-area-inset-top)" }}
+        >
           <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
             <button onClick={() => setActiveLesson(null)} className="text-gray-400 text-2xl leading-none">
               ←
@@ -120,7 +123,10 @@ function MainApp({ profile, onSwitchProfile }) {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header
+        className="bg-white border-b border-gray-200 sticky top-0 z-10"
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
+      >
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
           <h1 className="text-lg font-bold text-gray-800">
             {tab === "home" && "📐 Daily Math"}
@@ -150,7 +156,10 @@ function MainApp({ profile, onSwitchProfile }) {
         {tab === "library" && <ConceptLibrary />}
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10">
+      <nav
+        className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
         <div className="max-w-lg mx-auto flex">
           {BOTTOM_TABS.map((t) => (
             <button
