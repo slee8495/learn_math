@@ -66,14 +66,15 @@ export function startDateKey() {
 }
 
 // ── Curriculum assembly ───────────────────────────────────────
-// Each concept is taught for CONCEPT_SPAN_DAYS days in a row: day 1 of
-// the block introduces it, the following days give fresh (seeded)
-// practice problems + worked solutions for the same concept. After the
-// full concept list has been covered once, the curriculum loops back
-// into "review mode" — same concepts, new seeded problem combinations —
-// rather than stopping. This keeps "just follow what the app says"
-// working indefinitely while more advanced units are authored later.
-const CONCEPT_SPAN_DAYS = 3;
+// One new concept per day (CONCEPT_SPAN_DAYS = 1). Each concept's
+// problem bank is small (4 problems, matching PROBLEMS_PER_DAY), so
+// spreading a single concept across multiple days showed the exact
+// same 4 problems every time — reordered, but not actually different.
+// A fresh concept daily keeps the problems fresh too, since the pool
+// changes with the concept. After the full concept list has been
+// covered once, the curriculum loops back into "review mode" — same
+// concepts, new seeded problem combinations — rather than stopping.
+const CONCEPT_SPAN_DAYS = 1;
 const TOTAL_NEW_DAYS = concepts.length * CONCEPT_SPAN_DAYS;
 const PROBLEMS_PER_DAY = 4;
 
