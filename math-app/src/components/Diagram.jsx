@@ -176,19 +176,34 @@ function Sphere({ r = 5 }) {
   );
 }
 
-function CoordinatePlane({ points = [], segment, quadrantHighlight }) {
+const LINE_COLORS = [STROKE, "#dc2626", "#059669"];
+
+function CoordinatePlane({ points = [], segment, quadrantHighlight, lines, shade, riseRun, showQuadrantLabels = true }) {
   const cx = 120, cy = 100;
   const allCoords = [
     ...points.map((p) => [p.x, p.y]),
     ...(segment ? segment : []),
+    ...(riseRun ? [riseRun.from, riseRun.to] : []),
   ].flat();
-  const maxAbs = Math.max(1, ...allCoords.map((n) => Math.abs(n)));
+  const maxAbs = Math.max(4, ...allCoords.map((n) => Math.abs(n)));
   const scale = Math.min(16, Math.max(6, 90 / maxAbs));
   const toXY = (x, y) => [cx + x * scale, cy - y * scale];
+  const dataMax = 100 / scale; // data-space half-width visible in the box (20..220 around cx)
   const quads = {
     I: [cx, 20, cx + 100, cy], II: [20, 20, cx, cy],
     III: [20, cy, cx, 180], IV: [cx, cy, cx + 100, 180],
   };
+
+  function lineEndpoints(line) {
+    if (line.vertical !== undefined) {
+      return [toXY(line.vertical, dataMax), toXY(line.vertical, -dataMax)];
+    }
+    const clamp = (v) => Math.max(-dataMax, Math.min(dataMax, v));
+    const y1 = clamp(line.slope * -dataMax + line.intercept);
+    const y2 = clamp(line.slope * dataMax + line.intercept);
+    return [toXY(-dataMax, y1), toXY(dataMax, y2)];
+  }
+
   return (
     <Wrap>
       {quadrantHighlight && quads[quadrantHighlight] && (
@@ -199,13 +214,51 @@ function CoordinatePlane({ points = [], segment, quadrantHighlight }) {
           fill="#c7d2fe"
         />
       )}
+      {shade && (() => {
+        const [[x1, y1], [x2, y2]] = lineEndpoints(shade);
+        const above = shade.side === "above";
+        const topY = 20, botY = 180;
+        const corner1 = above ? [x1, topY] : [x1, botY];
+        const corner2 = above ? [x2, topY] : [x2, botY];
+        return <polygon points={`${x1},${y1} ${x2},${y2} ${corner2} ${corner1}`} fill="#c7d2fe" opacity="0.7" />;
+      })()}
       <line x1="20" y1={cy} x2="220" y2={cy} stroke="#9ca3af" strokeWidth="1.5" />
       <line x1={cx} y1="20" x2={cx} y2="180" stroke="#9ca3af" strokeWidth="1.5" />
+      {showQuadrantLabels && (
+        <>
+          <text x={cx + 92} y="32" fontSize="10" fill="#c4c9d4" textAnchor="middle">I</text>
+          <text x={cx - 92} y="32" fontSize="10" fill="#c4c9d4" textAnchor="middle">II</text>
+          <text x={cx - 92} y="172" fontSize="10" fill="#c4c9d4" textAnchor="middle">III</text>
+          <text x={cx + 92} y="172" fontSize="10" fill="#c4c9d4" textAnchor="middle">IV</text>
+        </>
+      )}
+      {lines && lines.map((line, i) => {
+        const [[x1, y1], [x2, y2]] = lineEndpoints(line);
+        const color = line.color || LINE_COLORS[i % LINE_COLORS.length];
+        return (
+          <g key={i}>
+            <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth="2.5" strokeDasharray={line.dashed ? "5 4" : undefined} />
+            {line.label && <text x={x2 - 14} y={y2 - 8} fontSize="11" fill={color} textAnchor="end">{line.label}</text>}
+          </g>
+        );
+      })}
       {segment && (() => {
         const [p1, p2] = segment;
         const [x1, y1] = toXY(p1[0], p1[1]);
         const [x2, y2] = toXY(p2[0], p2[1]);
         return <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={STROKE} strokeWidth="2" strokeDasharray="4 3" />;
+      })()}
+      {riseRun && (() => {
+        const [x1, y1] = toXY(riseRun.from[0], riseRun.from[1]);
+        const [x2, y2] = toXY(riseRun.to[0], riseRun.to[1]);
+        return (
+          <g>
+            <line x1={x1} y1={y1} x2={x2} y2={y1} stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="3 2" />
+            <line x1={x2} y1={y1} x2={x2} y2={y2} stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="3 2" />
+            <text x={(x1 + x2) / 2} y={y1 + 14} fontSize="11" fill="#b45309" textAnchor="middle">run</text>
+            <text x={x2 + 6} y={(y1 + y2) / 2} fontSize="11" fill="#b45309">rise</text>
+          </g>
+        );
       })()}
       {points.map((p, i) => {
         const [x, y] = toXY(p.x, p.y);

@@ -58,7 +58,7 @@ export const concepts = [
       "Formula from two points (x₁,y₁) and (x₂,y₂): m = (y₂ − y₁)/(x₂ − x₁).",
       "Positive slope rises left to right; negative slope falls left to right.",
     ],
-    example: { problem: "Find the slope between (1,2) and (4,11).", steps: ["m = (11 − 2)/(4 − 1) = 9/3."], answer: "3" },
+    example: { problem: "Find the slope between (1,2) and (4,11).", steps: ["m = (11 − 2)/(4 − 1) = 9/3."], answer: "3", diagram: { type: "coordinatePlane", points: [{ x: 1, y: 2 }, { x: 4, y: 11 }], segment: [[1, 2], [4, 11]], riseRun: { from: [1, 2], to: [4, 11] } } },
   },
   {
     id: 7, unit: "Linear Equations & Functions", level: "Algebra I", title: "Slope-Intercept Form",
@@ -66,7 +66,7 @@ export const concepts = [
       "y = mx + b, where m is the slope and b is the y-intercept (where the line crosses the y-axis).",
       "This is the most common way to write a linear equation.",
     ],
-    example: { problem: "A line has slope 2 and y-intercept −3. Write its equation.", steps: ["Plug into y = mx + b: m=2, b=−3."], answer: "y = 2x − 3" },
+    example: { problem: "A line has slope 2 and y-intercept −3. Write its equation.", steps: ["Plug into y = mx + b: m=2, b=−3."], answer: "y = 2x − 3", diagram: { type: "coordinatePlane", lines: [{ slope: 2, intercept: -3, label: "y = 2x − 3" }], points: [{ x: 0, y: -3, label: "b = −3" }] } },
   },
   {
     id: 8, unit: "Linear Equations & Functions", level: "Algebra I", title: "Graphing Linear Equations",
@@ -74,7 +74,7 @@ export const concepts = [
       "Plot the y-intercept first, then use the slope (rise/run) to find a second point.",
       "Draw a straight line through the two points, extending in both directions.",
     ],
-    example: { problem: "Describe how to graph y = (1/2)x + 1.", steps: ["Start at (0,1) — the y-intercept.", "Slope 1/2 means: from that point, go up 1, right 2.", "Plot that point and draw the line through both."], answer: "Line through (0,1) and (2,2)" },
+    example: { problem: "Describe how to graph y = (1/2)x + 1.", steps: ["Start at (0,1) — the y-intercept.", "Slope 1/2 means: from that point, go up 1, right 2.", "Plot that point and draw the line through both."], answer: "Line through (0,1) and (2,2)", diagram: { type: "coordinatePlane", lines: [{ slope: 0.5, intercept: 1 }], points: [{ x: 0, y: 1 }, { x: 2, y: 2 }] } },
   },
   {
     id: 9, unit: "Linear Equations & Functions", level: "Algebra I", title: "Writing Equations of Lines",
@@ -82,7 +82,7 @@ export const concepts = [
       "Point-slope form: y − y₁ = m(x − x₁), useful when you know a point and the slope.",
       "To write an equation from two points: find the slope first, then use point-slope form.",
     ],
-    example: { problem: "Write the equation of the line through (2,3) with slope 4.", steps: ["y − 3 = 4(x − 2).", "Distribute: y − 3 = 4x − 8.", "Add 3: y = 4x − 5."], answer: "y = 4x − 5" },
+    example: { problem: "Write the equation of the line through (2,3) with slope 4.", steps: ["y − 3 = 4(x − 2).", "Distribute: y − 3 = 4x − 8.", "Add 3: y = 4x − 5."], answer: "y = 4x − 5", diagram: { type: "coordinatePlane", lines: [{ slope: 4, intercept: -5 }], points: [{ x: 2, y: 3, label: "(2, 3)" }] } },
   },
   {
     id: 10, unit: "Linear Equations & Functions", level: "Algebra I", title: "Systems of Equations: Substitution",
@@ -90,7 +90,7 @@ export const concepts = [
       "A system of equations is two or more equations with the same variables, solved together.",
       "Substitution: solve one equation for a variable, then plug that expression into the other equation.",
     ],
-    example: { problem: "Solve: y = x + 2 and 2x + y = 11.", steps: ["Substitute y: 2x + (x + 2) = 11.", "3x + 2 = 11 → 3x = 9 → x = 3.", "y = 3 + 2 = 5."], answer: "x = 3, y = 5" },
+    example: { problem: "Solve: y = x + 2 and 2x + y = 11.", steps: ["Substitute y: 2x + (x + 2) = 11.", "3x + 2 = 11 → 3x = 9 → x = 3.", "y = 3 + 2 = 5."], answer: "x = 3, y = 5", diagram: { type: "coordinatePlane", lines: [{ slope: 1, intercept: 2 }, { slope: -2, intercept: 11 }], points: [{ x: 3, y: 5, label: "(3, 5)" }] } },
   },
   {
     id: 11, unit: "Linear Equations & Functions", level: "Algebra I", title: "Systems of Equations: Elimination",
@@ -98,7 +98,7 @@ export const concepts = [
       "Elimination: add or subtract the equations to cancel out one variable.",
       "You may need to multiply one or both equations first so the coefficients match.",
     ],
-    example: { problem: "Solve: 2x + y = 10 and x − y = 2.", steps: ["Add the equations: (2x + x) + (y − y) = 10 + 2.", "3x = 12 → x = 4.", "Plug in: 4 − y = 2 → y = 2."], answer: "x = 4, y = 2" },
+    example: { problem: "Solve: 2x + y = 10 and x − y = 2.", steps: ["Add the equations: (2x + x) + (y − y) = 10 + 2.", "3x = 12 → x = 4.", "Plug in: 4 − y = 2 → y = 2."], answer: "x = 4, y = 2", diagram: { type: "coordinatePlane", lines: [{ slope: -2, intercept: 10 }, { slope: 1, intercept: -2 }], points: [{ x: 4, y: 2, label: "(4, 2)" }] } },
   },
   {
     id: 12, unit: "Linear Equations & Functions", level: "Algebra I", title: "Graphing Systems of Equations",
@@ -107,7 +107,7 @@ export const concepts = [
       "Parallel lines (same slope, different intercept) mean no solution.",
       "Identical lines mean infinitely many solutions.",
     ],
-    example: { problem: "Lines y = x + 1 and y = x − 2 — how many solutions?", steps: ["Both have slope 1 (parallel).", "Different y-intercepts, so they never cross."], answer: "No solution" },
+    example: { problem: "Lines y = x + 1 and y = x − 2 — how many solutions?", steps: ["Both have slope 1 (parallel).", "Different y-intercepts, so they never cross."], answer: "No solution", diagram: { type: "coordinatePlane", lines: [{ slope: 1, intercept: 1 }, { slope: 1, intercept: -2 }] } },
   },
   {
     id: 13, unit: "Linear Equations & Functions", level: "Algebra I", title: "Linear Inequalities in Two Variables",
@@ -115,7 +115,7 @@ export const concepts = [
       "Graph the boundary line as if it were an equation (dashed for < or >, solid for ≤ or ≥).",
       "Shade the side of the line that makes the inequality true — test the point (0,0) if it's not on the line.",
     ],
-    example: { problem: "Which side do you shade for y > x + 1?", steps: ["Test (0,0): is 0 > 0 + 1? 0 > 1 is false.", "Since it's false, shade the side NOT containing (0,0)."], answer: "Shade above the line" },
+    example: { problem: "Which side do you shade for y > x + 1?", steps: ["Test (0,0): is 0 > 0 + 1? 0 > 1 is false.", "Since it's false, shade the side NOT containing (0,0)."], answer: "Shade above the line", diagram: { type: "coordinatePlane", lines: [{ slope: 1, intercept: 1, dashed: true }], shade: { slope: 1, intercept: 1, side: "above" } } },
   },
   {
     id: 14, unit: "Linear Equations & Functions", level: "Algebra I", title: "Introduction to Functions",
@@ -322,7 +322,7 @@ export const concepts = [
       "A vertical asymptote occurs where the denominator equals zero (and the numerator doesn't).",
       "A horizontal asymptote describes the function's behavior as x gets very large or very negative.",
     ],
-    example: { problem: "Find the vertical asymptote of f(x) = 3/(x − 4).", steps: ["Set the denominator to 0: x − 4 = 0."], answer: "x = 4" },
+    example: { problem: "Find the vertical asymptote of f(x) = 3/(x − 4).", steps: ["Set the denominator to 0: x − 4 = 0."], answer: "x = 4", diagram: { type: "coordinatePlane", lines: [{ vertical: 4, dashed: true, label: "x = 4" }] } },
   },
   {
     id: 37, unit: "Algebra II", level: "Algebra II", title: "Exponential Functions: Growth & Decay",
