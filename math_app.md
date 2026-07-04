@@ -4,7 +4,7 @@
 **Live app:** https://math-app-five-beta.vercel.app (deployed on Vercel, `math-app` project)
 **App subdirectory:** `math-app/` (the actual Vite app lives one level below repo root)
 
-This document exists so a future Claude session (working in a *different* repo, e.g. a new subject app) can read it, look at the actual `learn_math` GitHub repo for concrete code, and rebuild the same product philosophy for a new subject — without re-deriving decisions that were already made and refined here through several rounds of user feedback.
+This document exists so a future Claude session (working in a *different* repo, e.g. a new subject app) can read it, look at the actual `learn_math` GitHub repo for concrete code, and rebuild the same proㄷduct philosophy for a new subject — without re-deriving decisions that were already made and refined here through several rounds of user feedback.
 
 This app itself was built by explicitly copying the philosophy of an earlier sibling project, **`learn_japanese`** (https://github.com/slee8495/learn_japanese, reference doc `learn_japanese.md` in that repo). Read that repo/doc too if you want the original reasoning trail — most of the "why" below traces back to decisions made there.
 

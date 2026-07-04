@@ -24,7 +24,9 @@
       "Bash(git push *)",
       "Bash(node verify_profile.js)",
       "Bash(node *)",
-      "Bash(pkill -f \"vite --port 5185\")"
+      "Bash(pkill -f \"vite --port 5185\")",
+      "Skill(claude-api)",
+      "Bash(pkill -f \"vite --port 5190\")"
     ]
   }
 }
