@@ -2,70 +2,13 @@ import { concepts } from "./concepts";
 import { problemsByConcept } from "./problems";
 import { seededShuffle } from "../utils/seededShuffle";
 
-// ── Day-number math ───────────────────────────────────────────
-// "Today" is always computed in a fixed reference timezone, not the
-// device's local time — otherwise the day number can be off by one
-// depending on where the phone thinks it is.
-export const TIMEZONE = "America/Los_Angeles";
-
-// Day 1 of the curriculum. Fixed once, never recomputed at runtime.
-const START = { y: 2026, m: 7, d: 3 };
-
-function pad(n) {
-  return String(n).padStart(2, "0");
-}
-
-const START_KEY = `${START.y}-${pad(START.m)}-${pad(START.d)}`;
-
-function dateKeyToUTCms(dateKey) {
-  const [y, m, d] = dateKey.split("-").map(Number);
-  return Date.UTC(y, m - 1, d);
-}
-
-export function getCaliforniaToday() {
-  const fmt = new Intl.DateTimeFormat("en-CA", {
-    timeZone: TIMEZONE,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-  return fmt.format(new Date()); // "YYYY-MM-DD"
-}
-
-// Today's date key — used to key localStorage progress entries.
-export function dateKey() {
-  return getCaliforniaToday();
-}
-
-export function getDayNumber() {
-  const todayKey = getCaliforniaToday();
-  const diffDays = Math.round(
-    (dateKeyToUTCms(todayKey) - dateKeyToUTCms(START_KEY)) / 86400000
-  );
-  return Math.max(1, diffDays + 1);
-}
-
-export function dayNumToDateKey(dayNum) {
-  const ms = dateKeyToUTCms(START_KEY) + (dayNum - 1) * 86400000;
-  const d = new Date(ms);
-  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
-}
-
-// Curriculum day number for an arbitrary calendar date (used by the
-// calendar view — dates before START have no lesson, dates after
-// today are shown but not yet reachable).
-export function dateKeyToDayNum(dateKeyStr) {
-  const diffDays = Math.round(
-    (dateKeyToUTCms(dateKeyStr) - dateKeyToUTCms(START_KEY)) / 86400000
-  );
-  return diffDays + 1;
-}
-
-export function startDateKey() {
-  return START_KEY;
-}
-
 // ── Curriculum assembly ───────────────────────────────────────
+// "Day" is not a calendar date — it's each profile's own position in
+// the curriculum, driven entirely by how many days they've completed
+// (see getCurrentDay() in useDailyProgress.js). Two people using the
+// same link on their own pace legitimately see different Day numbers
+// on the same real-world date; nothing here depends on wall-clock time.
+//
 // One new concept per day (CONCEPT_SPAN_DAYS = 1). Each concept's
 // problem bank is small (4 problems, matching PROBLEMS_PER_DAY), so
 // spreading a single concept across multiple days showed the exact

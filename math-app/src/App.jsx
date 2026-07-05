@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDailyProgress, getStoredProfile, setStoredProfile } from "./hooks/useDailyProgress";
-import { getDayNumber, dayNumToDateKey, getDayLesson } from "./data/curriculum";
+import { getDayLesson } from "./data/curriculum";
 import Home from "./components/Home";
 import DailyLesson from "./components/DailyLesson";
 import ConceptLibrary from "./components/ConceptLibrary";
@@ -67,29 +67,29 @@ function MainApp({ profile, onSwitchProfile }) {
   const [tab, setTab] = useState("home");
   const [activeLesson, setActiveLesson] = useState(null); // { task, dayNum }
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [dayPicker, setDayPicker] = useState(null); // { dayNum, dateKeyStr }
+  const [dayPicker, setDayPicker] = useState(null); // { dayNum }
 
-  const { daily, markTask, isTaskDone, getTodayDone, getStreak, getWeekStatus, dateKey } =
+  const { daily, markTask, isTaskDone, getDoneCount, getCurrentDay, getStreak, getRecentStatus } =
     useDailyProgress(profile);
 
-  const todayDone = getTodayDone();
+  const currentDay = getCurrentDay();
+  const todayDone = getDoneCount(String(currentDay));
   const streak = getStreak();
-  const weekStatus = getWeekStatus();
+  const recentStatus = getRecentStatus();
 
-  function handleNavigate(task, dayNum = getDayNumber()) {
+  function handleNavigate(task, dayNum = currentDay) {
     setActiveLesson({ task, dayNum });
   }
 
   function handleTaskDone() {
     const { task, dayNum } = activeLesson;
-    const key = dayNum === getDayNumber() ? dateKey() : dayNumToDateKey(dayNum);
-    markTask(task, key);
+    markTask(task, String(dayNum));
     setActiveLesson(null);
   }
 
-  function handleSelectCalendarDay(dayNum, dateKeyStr) {
+  function handleSelectCalendarDay(dayNum) {
     setCalendarOpen(false);
-    setDayPicker({ dayNum, dateKeyStr });
+    setDayPicker({ dayNum });
   }
 
   function handlePickDayTask(task) {
@@ -98,7 +98,7 @@ function MainApp({ profile, onSwitchProfile }) {
   }
 
   if (activeLesson) {
-    const isToday = activeLesson.dayNum === getDayNumber();
+    const isCurrent = activeLesson.dayNum === currentDay;
     const lesson = getDayLesson(activeLesson.dayNum);
     const chatContext = {
       profile,
@@ -120,7 +120,7 @@ function MainApp({ profile, onSwitchProfile }) {
             </button>
             <div>
               <p className="font-semibold text-gray-800">{TASK_LABEL[activeLesson.task]}</p>
-              {!isToday && <p className="text-xs text-indigo-500">Day {activeLesson.dayNum} review</p>}
+              {!isCurrent && <p className="text-xs text-indigo-500">Day {activeLesson.dayNum} review</p>}
             </div>
           </div>
         </header>
@@ -132,11 +132,11 @@ function MainApp({ profile, onSwitchProfile }) {
     );
   }
 
-  const todayLesson = getDayLesson(getDayNumber());
+  const todayLesson = getDayLesson(currentDay);
   const homeChatContext = {
     profile,
     view: tab,
-    dayNum: getDayNumber(),
+    dayNum: currentDay,
     isReview: todayLesson.isReview,
     concept: todayLesson.concept,
   };
@@ -168,9 +168,10 @@ function MainApp({ profile, onSwitchProfile }) {
             onNavigate={handleNavigate}
             onOpenCalendar={() => setCalendarOpen(true)}
             isTaskDone={isTaskDone}
+            dayNum={currentDay}
             todayDone={todayDone}
             streak={streak}
-            weekStatus={weekStatus}
+            recentStatus={recentStatus}
           />
         )}
         {tab === "library" && <ConceptLibrary />}
@@ -197,12 +198,16 @@ function MainApp({ profile, onSwitchProfile }) {
       </nav>
 
       {calendarOpen && (
-        <CalendarView daily={daily} onSelectDay={handleSelectCalendarDay} onClose={() => setCalendarOpen(false)} />
+        <CalendarView
+          daily={daily}
+          currentDay={currentDay}
+          onSelectDay={handleSelectCalendarDay}
+          onClose={() => setCalendarOpen(false)}
+        />
       )}
       {dayPicker && (
         <DayTaskPicker
           dayNum={dayPicker.dayNum}
-          dateKeyStr={dayPicker.dateKeyStr}
           isTaskDone={isTaskDone}
           onPick={handlePickDayTask}
           onClose={() => setDayPicker(null)}

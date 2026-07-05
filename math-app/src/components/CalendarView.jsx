@@ -1,85 +1,32 @@
-import { useState } from "react";
-import { getDayNumber, dateKeyToDayNum, startDateKey } from "../data/curriculum";
-
-function pad(n) {
-  return String(n).padStart(2, "0");
-}
-
-export default function CalendarView({ daily, onSelectDay, onClose }) {
-  const todayDayNum = getDayNumber();
-  const startKey = startDateKey();
-  const [startY, startM] = startKey.split("-").map(Number);
-  const now = new Date();
-  const [viewY, setViewY] = useState(now.getUTCFullYear());
-  const [viewM, setViewM] = useState(now.getUTCMonth() + 1); // 1-12
-
-  const canGoPrev = viewY > startY || (viewY === startY && viewM > startM);
-
-  function shiftMonth(delta) {
-    let m = viewM + delta;
-    let y = viewY;
-    if (m < 1) { m = 12; y -= 1; }
-    if (m > 12) { m = 1; y += 1; }
-    setViewY(y);
-    setViewM(m);
-  }
-
-  const firstOfMonth = new Date(Date.UTC(viewY, viewM - 1, 1));
-  const daysInMonth = new Date(Date.UTC(viewY, viewM, 0)).getUTCDate();
-  const leadingBlanks = firstOfMonth.getUTCDay(); // 0=Sun
-
-  const cells = [];
-  for (let i = 0; i < leadingBlanks; i++) cells.push(null);
-  for (let day = 1; day <= daysInMonth; day++) cells.push(day);
+// A simple grid of "Day 1, Day 2, ..." rather than a real month
+// calendar — Day is tied to each profile's own completion pace, not to
+// calendar dates, so a weekday/month grid no longer means anything.
+export default function CalendarView({ daily, currentDay, onSelectDay, onClose }) {
+  const days = Array.from({ length: currentDay }, (_, i) => i + 1);
 
   return (
     <div className="fixed inset-0 bg-black/40 z-30 flex items-end sm:items-center justify-center">
       <div className="bg-white w-full sm:max-w-sm sm:rounded-3xl rounded-t-3xl p-5 max-h-[85vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-4">
-          <button
-            onClick={() => canGoPrev && shiftMonth(-1)}
-            disabled={!canGoPrev}
-            className="w-9 h-9 rounded-full bg-gray-100 text-gray-600 disabled:opacity-30"
-          >
-            ←
-          </button>
-          <p className="font-bold text-gray-800">
-            {new Date(Date.UTC(viewY, viewM - 1, 1)).toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" })}
-          </p>
-          <button onClick={() => shiftMonth(1)} className="w-9 h-9 rounded-full bg-gray-100 text-gray-600">
-            →
-          </button>
-        </div>
+        <p className="font-bold text-gray-800 mb-4">All days so far</p>
 
-        <div className="grid grid-cols-7 gap-1 text-center text-[11px] text-gray-400 mb-1">
-          {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => <div key={i}>{d}</div>)}
-        </div>
-
-        <div className="grid grid-cols-7 gap-1">
-          {cells.map((day, i) => {
-            if (day === null) return <div key={i} />;
-            const key = `${viewY}-${pad(viewM)}-${pad(day)}`;
-            const dayNum = dateKeyToDayNum(key);
-            const reachable = dayNum >= 1 && dayNum <= todayDayNum;
-            const count = daily[key]
-              ? Object.values(daily[key]).filter(Boolean).length
+        <div className="grid grid-cols-5 gap-2">
+          {days.map((day) => {
+            const count = daily[String(day)]
+              ? Object.values(daily[String(day)]).filter(Boolean).length
               : 0;
-            const isToday = dayNum === todayDayNum;
+            const isCurrent = day === currentDay;
 
             return (
               <button
-                key={i}
-                disabled={!reachable}
-                onClick={() => reachable && onSelectDay(dayNum, key)}
+                key={day}
+                onClick={() => onSelectDay(day)}
                 className={`aspect-square rounded-xl flex flex-col items-center justify-center text-xs font-medium ${
-                  !reachable
-                    ? "text-gray-300"
-                    : count === 3
+                  count === 3
                     ? "bg-green-500 text-white"
                     : count > 0
                     ? "bg-yellow-200 text-yellow-800"
                     : "bg-gray-100 text-gray-600"
-                } ${isToday ? "ring-2 ring-indigo-500" : ""}`}
+                } ${isCurrent ? "ring-2 ring-indigo-500" : ""}`}
               >
                 {day}
               </button>

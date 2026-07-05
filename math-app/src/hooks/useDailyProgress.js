@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-import { dateKey as todayKey } from "../data/curriculum";
 
 export const TASKS = ["concept", "problem", "solution"];
 
@@ -21,77 +20,100 @@ function storageKeyFor(profile) {
   return `math_daily_${profile}`;
 }
 
-function loadAll(profile) {
-  try {
-    return JSON.parse(localStorage.getItem(storageKeyFor(profile))) || {};
-  } catch {
-    return {};
-  }
+function isDateKey(k) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(k);
 }
 
 function saveAll(profile, data) {
   localStorage.setItem(storageKeyFor(profile), JSON.stringify(data));
 }
 
+// Progress used to be keyed by real calendar date, which made "Day X"
+// calendar-locked and identical for every profile. Progress is now
+// keyed by curriculum day number (1, 2, 3...) so each profile advances
+// at its own pace. Old date-keyed records are migrated once, in
+// completion order, so nobody's history is silently dropped.
+function loadAll(profile) {
+  let raw;
+  try {
+    raw = JSON.parse(localStorage.getItem(storageKeyFor(profile))) || {};
+  } catch {
+    raw = {};
+  }
+  const keys = Object.keys(raw);
+  if (keys.length && keys.every(isDateKey)) {
+    const migrated = {};
+    keys.sort().forEach((k, i) => {
+      migrated[String(i + 1)] = raw[k];
+    });
+    saveAll(profile, migrated);
+    return migrated;
+  }
+  return raw;
+}
+
 export function useDailyProgress(profile) {
   const [daily, setDaily] = useState(() => loadAll(profile));
 
-  const markTask = useCallback((task, key) => {
-    setDaily((prev) => {
-      const day = { ...(prev[key] || {}), [task]: true };
-      const next = { ...prev, [key]: day };
-      saveAll(profile, next);
-      return next;
-    });
-  }, [profile]);
-
-  const isTaskDone = useCallback(
-    (task, key) => Boolean(daily[key]?.[task]),
-    [daily]
+  const markTask = useCallback(
+    (task, dayKey) => {
+      setDaily((prev) => {
+        const day = { ...(prev[dayKey] || {}), [task]: true };
+        const next = { ...prev, [dayKey]: day };
+        saveAll(profile, next);
+        return next;
+      });
+    },
+    [profile]
   );
+
+  const isTaskDone = useCallback((task, dayKey) => Boolean(daily[dayKey]?.[task]), [daily]);
 
   const getDoneCount = useCallback(
-    (key) => TASKS.filter((t) => daily[key]?.[t]).length,
+    (dayKey) => TASKS.filter((t) => daily[dayKey]?.[t]).length,
     [daily]
   );
 
-  const getTodayDone = useCallback(() => getDoneCount(todayKey()), [getDoneCount]);
+  // The next day in the curriculum this profile hasn't fully finished yet.
+  const getCurrentDay = useCallback(() => {
+    let day = 1;
+    while (getDoneCount(String(day)) === TASKS.length) day++;
+    return day;
+  }, [getDoneCount]);
 
-  // Consecutive days (ending today) where all tasks are complete.
+  // Consecutive fully-completed days immediately before the current one.
   const getStreak = useCallback(() => {
     let streak = 0;
-    let cursor = new Date(`${todayKey()}T00:00:00Z`);
-    for (;;) {
-      const key = cursor.toISOString().slice(0, 10);
-      const done = TASKS.every((t) => daily[key]?.[t]);
-      if (!done) break;
+    let day = getCurrentDay() - 1;
+    while (day >= 1 && getDoneCount(String(day)) === TASKS.length) {
       streak += 1;
-      cursor.setUTCDate(cursor.getUTCDate() - 1);
+      day -= 1;
     }
     return streak;
-  }, [daily]);
+  }, [getCurrentDay, getDoneCount]);
 
-  // Last 7 days (oldest to newest, ending today) with completion status.
-  const getWeekStatus = useCallback(() => {
-    const days = [];
-    for (let i = 6; i >= 0; i--) {
-      const cursor = new Date(`${todayKey()}T00:00:00Z`);
-      cursor.setUTCDate(cursor.getUTCDate() - i);
-      const key = cursor.toISOString().slice(0, 10);
-      const count = getDoneCount(key);
-      days.push({ key, count, done: count === TASKS.length });
-    }
-    return days;
-  }, [getDoneCount]);
+  // The most recent N days up to and including the current day.
+  const getRecentStatus = useCallback(
+    (n = 7) => {
+      const current = getCurrentDay();
+      const start = Math.max(1, current - n + 1);
+      const days = [];
+      for (let d = start; d <= current; d++) {
+        const count = getDoneCount(String(d));
+        days.push({ day: d, count, done: count === TASKS.length });
+      }
+      return days;
+    },
+    [getCurrentDay, getDoneCount]
+  );
 
   return {
     daily,
     markTask,
     isTaskDone,
     getDoneCount,
-    getTodayDone,
+    getCurrentDay,
     getStreak,
-    getWeekStatus,
-    dateKey: todayKey,
+    getRecentStatus,
   };
 }

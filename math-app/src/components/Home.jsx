@@ -1,4 +1,4 @@
-import { getDayLesson, getDayNumber } from "../data/curriculum";
+import { getDayLesson } from "../data/curriculum";
 import { TASKS } from "../hooks/useDailyProgress";
 
 const TASK_CARDS = [
@@ -7,10 +7,9 @@ const TASK_CARDS = [
   { id: "solution", icon: "✅", label: "Solution Walkthrough", blurb: "Check your work" },
 ];
 
-export default function Home({ onNavigate, onOpenCalendar, isTaskDone, todayDone, streak, weekStatus }) {
-  const dayNum = getDayNumber();
+export default function Home({ onNavigate, onOpenCalendar, isTaskDone, dayNum, todayDone, streak, recentStatus }) {
   const lesson = getDayLesson(dayNum);
-  const todayKey = weekStatus[weekStatus.length - 1]?.key;
+  const dayKey = String(dayNum);
 
   return (
     <div className="px-4 pt-4 pb-6">
@@ -43,7 +42,7 @@ export default function Home({ onNavigate, onOpenCalendar, isTaskDone, todayDone
       {/* Task cards */}
       <div className="flex flex-col gap-3 mb-4">
         {TASK_CARDS.map((card) => {
-          const done = isTaskDone(card.id, todayKey);
+          const done = isTaskDone(card.id, dayKey);
           return (
             <button
               key={card.id}
@@ -65,19 +64,15 @@ export default function Home({ onNavigate, onOpenCalendar, isTaskDone, todayDone
         })}
       </div>
 
-      {/* 7-day strip */}
+      {/* Recent days strip */}
       <div className="bg-white border border-gray-200 rounded-2xl p-4 mb-4">
-        <p className="text-sm font-medium text-gray-500 mb-3">Last 7 days</p>
+        <p className="text-sm font-medium text-gray-500 mb-3">Recent days</p>
         <div className="flex justify-between">
-          {weekStatus.map((d) => {
-            const dow = new Date(`${d.key}T00:00:00Z`).toLocaleDateString("en-US", {
-              weekday: "short",
-              timeZone: "UTC",
-            });
-            const isToday = d.key === todayKey;
+          {recentStatus.map((d) => {
+            const isCurrent = d.day === dayNum;
             return (
-              <div key={d.key} className="flex flex-col items-center gap-1">
-                <span className="text-[10px] text-gray-400">{dow[0]}</span>
+              <div key={d.day} className="flex flex-col items-center gap-1">
+                <span className="text-[10px] text-gray-400">D{d.day}</span>
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${
                     d.done
@@ -85,7 +80,7 @@ export default function Home({ onNavigate, onOpenCalendar, isTaskDone, todayDone
                       : d.count > 0
                       ? "bg-yellow-200 text-yellow-800"
                       : "bg-gray-100 text-gray-300"
-                  } ${isToday ? "ring-2 ring-indigo-500 ring-offset-1" : ""}`}
+                  } ${isCurrent ? "ring-2 ring-indigo-500 ring-offset-1" : ""}`}
                 >
                   {d.done ? "✓" : d.count > 0 ? d.count : "·"}
                 </div>
@@ -99,7 +94,7 @@ export default function Home({ onNavigate, onOpenCalendar, isTaskDone, todayDone
         onClick={onOpenCalendar}
         className="w-full py-3 bg-white border border-gray-200 rounded-2xl text-indigo-600 font-medium text-sm active:scale-[0.98] transition-transform"
       >
-        📅 Open full calendar — review any past day
+        📋 View all days — review anything you've done before
       </button>
     </div>
   );

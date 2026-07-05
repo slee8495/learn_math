@@ -6,8 +6,9 @@ const TASKS = [
   { id: "solution", icon: "✅", label: "Solution Walkthrough" },
 ];
 
-export default function DayTaskPicker({ dayNum, isTaskDone, dateKeyStr, onPick, onClose }) {
+export default function DayTaskPicker({ dayNum, isTaskDone, onPick, onClose }) {
   const lesson = getDayLesson(dayNum);
+  const dayKey = String(dayNum);
 
   return (
     <div className="fixed inset-0 bg-black/40 z-40 flex items-end sm:items-center justify-center">
@@ -17,7 +18,7 @@ export default function DayTaskPicker({ dayNum, isTaskDone, dateKeyStr, onPick, 
 
         <div className="flex flex-col gap-2 mb-4">
           {TASKS.map((t) => {
-            const done = isTaskDone(t.id, dateKeyStr);
+            const done = isTaskDone(t.id, dayKey);
             return (
               <button
                 key={t.id}
