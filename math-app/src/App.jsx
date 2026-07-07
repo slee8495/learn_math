@@ -6,7 +6,6 @@ import Home from "./components/Home";
 import DailyLesson from "./components/DailyLesson";
 import ConceptLibrary from "./components/ConceptLibrary";
 import CalendarView from "./components/CalendarView";
-import DayTaskPicker from "./components/DayTaskPicker";
 import ChatWidget from "./components/ChatWidget";
 import Scratchpad from "./components/Scratchpad";
 
@@ -69,18 +68,20 @@ function MainApp({ profile, onSwitchProfile }) {
   const [tab, setTab] = useState("home");
   const [activeLesson, setActiveLesson] = useState(null); // { task, dayNum }
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [dayPicker, setDayPicker] = useState(null); // { dayNum }
+  const [viewedDay, setViewedDay] = useState(null); // non-null while browsing a past day on Home
 
   const { daily, markTask, isTaskDone, getDoneCount, getCurrentDay, getStreak, getRecentStatus } =
     useDailyProgress(profile);
   const { getAnswer, setAnswer } = useUserAnswers(profile);
 
   const currentDay = getCurrentDay();
-  const todayDone = getDoneCount(String(currentDay));
+  const displayDay = viewedDay ?? currentDay;
+  const todayDone = getDoneCount(String(displayDay));
   const streak = getStreak();
   const recentStatus = getRecentStatus();
+  const isPastView = viewedDay !== null && viewedDay !== currentDay;
 
-  function handleNavigate(task, dayNum = currentDay) {
+  function handleNavigate(task, dayNum = displayDay) {
     setActiveLesson({ task, dayNum });
   }
 
@@ -92,12 +93,7 @@ function MainApp({ profile, onSwitchProfile }) {
 
   function handleSelectCalendarDay(dayNum) {
     setCalendarOpen(false);
-    setDayPicker({ dayNum });
-  }
-
-  function handlePickDayTask(task) {
-    setActiveLesson({ task, dayNum: dayPicker.dayNum });
-    setDayPicker(null);
+    setViewedDay(dayNum);
   }
 
   if (activeLesson) {
@@ -142,11 +138,11 @@ function MainApp({ profile, onSwitchProfile }) {
     );
   }
 
-  const todayLesson = getDayLesson(currentDay);
+  const todayLesson = getDayLesson(displayDay);
   const homeChatContext = {
     profile,
     view: tab,
-    dayNum: currentDay,
+    dayNum: displayDay,
     isReview: todayLesson.isReview,
     concept: todayLesson.concept,
   };
@@ -178,10 +174,12 @@ function MainApp({ profile, onSwitchProfile }) {
             onNavigate={handleNavigate}
             onOpenCalendar={() => setCalendarOpen(true)}
             isTaskDone={isTaskDone}
-            dayNum={currentDay}
+            dayNum={displayDay}
             todayDone={todayDone}
             streak={streak}
             recentStatus={recentStatus}
+            isPastView={isPastView}
+            onBackToToday={() => setViewedDay(null)}
           />
         )}
         {tab === "library" && <ConceptLibrary />}
@@ -213,14 +211,6 @@ function MainApp({ profile, onSwitchProfile }) {
           currentDay={currentDay}
           onSelectDay={handleSelectCalendarDay}
           onClose={() => setCalendarOpen(false)}
-        />
-      )}
-      {dayPicker && (
-        <DayTaskPicker
-          dayNum={dayPicker.dayNum}
-          isTaskDone={isTaskDone}
-          onPick={handlePickDayTask}
-          onClose={() => setDayPicker(null)}
         />
       )}
       <ChatWidget context={homeChatContext} />

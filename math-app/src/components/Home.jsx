@@ -7,12 +7,32 @@ const TASK_CARDS = [
   { id: "solution", icon: "✅", label: "Solution Walkthrough", blurb: "Check your work" },
 ];
 
-export default function Home({ onNavigate, onOpenCalendar, isTaskDone, dayNum, todayDone, streak, recentStatus }) {
+export default function Home({
+  onNavigate,
+  onOpenCalendar,
+  isTaskDone,
+  dayNum,
+  todayDone,
+  streak,
+  recentStatus,
+  isPastView,
+  onBackToToday,
+}) {
   const lesson = getDayLesson(dayNum);
   const dayKey = String(dayNum);
 
   return (
     <div className="px-4 pt-4 pb-6">
+      {isPastView && (
+        <button
+          onClick={onBackToToday}
+          className="w-full mb-3 py-2.5 bg-indigo-50 border border-indigo-200 rounded-2xl text-indigo-600 font-medium text-sm active:scale-[0.98] transition-transform flex items-center justify-center gap-1.5"
+        >
+          <span>←</span>
+          <span>Viewing Day {dayNum} · Back to Today</span>
+        </button>
+      )}
+
       {/* Day header */}
       <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-3xl p-5 text-white mb-4">
         <div className="flex items-center justify-between">
