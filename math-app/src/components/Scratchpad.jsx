@@ -1,11 +1,17 @@
 import { useRef, useState, useEffect } from "react";
 
+const PEN_WIDTH = 2.5;
+const ERASER_WIDTH = 22;
+
 export default function Scratchpad() {
   const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState("pen"); // "pen" | "eraser"
   const canvasRef = useRef(null);
   const drawing = useRef(false);
   const last = useRef({ x: 0, y: 0 });
   const sized = useRef(false);
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
 
   useEffect(() => {
     if (!open || sized.current) return;
@@ -39,6 +45,9 @@ export default function Scratchpad() {
     if (!drawing.current) return;
     e.preventDefault();
     const ctx = canvasRef.current.getContext("2d");
+    const erasing = modeRef.current === "eraser";
+    ctx.globalCompositeOperation = erasing ? "destination-out" : "source-over";
+    ctx.lineWidth = erasing ? ERASER_WIDTH : PEN_WIDTH;
     const p = pos(e);
     ctx.beginPath();
     ctx.moveTo(last.current.x, last.current.y);
@@ -81,6 +90,24 @@ export default function Scratchpad() {
         >
           <p className="font-bold text-gray-800 px-1">Scratchpad</p>
           <div className="flex gap-2">
+            <button
+              onClick={() => setMode("pen")}
+              className={`w-9 h-9 rounded-lg text-base flex items-center justify-center ${
+                mode === "pen" ? "bg-indigo-100 text-indigo-600" : "bg-gray-100 text-gray-500"
+              }`}
+              aria-label="Pen"
+            >
+              ✏️
+            </button>
+            <button
+              onClick={() => setMode("eraser")}
+              className={`w-9 h-9 rounded-lg text-base flex items-center justify-center ${
+                mode === "eraser" ? "bg-indigo-100 text-indigo-600" : "bg-gray-100 text-gray-500"
+              }`}
+              aria-label="Eraser"
+            >
+              🧽
+            </button>
             <button onClick={clear} className="px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 text-sm font-medium">
               Clear
             </button>
