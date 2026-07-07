@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useDailyProgress, getStoredProfile, setStoredProfile } from "./hooks/useDailyProgress";
+import { useUserAnswers } from "./hooks/useUserAnswers";
 import { getDayLesson } from "./data/curriculum";
 import Home from "./components/Home";
 import DailyLesson from "./components/DailyLesson";
@@ -7,6 +8,7 @@ import ConceptLibrary from "./components/ConceptLibrary";
 import CalendarView from "./components/CalendarView";
 import DayTaskPicker from "./components/DayTaskPicker";
 import ChatWidget from "./components/ChatWidget";
+import Scratchpad from "./components/Scratchpad";
 
 const BOTTOM_TABS = [
   { id: "home", icon: "🏠", label: "Home" },
@@ -71,6 +73,7 @@ function MainApp({ profile, onSwitchProfile }) {
 
   const { daily, markTask, isTaskDone, getDoneCount, getCurrentDay, getStreak, getRecentStatus } =
     useDailyProgress(profile);
+  const { getAnswer, setAnswer } = useUserAnswers(profile);
 
   const currentDay = getCurrentDay();
   const todayDone = getDoneCount(String(currentDay));
@@ -125,9 +128,16 @@ function MainApp({ profile, onSwitchProfile }) {
           </div>
         </header>
         <main className="max-w-lg mx-auto">
-          <DailyLesson task={activeLesson.task} dayNum={activeLesson.dayNum} onDone={handleTaskDone} />
+          <DailyLesson
+            task={activeLesson.task}
+            dayNum={activeLesson.dayNum}
+            onDone={handleTaskDone}
+            getAnswer={getAnswer}
+            setAnswer={setAnswer}
+          />
         </main>
         <ChatWidget context={chatContext} />
+        {activeLesson.task !== "concept" && <Scratchpad />}
       </div>
     );
   }

@@ -41,7 +41,7 @@ function ConceptView({ lesson, onDone }) {
   );
 }
 
-function ProblemView({ lesson, onDone }) {
+function ProblemView({ lesson, onDone, dayKey, getAnswer, setAnswer }) {
   return (
     <div className="p-4">
       <p className="text-xs font-medium text-indigo-500 uppercase tracking-wide">{lesson.concept.unit}</p>
@@ -54,6 +54,13 @@ function ProblemView({ lesson, onDone }) {
             <p className="text-xs font-semibold text-gray-400 mb-1">PROBLEM {i + 1}</p>
             <p className="font-medium text-gray-800">{p.q}</p>
             {p.diagram && <div className="mt-3"><Diagram {...p.diagram} /></div>}
+            <input
+              type="text"
+              value={getAnswer(dayKey, i)}
+              onChange={(e) => setAnswer(dayKey, i, e.target.value)}
+              placeholder="Your answer..."
+              className="mt-3 w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
           </div>
         ))}
       </div>
@@ -68,28 +75,41 @@ function ProblemView({ lesson, onDone }) {
   );
 }
 
-function SolutionView({ lesson, onDone }) {
+function normalizeAnswer(s) {
+  return (s || "").toLowerCase().replace(/\s+/g, "").replace(/['".]/g, "");
+}
+
+function SolutionView({ lesson, onDone, dayKey, getAnswer }) {
   return (
     <div className="p-4">
       <p className="text-xs font-medium text-indigo-500 uppercase tracking-wide">{lesson.concept.unit}</p>
       <h2 className="text-xl font-bold text-gray-800 mt-1 mb-4">{lesson.concept.title}</h2>
 
       <div className="flex flex-col gap-3 mb-5">
-        {lesson.problems.map((p, i) => (
-          <div key={i} className="bg-white border border-gray-200 rounded-2xl p-4">
-            <p className="text-xs font-semibold text-gray-400 mb-1">PROBLEM {i + 1}</p>
-            <p className="font-medium text-gray-800 mb-3">{p.q}</p>
-            {p.diagram && <Diagram {...p.diagram} />}
-            <ol className="flex flex-col gap-1.5 mb-2">
-              {p.steps.map((s, j) => (
-                <li key={j} className="text-sm text-gray-600">
-                  <span className="text-indigo-400 font-medium">{j + 1}.</span> {s}
-                </li>
-              ))}
-            </ol>
-            <p className="text-sm font-semibold text-green-700">Answer: {p.a}</p>
-          </div>
-        ))}
+        {lesson.problems.map((p, i) => {
+          const yourAnswer = getAnswer(dayKey, i);
+          const matches = yourAnswer && normalizeAnswer(yourAnswer) === normalizeAnswer(p.a);
+          return (
+            <div key={i} className="bg-white border border-gray-200 rounded-2xl p-4">
+              <p className="text-xs font-semibold text-gray-400 mb-1">PROBLEM {i + 1}</p>
+              <p className="font-medium text-gray-800 mb-3">{p.q}</p>
+              {p.diagram && <Diagram {...p.diagram} />}
+              <ol className="flex flex-col gap-1.5 mb-2">
+                {p.steps.map((s, j) => (
+                  <li key={j} className="text-sm text-gray-600">
+                    <span className="text-indigo-400 font-medium">{j + 1}.</span> {s}
+                  </li>
+                ))}
+              </ol>
+              {yourAnswer && (
+                <p className={`text-sm mb-1 ${matches ? "text-green-700" : "text-gray-500"}`}>
+                  Your answer: {yourAnswer} {matches && "✓ matches"}
+                </p>
+              )}
+              <p className="text-sm font-semibold text-green-700">Answer: {p.a}</p>
+            </div>
+          );
+        })}
       </div>
 
       <button
@@ -102,11 +122,14 @@ function SolutionView({ lesson, onDone }) {
   );
 }
 
-export default function DailyLesson({ task, dayNum, onDone }) {
+export default function DailyLesson({ task, dayNum, onDone, getAnswer, setAnswer }) {
   const lesson = getDayLesson(dayNum);
+  const dayKey = String(dayNum);
 
   if (task === "concept") return <ConceptView lesson={lesson} onDone={onDone} />;
-  if (task === "problem") return <ProblemView lesson={lesson} onDone={onDone} />;
-  if (task === "solution") return <SolutionView lesson={lesson} onDone={onDone} />;
+  if (task === "problem")
+    return <ProblemView lesson={lesson} onDone={onDone} dayKey={dayKey} getAnswer={getAnswer} setAnswer={setAnswer} />;
+  if (task === "solution")
+    return <SolutionView lesson={lesson} onDone={onDone} dayKey={dayKey} getAnswer={getAnswer} />;
   return null;
 }
