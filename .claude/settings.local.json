@@ -31,7 +31,21 @@
       "Bash(pkill -f \"vite --port 5195\")",
       "Bash(pkill -f \"vite --port 5193\")",
       "Bash(pkill -f \"vite --port 5196\")",
-      "Bash(npx eslint *)"
+      "Bash(npx eslint *)",
+      "Bash(cat .vercel/project.json)",
+      "Bash(vercel --version)",
+      "Bash(vercel ls *)",
+      "Bash(vercel --prod)",
+      "Bash(awk '/^  16: \\\\[/,/^  22: \\\\[/' src/data/problems.js)",
+      "Bash(python3 -)",
+      "Bash(grep -n '\\\\${x[0-9]*}\\\\|\\\\${y[0-9]*}\\\\|\\\\${n}\\\\b' src/data/reviewGenerators/unit02_linearEquations.js)",
+      "Bash(grep -n '\\\\${x2}\\\\|\\\\${y2}\\\\|\\\\${n}\\\\|\\\\${xDup}\\\\|\\\\${xOther}\\\\|\\\\${yA}\\\\|\\\\${yB}\\\\|\\\\${yOther}\\\\|\\\\${x0}\\\\|\\\\${y0}' src/data/reviewGenerators/unit02_linearEquations.js)",
+      "Bash(rm -f \"/private/tmp/claude-501/-Users-stanlee-Desktop-Desktop---Sangho-MacBook-Pro-QuantLee-Capital-learn-math/3791279e-999f-472a-a5a0-91a2ec0d77f0/scratchpad/verify_unit10.mjs\")",
+      "Bash(ls \"/private/tmp/claude-501/-Users-stanlee-Desktop-Desktop---Sangho-MacBook-Pro-QuantLee-Capital-learn-math/3791279e-999f-472a-a5a0-91a2ec0d77f0/scratchpad/\")",
+      "Bash(grep -n '\\\\${C}\\\\|\\\\${C1}\\\\|\\\\${C2}\\\\|\\\\${b1}\\\\|\\\\${b2}\\\\|\\\\${b}\\\\b' src/data/reviewGenerators/unit02_linearEquations.js)",
+      "Bash(grep -n '\\\\${b}\\\\|\\\\${B}\\\\|\\\\${half}\\\\|\\\\${x}\\\\b' src/data/reviewGenerators/unit06_algebra2.js)",
+      "Bash(sort -u -t: -k2)",
+      "Bash(npx vite-node *)"
     ]
   }
 }

@@ -1,6 +1,8 @@
 import { concepts } from "./concepts";
 import { problemsByConcept } from "./problems";
 import { seededShuffle } from "../utils/seededShuffle";
+import { reviewGenerators } from "./reviewGenerators/index.js";
+import { mulberry32 } from "../utils/seededRandom.js";
 
 // ── Curriculum assembly ───────────────────────────────────────
 // "Day" is not a calendar date — it's each profile's own position in
@@ -25,7 +27,7 @@ const PROBLEMS_PER_DAY = 4;
 // concept: it re-tests problems drawn from the days right before it,
 // so material doesn't just get learned once and forgotten.
 const QUIZ_INTERVAL_DAYS = 5;
-const QUIZ_PROBLEMS_PER_DAY = 2;
+const QUIZ_PROBLEMS_PER_DAY = 5;
 
 export function isQuizDay(dayNum) {
   return dayNum % QUIZ_INTERVAL_DAYS === 0;
@@ -50,14 +52,42 @@ function getReviewWindowDays(dayNum) {
   return days.reverse();
 }
 
+// Quiz problems are freshly generated (not the same ones seen on the
+// practice day) so a review quiz never just repeats what was already
+// solved. Falls back to the static pool only if a concept has no
+// generator yet.
+const MAX_REGEN_ATTEMPTS = 8;
+
+function getQuizProblemsForConcept(dayNum, concept) {
+  const generate = reviewGenerators[concept.id];
+  if (generate) {
+    const practiceQs = new Set((problemsByConcept[concept.id] || []).map((p) => p.q));
+    const usedQs = new Set();
+    return Array.from({ length: QUIZ_PROBLEMS_PER_DAY }, (_, i) => {
+      let problem;
+      for (let attempt = 0; attempt < MAX_REGEN_ATTEMPTS; attempt++) {
+        const seed = dayNum * 100000 + concept.id * 1000 + i * 37 + attempt * 613 + 7;
+        problem = generate(mulberry32(seed));
+        // Low-entropy concepts (a handful of fixed conceptual variants) may
+        // not have enough distinct outputs to avoid every repeat forever;
+        // accept the last attempt rather than loop indefinitely.
+        if (!practiceQs.has(problem.q) && !usedQs.has(problem.q)) break;
+      }
+      usedQs.add(problem.q);
+      return { ...problem, sourceConceptTitle: concept.title };
+    });
+  }
+  const pool = problemsByConcept[concept.id] || [];
+  return seededShuffle(pool, dayNum * 3000 + concept.id)
+    .slice(0, Math.min(QUIZ_PROBLEMS_PER_DAY, pool.length))
+    .map((p) => ({ ...p, sourceConceptTitle: concept.title }));
+}
+
 function getQuizLesson(dayNum) {
   const windowDays = getReviewWindowDays(dayNum);
   const parts = windowDays.map((d) => {
     const { concept } = getRegularDayLesson(d);
-    const pool = problemsByConcept[concept.id] || [];
-    const problems = seededShuffle(pool, dayNum * 3000 + concept.id)
-      .slice(0, Math.min(QUIZ_PROBLEMS_PER_DAY, pool.length))
-      .map((p) => ({ ...p, sourceConceptTitle: concept.title }));
+    const problems = getQuizProblemsForConcept(dayNum, concept);
     return { day: d, concept, problems };
   });
 
