@@ -1,11 +1,13 @@
 import { getDayLesson } from "../data/curriculum";
 import { TASKS } from "../hooks/useDailyProgress";
 
-const TASK_CARDS = [
-  { id: "concept", icon: "💡", label: "Concept", blurb: "Learn today's idea" },
-  { id: "problem", icon: "✏️", label: "Practice Problems", blurb: "Try it yourself" },
-  { id: "solution", icon: "✅", label: "Solution Walkthrough", blurb: "Check your work" },
-];
+function getTaskCards(isQuiz) {
+  return [
+    { id: "concept", icon: "💡", label: "Concept", blurb: isQuiz ? "Recap the last few days" : "Learn today's idea" },
+    { id: "problem", icon: "✏️", label: isQuiz ? "Review Quiz" : "Practice Problems", blurb: "Try it yourself" },
+    { id: "solution", icon: "✅", label: "Solution Walkthrough", blurb: "Check your work" },
+  ];
+}
 
 export default function Home({
   onNavigate,
@@ -20,6 +22,7 @@ export default function Home({
 }) {
   const lesson = getDayLesson(dayNum);
   const dayKey = String(dayNum);
+  const taskCards = getTaskCards(lesson.isQuiz);
 
   return (
     <div className="px-4 pt-4 pb-6">
@@ -38,7 +41,7 @@ export default function Home({
         <div className="flex items-center justify-between">
           <div>
             <p className="text-indigo-200 text-sm font-medium">
-              {lesson.isReview ? "Review" : lesson.concept.unit}
+              {lesson.isQuiz ? "Quiz Day" : lesson.isReview ? "Review" : lesson.concept.unit}
             </p>
             <h2 className="text-2xl font-bold">Day {dayNum}</h2>
           </div>
@@ -61,7 +64,7 @@ export default function Home({
 
       {/* Task cards */}
       <div className="flex flex-col gap-3 mb-4">
-        {TASK_CARDS.map((card) => {
+        {taskCards.map((card) => {
           const done = isTaskDone(card.id, dayKey);
           return (
             <button

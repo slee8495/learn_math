@@ -180,28 +180,61 @@ const LINE_COLORS = [STROKE, "#dc2626", "#059669"];
 
 function CoordinatePlane({ points = [], segment, quadrantHighlight, lines, shade, riseRun, showQuadrantLabels = true }) {
   const cx = 120, cy = 100;
-  const allCoords = [
-    ...points.map((p) => [p.x, p.y]),
-    ...(segment ? segment : []),
-    ...(riseRun ? [riseRun.from, riseRun.to] : []),
-  ].flat();
-  const maxAbs = Math.max(4, ...allCoords.map((n) => Math.abs(n)));
-  const scale = Math.min(16, Math.max(6, 90 / maxAbs));
+  const xs = [
+    ...points.map((p) => p.x),
+    ...(segment ? segment.map((p) => p[0]) : []),
+    ...(riseRun ? [riseRun.from[0], riseRun.to[0]] : []),
+  ];
+  const ys = [
+    ...points.map((p) => p.y),
+    ...(segment ? segment.map((p) => p[1]) : []),
+    ...(riseRun ? [riseRun.from[1], riseRun.to[1]] : []),
+  ];
+  const maxAbsX = Math.max(4, ...xs.map((n) => Math.abs(n)));
+  const maxAbsY = Math.max(4, ...ys.map((n) => Math.abs(n)));
+  // Box half-extents in pixels: x spans cx±100, y spans cy±80 (see axis lines below).
+  const scale = Math.min(16, Math.max(6, Math.min(100 / maxAbsX, 80 / maxAbsY)));
   const toXY = (x, y) => [cx + x * scale, cy - y * scale];
-  const dataMax = 100 / scale; // data-space half-width visible in the box (20..220 around cx)
+  const halfW = 100 / scale; // data-space half-width visible in the box
+  const halfH = 80 / scale; // data-space half-height visible in the box
   const quads = {
     I: [cx, 20, cx + 100, cy], II: [20, 20, cx, cy],
     III: [20, cy, cx, 180], IV: [cx, cy, cx + 100, 180],
   };
 
+  // Clip a line (y = slope*x + intercept, or a vertical x = value) to the
+  // visible data window so the drawn segment stays on the true line instead
+  // of getting yanked sideways when it runs off the top/bottom edge.
   function lineEndpoints(line) {
     if (line.vertical !== undefined) {
-      return [toXY(line.vertical, dataMax), toXY(line.vertical, -dataMax)];
+      return [toXY(line.vertical, halfH), toXY(line.vertical, -halfH)];
     }
-    const clamp = (v) => Math.max(-dataMax, Math.min(dataMax, v));
-    const y1 = clamp(line.slope * -dataMax + line.intercept);
-    const y2 = clamp(line.slope * dataMax + line.intercept);
-    return [toXY(-dataMax, y1), toXY(dataMax, y2)];
+    const { slope: m, intercept: b } = line;
+    const candidates = [];
+    const yAtXMin = m * -halfW + b;
+    if (yAtXMin >= -halfH && yAtXMin <= halfH) candidates.push([-halfW, yAtXMin]);
+    const yAtXMax = m * halfW + b;
+    if (yAtXMax >= -halfH && yAtXMax <= halfH) candidates.push([halfW, yAtXMax]);
+    if (m !== 0) {
+      const xAtYMin = (-halfH - b) / m;
+      if (xAtYMin >= -halfW && xAtYMin <= halfW) candidates.push([xAtYMin, -halfH]);
+      const xAtYMax = (halfH - b) / m;
+      if (xAtYMax >= -halfW && xAtYMax <= halfW) candidates.push([xAtYMax, halfH]);
+    }
+    if (candidates.length < 2) {
+      // Line doesn't cross the visible window at all; draw it across full width anyway.
+      return [toXY(-halfW, yAtXMin), toXY(halfW, yAtXMax)];
+    }
+    // Pick the two most-separated intersection points (handles corner-touching duplicates).
+    let [p1, p2] = [candidates[0], candidates[1]];
+    let maxDist = -1;
+    for (let i = 0; i < candidates.length; i++) {
+      for (let j = i + 1; j < candidates.length; j++) {
+        const d = Math.hypot(candidates[i][0] - candidates[j][0], candidates[i][1] - candidates[j][1]);
+        if (d > maxDist) { maxDist = d; p1 = candidates[i]; p2 = candidates[j]; }
+      }
+    }
+    return [toXY(p1[0], p1[1]), toXY(p2[0], p2[1])];
   }
 
   return (

@@ -26,7 +26,12 @@
       "Bash(node *)",
       "Bash(pkill -f \"vite --port 5185\")",
       "Skill(claude-api)",
-      "Bash(pkill -f \"vite --port 5190\")"
+      "Bash(pkill -f \"vite --port 5190\")",
+      "Bash(pkill -f \"vite --port 5194\")",
+      "Bash(pkill -f \"vite --port 5195\")",
+      "Bash(pkill -f \"vite --port 5193\")",
+      "Bash(pkill -f \"vite --port 5196\")",
+      "Bash(npx eslint *)"
     ]
   }
 }
