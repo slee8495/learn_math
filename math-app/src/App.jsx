@@ -142,7 +142,10 @@ function MainApp({ profile, onSwitchProfile }) {
             </div>
           </div>
         </header>
-        <main className="max-w-lg mx-auto">
+        <main
+          className="max-w-lg mx-auto"
+          style={{ paddingBottom: "calc(10rem + env(safe-area-inset-bottom))" }}
+        >
           <DailyLesson
             task={activeLesson.task}
             dayNum={activeLesson.dayNum}
