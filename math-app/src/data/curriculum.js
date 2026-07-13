@@ -183,19 +183,21 @@ function buildReviewForDay(dayNum, sourceDayNum) {
   };
 }
 
-// Review entries for the most recent teachable days, newest first
-// (yesterday, then the day before). Walks backward past quiz days
-// rather than stopping at them, so a quiz on Day N doesn't shrink Day
-// N+1's review down to a single entry — it just rolls one day further
-// back to still find REVIEW_WINDOW_DAYS worth of material. Callers
-// should treat an empty/null return as "skip" — e.g. day 1 has no
-// prior days at all.
+// Review entries for the most recent teachable days, oldest first (the
+// day before yesterday, then yesterday) so the review flows in the same
+// order the material was originally taught. Walks backward past quiz
+// days rather than stopping at them, so a quiz on Day N doesn't shrink
+// Day N+1's review down to a single entry — it just rolls one day
+// further back to still find REVIEW_WINDOW_DAYS worth of material.
+// Callers should treat an empty/null return as "skip" — e.g. day 1 has
+// no prior days at all.
 export function getReviewLesson(dayNum) {
   const reviews = [];
   for (let sourceDayNum = dayNum - 1; sourceDayNum >= 1 && reviews.length < REVIEW_WINDOW_DAYS; sourceDayNum--) {
     const review = buildReviewForDay(dayNum, sourceDayNum);
     if (review) reviews.push(review);
   }
+  reviews.reverse();
   if (!reviews.length) return null;
 
   return { dayNum, reviews };

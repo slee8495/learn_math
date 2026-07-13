@@ -8,7 +8,7 @@ function ReviewView({ review, onDone, dayKey, getAnswer, setAnswer }) {
       <p className="text-xs font-medium text-indigo-500 uppercase tracking-wide">Daily Review</p>
       <h2 className="text-xl font-bold text-gray-800 mt-1 mb-1">
         {reviews.length > 1
-          ? `Days ${reviews[reviews.length - 1].sourceDayNum}–${reviews[0].sourceDayNum} recap`
+          ? `Days ${reviews[0].sourceDayNum}–${reviews[reviews.length - 1].sourceDayNum} recap`
           : `Day ${reviews[0].sourceDayNum} recap`}
       </h2>
       <p className="text-sm text-gray-400 mb-4">A quick check that recent concepts stuck.</p>

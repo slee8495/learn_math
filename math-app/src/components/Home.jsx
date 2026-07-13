@@ -8,7 +8,7 @@ function getTaskCards(isQuiz, review) {
     cards.push({
       id: "review",
       icon: "🔁",
-      label: days.length > 1 ? `Review: Days ${days[days.length - 1]}–${days[0]}` : `Review: Day ${days[0]}`,
+      label: days.length > 1 ? `Review: Days ${days[0]}–${days[days.length - 1]}` : `Review: Day ${days[0]}`,
       blurb:
         days.length > 1
           ? "Fresh problems on the last two days' ideas"
