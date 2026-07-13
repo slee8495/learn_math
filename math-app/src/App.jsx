@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDailyProgress, getStoredProfile, setStoredProfile } from "./hooks/useDailyProgress";
+import { useDailyProgress, getStoredProfile, setStoredProfile, TASKS } from "./hooks/useDailyProgress";
 import { useUserAnswers } from "./hooks/useUserAnswers";
 import { getDayLesson } from "./data/curriculum";
 import Home from "./components/Home";
@@ -88,8 +88,26 @@ function MainApp({ profile, onSwitchProfile }) {
 
   function handleTaskDone() {
     const { task, dayNum } = activeLesson;
-    markTask(task, String(dayNum));
+    const dayKey = String(dayNum);
+    // Checked against the pre-update state, on purpose: this tells us
+    // whether the *other* core tasks were already done and today's mission
+    // was not yet complete, i.e. whether this specific completion is the
+    // one that finishes it. Review doesn't count — it's a bonus, not a gate.
+    const isTodaysMission = dayNum === currentDay;
+    const finishesMission =
+      isTodaysMission &&
+      TASKS.includes(task) &&
+      getDoneCount(dayKey) < TASKS.length &&
+      TASKS.filter((t) => t !== task).every((t) => isTaskDone(t, dayKey));
+
+    markTask(task, dayKey);
     setActiveLesson(null);
+
+    // Finishing today's mission silently unlocks tomorrow (getCurrentDay
+    // advances) without yanking the screen forward — pin the view to the
+    // day just finished so it stays put; Calendar (or the resulting "Back
+    // to Today" banner) is how the user chooses to move on.
+    if (finishesMission) setViewedDay(dayNum);
   }
 
   function handleSelectCalendarDay(dayNum) {
