@@ -2,46 +2,59 @@ import { getDayLesson, getReviewLesson } from "../data/curriculum";
 import Diagram from "./Diagram";
 
 function ReviewView({ review, onDone, dayKey, getAnswer, setAnswer }) {
-  const { concept, problem, prevDayNum } = review;
+  const { reviews } = review;
   return (
     <div className="p-4">
-      <p className="text-xs font-medium text-indigo-500 uppercase tracking-wide">{concept.unit}</p>
-      <h2 className="text-xl font-bold text-gray-800 mt-1 mb-1">Review: {concept.title}</h2>
-      <p className="text-sm text-gray-400 mb-4">From Day {prevDayNum} — a quick check that it stuck.</p>
+      <p className="text-xs font-medium text-indigo-500 uppercase tracking-wide">Daily Review</p>
+      <h2 className="text-xl font-bold text-gray-800 mt-1 mb-1">
+        {reviews.length > 1
+          ? `Days ${reviews[reviews.length - 1].sourceDayNum}–${reviews[0].sourceDayNum} recap`
+          : `Day ${reviews[0].sourceDayNum} recap`}
+      </h2>
+      <p className="text-sm text-gray-400 mb-4">A quick check that recent concepts stuck.</p>
 
-      <ul className="flex flex-col gap-2 mb-5">
-        {concept.explain.map((line, i) => (
-          <li key={i} className="flex gap-2 text-gray-700 text-sm leading-relaxed">
-            <span className="text-indigo-400">•</span>
-            <span>{line}</span>
-          </li>
-        ))}
-      </ul>
-
-      <div className="bg-white border border-gray-200 rounded-2xl p-4 mb-5">
-        <p className="text-xs font-semibold text-gray-400 mb-1">NEW PROBLEM</p>
-        <p className="font-medium text-gray-800">{problem.q}</p>
-        {problem.diagram && <div className="mt-3"><Diagram {...problem.diagram} /></div>}
-        <input
-          type="text"
-          value={getAnswer(dayKey, 0)}
-          onChange={(e) => setAnswer(dayKey, 0, e.target.value)}
-          placeholder="Your answer..."
-          className="mt-3 w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-        />
-        {getAnswer(dayKey, 0) && (
-          <div className="mt-3 pt-3 border-t border-gray-100">
-            <p className="text-xs text-gray-400 mb-1">Steps</p>
-            <ol className="flex flex-col gap-1.5 mb-2">
-              {problem.steps.map((s, j) => (
-                <li key={j} className="text-sm text-gray-600">
-                  <span className="text-indigo-400 font-medium">{j + 1}.</span> {s}
+      <div className="flex flex-col gap-5 mb-5">
+        {reviews.map(({ sourceDayNum, concept, problem }, i) => (
+          <div key={sourceDayNum}>
+            <p className="text-xs font-semibold text-indigo-500 mb-1">
+              DAY {sourceDayNum} · {concept.title}
+            </p>
+            <ul className="flex flex-col gap-1.5 mb-3">
+              {concept.explain.map((line, j) => (
+                <li key={j} className="flex gap-2 text-gray-700 text-sm leading-relaxed">
+                  <span className="text-indigo-400">•</span>
+                  <span>{line}</span>
                 </li>
               ))}
-            </ol>
-            <p className="text-sm font-semibold text-green-700">Answer: {problem.a}</p>
+            </ul>
+
+            <div className="bg-white border border-gray-200 rounded-2xl p-4">
+              <p className="text-xs font-semibold text-gray-400 mb-1">NEW PROBLEM</p>
+              <p className="font-medium text-gray-800">{problem.q}</p>
+              {problem.diagram && <div className="mt-3"><Diagram {...problem.diagram} /></div>}
+              <input
+                type="text"
+                value={getAnswer(dayKey, i)}
+                onChange={(e) => setAnswer(dayKey, i, e.target.value)}
+                placeholder="Your answer..."
+                className="mt-3 w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              />
+              {getAnswer(dayKey, i) && (
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <p className="text-xs text-gray-400 mb-1">Steps</p>
+                  <ol className="flex flex-col gap-1.5 mb-2">
+                    {problem.steps.map((s, j) => (
+                      <li key={j} className="text-sm text-gray-600">
+                        <span className="text-indigo-400 font-medium">{j + 1}.</span> {s}
+                      </li>
+                    ))}
+                  </ol>
+                  <p className="text-sm font-semibold text-green-700">Answer: {problem.a}</p>
+                </div>
+              )}
+            </div>
           </div>
-        )}
+        ))}
       </div>
 
       <button

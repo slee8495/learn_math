@@ -4,11 +4,15 @@ import { TASKS } from "../hooks/useDailyProgress";
 function getTaskCards(isQuiz, review) {
   const cards = [];
   if (review) {
+    const days = review.reviews.map((r) => r.sourceDayNum);
     cards.push({
       id: "review",
       icon: "🔁",
-      label: `Review: Day ${review.prevDayNum}`,
-      blurb: "One fresh problem on yesterday's idea",
+      label: days.length > 1 ? `Review: Days ${days[days.length - 1]}–${days[0]}` : `Review: Day ${days[0]}`,
+      blurb:
+        days.length > 1
+          ? "Fresh problems on the last two days' ideas"
+          : "One fresh problem on yesterday's idea",
     });
   }
   cards.push(

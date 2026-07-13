@@ -141,45 +141,64 @@ export function getDayLesson(dayNum) {
   return isQuizDay(dayNum) ? getQuizLesson(dayNum) : getRegularDayLesson(dayNum);
 }
 
-// A single fresh problem revisiting whatever concept the *previous* day
-// covered, so each new day opens with a quick "did yesterday stick"
-// check before moving on to today's material. No previous day (day 1)
-// or a previous day that was itself a mixed quiz means there's nothing
-// singular to review, so callers should treat a null return as "skip".
-export function getReviewLesson(dayNum) {
-  const prevDayNum = dayNum - 1;
-  if (prevDayNum < 1) return null;
+// How many days back the daily review card reaches — yesterday and the
+// day before that, so a concept still gets a second look even once it's
+// no longer "yesterday's" material.
+const REVIEW_WINDOW_DAYS = 2;
 
-  const prevLesson = getDayLesson(prevDayNum);
-  if (prevLesson.isQuiz) return null;
+// One fresh problem (different from what was already solved that day)
+// revisiting whatever concept a recent day covered. Quiz days are
+// skipped as review sources since they mix several concepts rather than
+// teaching one, and there's nothing before day 1 — so the window can
+// come back with 0, 1, or REVIEW_WINDOW_DAYS entries.
+function buildReviewForDay(dayNum, sourceDayNum) {
+  const sourceLesson = getDayLesson(sourceDayNum);
+  if (sourceLesson.isQuiz) return null;
 
-  const { concept } = prevLesson;
-  const prevQs = new Set(prevLesson.problems.map((p) => p.q));
+  const { concept } = sourceLesson;
+  const seenQs = new Set(sourceLesson.problems.map((p) => p.q));
   const generate = reviewGenerators[concept.id];
 
   let problem;
   if (generate) {
     for (let attempt = 0; attempt < MAX_REGEN_ATTEMPTS; attempt++) {
-      const seed = dayNum * 100000 + concept.id * 1000 + attempt * 613 + 11;
+      const seed = dayNum * 100000 + sourceDayNum * 5000 + concept.id * 1000 + attempt * 613 + 11;
       problem = generate(mulberry32(seed));
-      if (!prevQs.has(problem.q)) break;
+      if (!seenQs.has(problem.q)) break;
     }
   } else {
     const pool = problemsByConcept[concept.id] || [];
     const fresh = seededShuffle(
-      pool.filter((p) => !prevQs.has(p.q)),
-      dayNum * 4000 + concept.id
+      pool.filter((p) => !seenQs.has(p.q)),
+      dayNum * 4000 + sourceDayNum * 200 + concept.id
     );
-    problem = fresh[0] || seededShuffle(pool, dayNum * 4000 + concept.id)[0];
+    problem = fresh[0] || seededShuffle(pool, dayNum * 4000 + sourceDayNum * 200 + concept.id)[0];
   }
   if (!problem) return null;
 
   return {
-    dayNum,
-    prevDayNum,
+    sourceDayNum,
     concept,
     problem: { ...problem, sourceConceptTitle: concept.title },
   };
+}
+
+// Review entries for the most recent teachable days, newest first
+// (yesterday, then the day before). Walks backward past quiz days
+// rather than stopping at them, so a quiz on Day N doesn't shrink Day
+// N+1's review down to a single entry — it just rolls one day further
+// back to still find REVIEW_WINDOW_DAYS worth of material. Callers
+// should treat an empty/null return as "skip" — e.g. day 1 has no
+// prior days at all.
+export function getReviewLesson(dayNum) {
+  const reviews = [];
+  for (let sourceDayNum = dayNum - 1; sourceDayNum >= 1 && reviews.length < REVIEW_WINDOW_DAYS; sourceDayNum--) {
+    const review = buildReviewForDay(dayNum, sourceDayNum);
+    if (review) reviews.push(review);
+  }
+  if (!reviews.length) return null;
+
+  return { dayNum, reviews };
 }
 
 export function getTotalNewDays() {
