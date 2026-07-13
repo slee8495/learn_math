@@ -190,8 +190,11 @@ function buildReviewForDay(dayNum, sourceDayNum) {
 // Day N+1's review down to a single entry — it just rolls one day
 // further back to still find REVIEW_WINDOW_DAYS worth of material.
 // Callers should treat an empty/null return as "skip" — e.g. day 1 has
-// no prior days at all.
+// no prior days at all, and quiz days already *are* a multi-day review,
+// so they skip the daily review card entirely rather than doubling up.
 export function getReviewLesson(dayNum) {
+  if (isQuizDay(dayNum)) return null;
+
   const reviews = [];
   for (let sourceDayNum = dayNum - 1; sourceDayNum >= 1 && reviews.length < REVIEW_WINDOW_DAYS; sourceDayNum--) {
     const review = buildReviewForDay(dayNum, sourceDayNum);
