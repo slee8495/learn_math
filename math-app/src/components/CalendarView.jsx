@@ -7,7 +7,7 @@ export default function CalendarView({ daily, currentDay, onSelectDay, onClose }
   const days = Array.from({ length: currentDay }, (_, i) => i + 1);
 
   return (
-    <div className="fixed inset-0 bg-black/40 z-30 flex items-end sm:items-center justify-center">
+    <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center">
       <div className="bg-white w-full sm:max-w-sm sm:rounded-3xl rounded-t-3xl p-5 max-h-[85vh] overflow-y-auto">
         <p className="font-bold text-gray-800 mb-4">All days so far</p>
 
