@@ -15,6 +15,7 @@ const BOTTOM_TABS = [
 ];
 
 const TASK_LABEL = {
+  review: "Review",
   concept: "Concept",
   problem: "Practice Problems",
   solution: "Solution Walkthrough",

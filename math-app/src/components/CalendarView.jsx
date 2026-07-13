@@ -1,3 +1,5 @@
+import { TASKS } from "../hooks/useDailyProgress";
+
 // A simple grid of "Day 1, Day 2, ..." rather than a real month
 // calendar — Day is tied to each profile's own completion pace, not to
 // calendar dates, so a weekday/month grid no longer means anything.
@@ -11,9 +13,8 @@ export default function CalendarView({ daily, currentDay, onSelectDay, onClose }
 
         <div className="grid grid-cols-5 gap-2">
           {days.map((day) => {
-            const count = daily[String(day)]
-              ? Object.values(daily[String(day)]).filter(Boolean).length
-              : 0;
+            const dayProgress = daily[String(day)];
+            const count = dayProgress ? TASKS.filter((t) => dayProgress[t]).length : 0;
             const isCurrent = day === currentDay;
 
             return (
@@ -21,7 +22,7 @@ export default function CalendarView({ daily, currentDay, onSelectDay, onClose }
                 key={day}
                 onClick={() => onSelectDay(day)}
                 className={`aspect-square rounded-xl flex flex-col items-center justify-center text-xs font-medium ${
-                  count === 3
+                  count === TASKS.length
                     ? "bg-green-500 text-white"
                     : count > 0
                     ? "bg-yellow-200 text-yellow-800"

@@ -1,12 +1,22 @@
-import { getDayLesson } from "../data/curriculum";
+import { getDayLesson, getReviewLesson } from "../data/curriculum";
 import { TASKS } from "../hooks/useDailyProgress";
 
-function getTaskCards(isQuiz) {
-  return [
+function getTaskCards(isQuiz, review) {
+  const cards = [];
+  if (review) {
+    cards.push({
+      id: "review",
+      icon: "🔁",
+      label: `Review: Day ${review.prevDayNum}`,
+      blurb: "One fresh problem on yesterday's idea",
+    });
+  }
+  cards.push(
     { id: "concept", icon: "💡", label: "Concept", blurb: isQuiz ? "Recap the last few days" : "Learn today's idea" },
     { id: "problem", icon: "✏️", label: isQuiz ? "Review Quiz" : "Practice Problems", blurb: "Try it yourself" },
-    { id: "solution", icon: "✅", label: "Solution Walkthrough", blurb: "Check your work" },
-  ];
+    { id: "solution", icon: "✅", label: "Solution Walkthrough", blurb: "Check your work" }
+  );
+  return cards;
 }
 
 export default function Home({
@@ -22,7 +32,8 @@ export default function Home({
 }) {
   const lesson = getDayLesson(dayNum);
   const dayKey = String(dayNum);
-  const taskCards = getTaskCards(lesson.isQuiz);
+  const review = getReviewLesson(dayNum);
+  const taskCards = getTaskCards(lesson.isQuiz, review);
 
   return (
     <div className="px-4 pt-4 pb-6">

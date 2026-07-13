@@ -141,6 +141,47 @@ export function getDayLesson(dayNum) {
   return isQuizDay(dayNum) ? getQuizLesson(dayNum) : getRegularDayLesson(dayNum);
 }
 
+// A single fresh problem revisiting whatever concept the *previous* day
+// covered, so each new day opens with a quick "did yesterday stick"
+// check before moving on to today's material. No previous day (day 1)
+// or a previous day that was itself a mixed quiz means there's nothing
+// singular to review, so callers should treat a null return as "skip".
+export function getReviewLesson(dayNum) {
+  const prevDayNum = dayNum - 1;
+  if (prevDayNum < 1) return null;
+
+  const prevLesson = getDayLesson(prevDayNum);
+  if (prevLesson.isQuiz) return null;
+
+  const { concept } = prevLesson;
+  const prevQs = new Set(prevLesson.problems.map((p) => p.q));
+  const generate = reviewGenerators[concept.id];
+
+  let problem;
+  if (generate) {
+    for (let attempt = 0; attempt < MAX_REGEN_ATTEMPTS; attempt++) {
+      const seed = dayNum * 100000 + concept.id * 1000 + attempt * 613 + 11;
+      problem = generate(mulberry32(seed));
+      if (!prevQs.has(problem.q)) break;
+    }
+  } else {
+    const pool = problemsByConcept[concept.id] || [];
+    const fresh = seededShuffle(
+      pool.filter((p) => !prevQs.has(p.q)),
+      dayNum * 4000 + concept.id
+    );
+    problem = fresh[0] || seededShuffle(pool, dayNum * 4000 + concept.id)[0];
+  }
+  if (!problem) return null;
+
+  return {
+    dayNum,
+    prevDayNum,
+    concept,
+    problem: { ...problem, sourceConceptTitle: concept.title },
+  };
+}
+
 export function getTotalNewDays() {
   return TOTAL_NEW_DAYS;
 }
