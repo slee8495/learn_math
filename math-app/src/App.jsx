@@ -71,7 +71,7 @@ function MainApp({ profile, onSwitchProfile }) {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [viewedDay, setViewedDay] = useState(null); // non-null while browsing a past day on Home
 
-  const { daily, markTask, isTaskDone, getDoneCount, getCurrentDay, getStreak, getRecentStatus } =
+  const { daily, markTask, unmarkTask, isTaskDone, getDoneCount, getCurrentDay, getStreak, getRecentStatus } =
     useDailyProgress(profile);
   const { getAnswer, setAnswer } = useUserAnswers(profile);
 
@@ -193,6 +193,7 @@ function MainApp({ profile, onSwitchProfile }) {
             onNavigate={handleNavigate}
             onOpenCalendar={() => setCalendarOpen(true)}
             isTaskDone={isTaskDone}
+            onUndoTask={unmarkTask}
             dayNum={displayDay}
             todayDone={todayDone}
             streak={streak}

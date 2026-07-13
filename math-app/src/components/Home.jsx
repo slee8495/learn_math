@@ -27,6 +27,7 @@ export default function Home({
   onNavigate,
   onOpenCalendar,
   isTaskDone,
+  onUndoTask,
   dayNum,
   todayDone,
   streak,
@@ -82,10 +83,10 @@ export default function Home({
         {taskCards.map((card) => {
           const done = isTaskDone(card.id, dayKey);
           return (
-            <button
+            <div
               key={card.id}
               onClick={() => onNavigate(card.id, dayNum)}
-              className="flex items-center gap-4 bg-white border border-gray-200 rounded-2xl p-4 text-left active:scale-[0.98] transition-transform"
+              className="flex items-center gap-4 bg-white border border-gray-200 rounded-2xl p-4 text-left active:scale-[0.98] transition-transform cursor-pointer"
             >
               <span className="text-3xl">{card.icon}</span>
               <span className="flex-1">
@@ -93,11 +94,20 @@ export default function Home({
                 <span className="block text-sm text-gray-400">{card.blurb}</span>
               </span>
               {done ? (
-                <span className="text-green-500 text-xl">✓</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onUndoTask(card.id, dayKey);
+                  }}
+                  title="Tap to undo"
+                  className="text-green-500 text-xl w-8 h-8 flex items-center justify-center rounded-full active:bg-green-50"
+                >
+                  ✓
+                </button>
               ) : (
                 <span className="text-gray-300 text-xl">→</span>
               )}
-            </button>
+            </div>
           );
         })}
       </div>

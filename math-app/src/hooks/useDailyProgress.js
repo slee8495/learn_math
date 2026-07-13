@@ -67,6 +67,21 @@ export function useDailyProgress(profile) {
     [profile]
   );
 
+  // Undoes a mistaken "mark done" tap — e.g. hit the wrong task, or
+  // wants to redo it before moving on.
+  const unmarkTask = useCallback(
+    (task, dayKey) => {
+      setDaily((prev) => {
+        const day = { ...(prev[dayKey] || {}) };
+        delete day[task];
+        const next = { ...prev, [dayKey]: day };
+        saveAll(profile, next);
+        return next;
+      });
+    },
+    [profile]
+  );
+
   const isTaskDone = useCallback((task, dayKey) => Boolean(daily[dayKey]?.[task]), [daily]);
 
   const getDoneCount = useCallback(
@@ -110,6 +125,7 @@ export function useDailyProgress(profile) {
   return {
     daily,
     markTask,
+    unmarkTask,
     isTaskDone,
     getDoneCount,
     getCurrentDay,
