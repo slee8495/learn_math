@@ -1,17 +1,74 @@
 import { useState, useRef, useEffect } from "react";
 
+const RECORDING_MIME_TYPES = ["audio/webm", "audio/mp4", "audio/ogg"];
+
+function pickRecordingMimeType() {
+  if (typeof MediaRecorder === "undefined") return undefined;
+  return RECORDING_MIME_TYPES.find((type) => MediaRecorder.isTypeSupported(type));
+}
+
 export default function ChatWidget({ context }) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
   const scrollRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, open]);
+
+  async function startRecording() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = pickRecordingMimeType();
+      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      const chunks = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunks.push(e.data);
+      };
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(chunks, { type: mimeType || "audio/webm" });
+        setTranscribing(true);
+        try {
+          const form = new FormData();
+          form.append("audio", blob, "voice-input.webm");
+          const res = await fetch("/api/transcribe", { method: "POST", body: form });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || "transcription failed");
+          if (data.text?.trim()) {
+            setInput((prev) => (prev ? `${prev} ${data.text.trim()}` : data.text.trim()));
+          }
+        } catch {
+          setMessages((m) => [
+            ...m,
+            { role: "assistant", content: "Sorry, I couldn't hear that clearly — try typing instead.", error: true },
+          ]);
+        } finally {
+          setTranscribing(false);
+        }
+      };
+
+      mediaRecorderRef.current = recorder;
+      recorder.start();
+      setRecording(true);
+    } catch {
+      // mic permission denied or unsupported — no-op, user can still type
+    }
+  }
+
+  function stopRecording() {
+    mediaRecorderRef.current?.stop();
+    mediaRecorderRef.current = null;
+    setRecording(false);
+  }
 
   async function send() {
     const text = input.trim();
@@ -99,10 +156,23 @@ export default function ChatWidget({ context }) {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask a question..."
+                placeholder={recording ? "Listening…" : transcribing ? "Transcribing…" : "Ask a question..."}
                 rows={1}
                 className="flex-1 resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
               />
+              <button
+                type="button"
+                onClick={() => (recording ? stopRecording() : startRecording())}
+                disabled={loading || transcribing}
+                aria-pressed={recording}
+                aria-label={recording ? "Stop recording" : "Ask by voice"}
+                title={recording ? "Stop recording" : "Ask by voice"}
+                className={`rounded-xl px-3 text-sm disabled:opacity-40 ${
+                  recording ? "bg-red-600 text-white" : "border border-gray-200 text-gray-500"
+                }`}
+              >
+                {recording ? "⏹" : "🎤"}
+              </button>
               <button
                 onClick={send}
                 disabled={loading || !input.trim()}
