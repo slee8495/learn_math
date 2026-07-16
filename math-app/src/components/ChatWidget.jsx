@@ -7,6 +7,19 @@ function pickRecordingMimeType() {
   return RECORDING_MIME_TYPES.find((type) => MediaRecorder.isTypeSupported(type));
 }
 
+// JSON+base64 instead of multipart/form-data — Vercel's Node function helper only
+// auto-parses json/urlencoded/text bodies, so form-data was arriving as an empty req.body.
+async function blobToBase64(blob) {
+  const buffer = await blob.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+  }
+  return btoa(binary);
+}
+
 export default function ChatWidget({ context }) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -38,9 +51,12 @@ export default function ChatWidget({ context }) {
         const blob = new Blob(chunks, { type: mimeType || "audio/webm" });
         setTranscribing(true);
         try {
-          const form = new FormData();
-          form.append("audio", blob, "voice-input.webm");
-          const res = await fetch("/api/transcribe", { method: "POST", body: form });
+          const audioBase64 = await blobToBase64(blob);
+          const res = await fetch("/api/transcribe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ audio: audioBase64, mimeType: blob.type || "audio/webm" }),
+          });
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || "transcription failed");
           if (data.text?.trim()) {
