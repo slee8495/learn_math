@@ -33,10 +33,10 @@ function ProfileSetup({ onDone }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-600 to-indigo-800 flex flex-col items-center justify-center px-6">
+    <div className="min-h-screen chalkboard-texture flex flex-col items-center justify-center px-6">
       <div className="text-center mb-10">
         <p className="text-6xl mb-4">📐</p>
-        <h1 className="text-3xl font-bold text-white">Daily Math</h1>
+        <h1 className="text-4xl font-display italic font-bold text-chalk">Daily Math</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="w-full max-w-xs flex flex-col gap-4">
@@ -47,18 +47,18 @@ function ProfileSetup({ onDone }) {
           placeholder="Enter your name"
           maxLength={12}
           autoFocus
-          className="w-full px-4 py-4 rounded-2xl text-lg text-center font-medium focus:outline-none focus:ring-2 focus:ring-white"
+          className="w-full px-4 py-4 rounded-2xl text-lg text-center font-medium bg-chalk text-ink placeholder:text-sub focus:outline-none focus:ring-2 focus:ring-amber"
         />
         <button
           type="submit"
           disabled={!name.trim()}
-          className="w-full py-4 bg-white text-indigo-700 font-bold text-lg rounded-2xl disabled:opacity-40 active:scale-95 transition-transform"
+          className="w-full py-4 bg-amber text-amber-ink font-bold text-lg rounded-2xl disabled:opacity-40 active:scale-95 transition-transform"
         >
           Start →
         </button>
       </form>
 
-      <p className="text-indigo-300 text-xs mt-8 text-center">
+      <p className="text-chalk/60 text-xs mt-8 text-center">
         Same link, different name — each person's progress is tracked separately
       </p>
     </div>
@@ -127,18 +127,18 @@ function MainApp({ profile, onSwitchProfile }) {
       problems: lesson.problems,
     };
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-cream">
         <header
-          className="bg-white border-b border-gray-200 sticky top-0 z-10"
+          className="bg-card border-b border-card-border sticky top-0 z-10"
           style={{ paddingTop: "env(safe-area-inset-top)" }}
         >
           <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
-            <button onClick={() => setActiveLesson(null)} className="text-gray-400 text-2xl leading-none">
+            <button onClick={() => setActiveLesson(null)} className="text-sub text-2xl leading-none">
               ←
             </button>
             <div>
-              <p className="font-semibold text-gray-800">{TASK_LABEL[activeLesson.task]}</p>
-              {!isCurrent && <p className="text-xs text-indigo-500">Day {activeLesson.dayNum} review</p>}
+              <p className="font-display font-bold text-ink">{TASK_LABEL[activeLesson.task]}</p>
+              {!isCurrent && <p className="text-xs text-accent font-medium">Day {activeLesson.dayNum} review</p>}
             </div>
           </div>
         </header>
@@ -170,19 +170,19 @@ function MainApp({ profile, onSwitchProfile }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-cream pb-20">
       <header
-        className="bg-white border-b border-gray-200 sticky top-0 z-10"
+        className="bg-card border-b border-card-border sticky top-0 z-10"
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
-          <h1 className="text-lg font-bold text-gray-800">
+          <h1 className="text-lg font-display italic font-bold text-ink">
             {tab === "home" && "📐 Daily Math"}
             {tab === "library" && "Concept Library"}
           </h1>
           <button
             onClick={onSwitchProfile}
-            className="flex items-center gap-1.5 bg-indigo-50 border border-indigo-200 text-indigo-600 rounded-full px-3 py-1 text-sm font-medium"
+            className="flex items-center gap-1.5 bg-pill border border-pill-border text-pill-ink rounded-full px-3 py-1 text-sm font-medium"
           >
             <span>👤</span>
             <span>{profile}</span>
@@ -209,7 +209,7 @@ function MainApp({ profile, onSwitchProfile }) {
       </main>
 
       <nav
-        className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10"
+        className="fixed bottom-0 left-0 right-0 chalkboard-texture border-t border-nav-border z-10"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="max-w-lg mx-auto flex">
@@ -218,7 +218,7 @@ function MainApp({ profile, onSwitchProfile }) {
               key={t.id}
               onClick={() => setTab(t.id)}
               className={`flex-1 flex flex-col items-center py-2 gap-0.5 ${
-                tab === t.id ? "text-indigo-600" : "text-gray-400"
+                tab === t.id ? "text-amber" : "text-chalk/50"
               }`}
             >
               <span className="text-xl">{t.icon}</span>

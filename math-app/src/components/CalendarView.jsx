@@ -8,8 +8,8 @@ export default function CalendarView({ daily, currentDay, onSelectDay, onClose }
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center">
-      <div className="bg-white w-full sm:max-w-sm sm:rounded-3xl rounded-t-3xl p-5 max-h-[85vh] overflow-y-auto">
-        <p className="font-bold text-gray-800 mb-4">All days so far</p>
+      <div className="bg-card w-full sm:max-w-sm sm:rounded-3xl rounded-t-3xl p-5 max-h-[85vh] overflow-y-auto">
+        <p className="font-display font-bold text-ink mb-4">All days so far</p>
 
         <div className="grid grid-cols-5 gap-2">
           {days.map((day) => {
@@ -23,11 +23,11 @@ export default function CalendarView({ daily, currentDay, onSelectDay, onClose }
                 onClick={() => onSelectDay(day)}
                 className={`aspect-square rounded-xl flex flex-col items-center justify-center text-xs font-medium ${
                   count === TASKS.length
-                    ? "bg-green-500 text-white"
+                    ? "bg-done text-chalk"
                     : count > 0
-                    ? "bg-yellow-200 text-yellow-800"
-                    : "bg-gray-100 text-gray-600"
-                } ${isCurrent ? "ring-2 ring-indigo-500" : ""}`}
+                    ? "bg-partial text-partial-ink"
+                    : "bg-pill/50 text-sub"
+                } ${isCurrent ? "ring-2 ring-amber" : ""}`}
               >
                 {day}
               </button>
@@ -37,7 +37,7 @@ export default function CalendarView({ daily, currentDay, onSelectDay, onClose }
 
         <button
           onClick={onClose}
-          className="w-full mt-5 py-3 bg-gray-100 rounded-2xl text-gray-600 font-medium"
+          className="w-full mt-5 py-3 bg-pill/50 rounded-2xl text-ink font-medium"
         >
           Close
         </button>

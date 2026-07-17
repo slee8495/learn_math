@@ -123,7 +123,7 @@ export default function ChatWidget({ context }) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-24 right-4 z-40 w-14 h-14 rounded-full bg-indigo-600 text-white text-2xl shadow-lg flex items-center justify-center active:scale-95 transition-transform"
+        className="fixed bottom-24 right-4 z-40 w-14 h-14 rounded-full bg-board text-chalk text-2xl shadow-lg flex items-center justify-center active:scale-95 transition-transform"
         aria-label="Ask Claude"
       >
         💬
@@ -131,20 +131,20 @@ export default function ChatWidget({ context }) {
 
       {open && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center">
-          <div className="bg-white w-full sm:max-w-sm sm:rounded-3xl rounded-t-3xl h-[75vh] sm:h-[70vh] flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+          <div className="bg-card w-full sm:max-w-sm sm:rounded-3xl rounded-t-3xl h-[75vh] sm:h-[70vh] flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-card-border">
               <div>
-                <p className="font-bold text-gray-800">Ask Claude</p>
-                <p className="text-xs text-gray-400">Knows what you're looking at right now</p>
+                <p className="font-display font-bold text-ink">Ask Claude</p>
+                <p className="text-xs text-sub">Knows what you're looking at right now</p>
               </div>
-              <button onClick={() => setOpen(false)} className="text-gray-400 text-2xl leading-none px-2">
+              <button onClick={() => setOpen(false)} className="text-sub text-2xl leading-none px-2">
                 ×
               </button>
             </div>
 
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
               {messages.length === 0 && (
-                <p className="text-sm text-gray-400 text-center mt-8">
+                <p className="text-sm text-sub text-center mt-8">
                   Ask about the concept, get a hint on a problem, or just say you're stuck.
                 </p>
               )}
@@ -153,28 +153,28 @@ export default function ChatWidget({ context }) {
                   key={i}
                   className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${
                     m.role === "user"
-                      ? "bg-indigo-600 text-white self-end"
+                      ? "bg-board text-chalk self-end"
                       : m.error
                       ? "bg-red-50 text-red-700 self-start"
-                      : "bg-gray-100 text-gray-800 self-start"
+                      : "bg-pill/40 text-ink self-start"
                   }`}
                 >
                   {m.content}
                 </div>
               ))}
               {loading && (
-                <div className="bg-gray-100 text-gray-400 self-start rounded-2xl px-3.5 py-2.5 text-sm">…</div>
+                <div className="bg-pill/40 text-sub self-start rounded-2xl px-3.5 py-2.5 text-sm">…</div>
               )}
             </div>
 
-            <div className="p-3 border-t border-gray-200 flex gap-2">
+            <div className="p-3 border-t border-card-border flex gap-2">
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={recording ? "Listening…" : transcribing ? "Transcribing…" : "Ask a question..."}
                 rows={1}
-                className="flex-1 resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                className="flex-1 resize-none rounded-xl border border-card-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber"
               />
               <button
                 type="button"
@@ -184,7 +184,7 @@ export default function ChatWidget({ context }) {
                 aria-label={recording ? "Stop recording" : "Ask by voice"}
                 title={recording ? "Stop recording" : "Ask by voice"}
                 className={`rounded-xl px-3 text-sm disabled:opacity-40 ${
-                  recording ? "bg-red-600 text-white" : "border border-gray-200 text-gray-500"
+                  recording ? "bg-red-600 text-white" : "border border-card-border text-sub"
                 }`}
               >
                 {recording ? "⏹" : "🎤"}
@@ -192,7 +192,7 @@ export default function ChatWidget({ context }) {
               <button
                 onClick={send}
                 disabled={loading || !input.trim()}
-                className="bg-indigo-600 text-white rounded-xl px-4 text-sm font-semibold disabled:opacity-40"
+                className="bg-board text-chalk rounded-xl px-4 text-sm font-semibold disabled:opacity-40"
               >
                 Send
               </button>

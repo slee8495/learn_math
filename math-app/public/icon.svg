@@ -1,10 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#6366f1"/>
-      <stop offset="1" stop-color="#3730a3"/>
+    <linearGradient id="board" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#26372f"/>
+      <stop offset="1" stop-color="#182420"/>
     </linearGradient>
+    <radialGradient id="vignette" cx="0.5" cy="0.38" r="0.75">
+      <stop offset="0" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.22"/>
+    </radialGradient>
   </defs>
-  <rect width="512" height="512" rx="112" fill="url(#g)"/>
-  <text x="256" y="330" font-family="Georgia, 'Times New Roman', serif" font-size="300" font-weight="700" fill="white" text-anchor="middle">&#8721;</text>
+
+  <rect width="512" height="512" rx="112" fill="url(#board)"/>
+  <rect width="512" height="512" rx="112" fill="url(#vignette)"/>
+
+  <!-- chalk dust flecks -->
+  <g fill="#f4f1e6" opacity="0.18">
+    <circle cx="96" cy="120" r="3"/>
+    <circle cx="420" cy="150" r="2.5"/>
+    <circle cx="120" cy="410" r="2"/>
+    <circle cx="410" cy="400" r="3"/>
+    <circle cx="70" cy="300" r="2"/>
+  </g>
+
+  <text x="266" y="345" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="300" font-weight="700" fill="#f4f1e6" text-anchor="middle">&#960;</text>
+
+  <!-- chalk underline, echoes a chalkboard equals-mark -->
+  <rect x="176" y="382" width="160" height="12" rx="6" fill="#e8b04b" opacity="0.9"/>
 </svg>

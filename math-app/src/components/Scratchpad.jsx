@@ -48,7 +48,7 @@ export default function Scratchpad() {
     ctx.clearRect(0, 0, canvas.width / ratio, canvas.height / ratio);
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    ctx.strokeStyle = "#1f2937";
+    ctx.strokeStyle = "#2e2a22";
     ctx.lineWidth = PEN_WIDTH;
     for (const s of strokes.current) {
       if (s.points.length < 2) continue;
@@ -146,28 +146,28 @@ export default function Scratchpad() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-24 left-4 z-40 w-14 h-14 rounded-full bg-amber-500 text-white text-2xl shadow-lg flex items-center justify-center active:scale-95 transition-transform"
+        className="fixed bottom-24 left-4 z-40 w-14 h-14 rounded-full bg-amber text-amber-ink text-2xl shadow-lg flex items-center justify-center active:scale-95 transition-transform"
         aria-label="Open scratchpad"
       >
         ✏️
       </button>
 
       <div
-        className={`fixed inset-0 bg-white z-50 flex flex-col transition-opacity ${
+        className={`fixed inset-0 bg-cream z-50 flex flex-col transition-opacity ${
           open ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
         <div
-          className="border-b border-gray-200"
+          className="border-b border-card-border"
           style={{ paddingTop: "calc(env(safe-area-inset-top) + 0.5rem)" }}
         >
           <div className="flex items-center justify-between px-3 pb-2">
-            <p className="font-bold text-gray-800 px-1">Scratchpad</p>
+            <p className="font-display font-bold text-ink px-1">Scratchpad</p>
             <div className="flex gap-2">
               <button
                 onClick={() => setMode("pen")}
                 className={`w-9 h-9 rounded-lg text-base flex items-center justify-center ${
-                  mode === "pen" ? "bg-indigo-100 text-indigo-600" : "bg-gray-100 text-gray-500"
+                  mode === "pen" ? "bg-pill text-accent" : "bg-pill/30 text-sub"
                 }`}
                 aria-label="Pen"
               >
@@ -176,24 +176,24 @@ export default function Scratchpad() {
               <button
                 onClick={() => setMode("eraser")}
                 className={`w-9 h-9 rounded-lg text-base flex items-center justify-center ${
-                  mode === "eraser" ? "bg-indigo-100 text-indigo-600" : "bg-gray-100 text-gray-500"
+                  mode === "eraser" ? "bg-pill text-accent" : "bg-pill/30 text-sub"
                 }`}
                 aria-label="Eraser"
               >
                 🧽
               </button>
-              <button onClick={clear} className="px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 text-sm font-medium">
+              <button onClick={clear} className="px-3 py-1.5 rounded-lg bg-pill/50 text-ink text-sm font-medium">
                 Clear
               </button>
               <button
                 onClick={() => setOpen(false)}
-                className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-sm font-medium"
+                className="px-3 py-1.5 rounded-lg bg-board text-chalk text-sm font-medium"
               >
                 Done
               </button>
             </div>
           </div>
-          <p className="text-[11px] text-gray-400 px-4 pb-1.5">
+          <p className="text-[11px] text-sub px-4 pb-1.5">
             {mode === "eraser" ? "Tap or swipe a line to erase it" : "One finger to write • two fingers to scroll"}
           </p>
         </div>
