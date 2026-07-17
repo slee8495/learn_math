@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 export const TASKS = ["concept", "problem", "solution"];
 
@@ -52,8 +52,61 @@ function loadAll(profile) {
   return raw;
 }
 
+// Cloud is the backup for when localStorage itself gets wiped (e.g. iOS
+// resets a home-screen app's storage on remove-and-reinstall), so a day/task
+// counts as done if *either* side has it marked — never lose a completion.
+function mergeDaily(local, cloud) {
+  const days = new Set([...Object.keys(local), ...Object.keys(cloud)]);
+  const merged = {};
+  for (const day of days) {
+    merged[day] = { ...(cloud[day] || {}), ...(local[day] || {}) };
+    for (const t of TASKS) {
+      if (cloud[day]?.[t] || local[day]?.[t]) merged[day][t] = true;
+    }
+  }
+  return merged;
+}
+
+async function fetchCloud(profile) {
+  try {
+    const res = await fetch(`/api/sync?profile=${encodeURIComponent(profile)}&kind=daily`);
+    if (!res.ok) return null;
+    return (await res.json()).data;
+  } catch {
+    return null;
+  }
+}
+
+function pushCloud(profile, data) {
+  fetch("/api/sync", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ profile, kind: "daily", data }),
+  }).catch(() => {});
+}
+
 export function useDailyProgress(profile) {
   const [daily, setDaily] = useState(() => loadAll(profile));
+
+  // Best-effort sync on mount — reconciles with the server copy so a fresh
+  // install (or a wiped localStorage) recovers prior progress. Local state
+  // and UI never wait on this; it just fills in if/when it resolves.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const cloud = await fetchCloud(profile);
+      if (cancelled || !cloud) return;
+      setDaily((current) => {
+        const merged = mergeDaily(current, cloud);
+        saveAll(profile, merged);
+        pushCloud(profile, merged);
+        return merged;
+      });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [profile]);
 
   const markTask = useCallback(
     (task, dayKey) => {
@@ -61,6 +114,7 @@ export function useDailyProgress(profile) {
         const day = { ...(prev[dayKey] || {}), [task]: true };
         const next = { ...prev, [dayKey]: day };
         saveAll(profile, next);
+        pushCloud(profile, next);
         return next;
       });
     },
@@ -76,6 +130,7 @@ export function useDailyProgress(profile) {
         delete day[task];
         const next = { ...prev, [dayKey]: day };
         saveAll(profile, next);
+        pushCloud(profile, next);
         return next;
       });
     },
