@@ -53,7 +53,7 @@ export default function Home({
       )}
 
       {/* Day header */}
-      <div className="bg-card border border-card-border rounded-2xl p-5 mb-4">
+      <div className="bg-accent/8 border border-accent/25 rounded-2xl p-5 mb-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="font-mono text-sub text-xs uppercase tracking-wide">

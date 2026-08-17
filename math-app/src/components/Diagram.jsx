@@ -2,10 +2,10 @@
 // concepts and problems. Each renders from a small params object so the same
 // renderer can be reused across many concepts/problems with different numbers.
 
-const STROKE = "#46392e"; // ink
+const STROKE = "#4e4136"; // ink
 const FILL = "#f9f3e2"; // parchment
 const DASHED = "#d3c49c"; // warm tan
-const LABEL = "#46392e"; // ink
+const LABEL = "#4e4136"; // ink
 
 function Wrap({ viewBox = "0 0 240 180", children }) {
   return (
@@ -286,10 +286,10 @@ function CoordinatePlane({ points = [], segment, quadrantHighlight, lines, shade
         const [x2, y2] = toXY(riseRun.to[0], riseRun.to[1]);
         return (
           <g>
-            <line x1={x1} y1={y1} x2={x2} y2={y1} stroke="#e08a1a" strokeWidth="1.5" strokeDasharray="3 2" />
-            <line x1={x2} y1={y1} x2={x2} y2={y2} stroke="#e08a1a" strokeWidth="1.5" strokeDasharray="3 2" />
-            <text x={(x1 + x2) / 2} y={y1 + 14} fontSize="11" fill="#97672a" textAnchor="middle">run</text>
-            <text x={x2 + 6} y={(y1 + y2) / 2} fontSize="11" fill="#97672a">rise</text>
+            <line x1={x1} y1={y1} x2={x2} y2={y1} stroke="#e89222" strokeWidth="1.5" strokeDasharray="3 2" />
+            <line x1={x2} y1={y1} x2={x2} y2={y2} stroke="#e89222" strokeWidth="1.5" strokeDasharray="3 2" />
+            <text x={(x1 + x2) / 2} y={y1 + 14} fontSize="11" fill="#9f6f32" textAnchor="middle">run</text>
+            <text x={x2 + 6} y={(y1 + y2) / 2} fontSize="11" fill="#9f6f32">rise</text>
           </g>
         );
       })()}
@@ -334,9 +334,9 @@ function UnitCircleDiagram({ angleDeg = 90 }) {
       <line x1={cx} y1="20" x2={cx} y2="180" stroke="#d3c49c" strokeWidth="1.5" />
       <circle cx={cx} cy={cy} r={r} fill="none" stroke={STROKE} strokeWidth="2" />
       <line x1={cx} y1={cy} x2={ex} y2={ey} stroke={STROKE} strokeWidth="2" />
-      <path d={`M ${cx + 20} ${cy} A 20 20 0 ${angleDeg > 180 ? 1 : 0} 0 ${cx + 20 * Math.cos(-rad)} ${cy + 20 * Math.sin(-rad)}`} fill="none" stroke="#e08a1a" strokeWidth="1.5" />
+      <path d={`M ${cx + 20} ${cy} A 20 20 0 ${angleDeg > 180 ? 1 : 0} 0 ${cx + 20 * Math.cos(-rad)} ${cy + 20 * Math.sin(-rad)}`} fill="none" stroke="#e89222" strokeWidth="1.5" />
       <circle cx={ex} cy={ey} r="3.5" fill={STROKE} />
-      <text x={cx + 30} y={cy - 26} fontSize="12" fill="#97672a">{angleDeg}°</text>
+      <text x={cx + 30} y={cy - 26} fontSize="12" fill="#9f6f32">{angleDeg}°</text>
     </Wrap>
   );
 }

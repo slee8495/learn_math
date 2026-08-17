@@ -1,25 +1,25 @@
 @import "tailwindcss";
 
 @theme {
-  --color-board: #cc7d12;
-  --color-board-soft: #dc9430;
+  --color-board: #d6871c;
+  --color-board-soft: #e49c38;
   --color-chalk: #fffdf8;
   --color-cream: #fffdf8;
-  --color-ink: #46392e;
-  --color-sub: #7a6a58;
-  --color-accent: #e08a1a;
-  --color-amber: #e08a1a;
+  --color-ink: #4e4136;
+  --color-sub: #827260;
+  --color-accent: #e89222;
+  --color-amber: #e89222;
   --color-amber-ink: #fffdf8;
   --color-card: #ffffff;
-  --color-card-border: #f5ecd9;
+  --color-card-border: #f7efe0;
   --color-pill: #fdfbf6;
-  --color-pill-ink: #46392e;
-  --color-pill-border: #f5ecd9;
-  --color-done: #5c8a5f;
-  --color-done-soft: #e7f0e4;
-  --color-partial: #f5e6c9;
-  --color-partial-ink: #97672a;
-  --color-nav-border: #f5ecd9;
+  --color-pill-ink: #4e4136;
+  --color-pill-border: #f7efe0;
+  --color-done: #629065;
+  --color-done-soft: #eaf3e8;
+  --color-partial: #f7e9d0;
+  --color-partial-ink: #9f6f32;
+  --color-nav-border: #f7efe0;
 
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
