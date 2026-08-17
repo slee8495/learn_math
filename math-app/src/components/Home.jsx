@@ -53,29 +53,29 @@ export default function Home({
       )}
 
       {/* Day header */}
-      <div className="bg-board rounded-2xl p-5 text-chalk mb-4">
+      <div className="bg-card border border-card-border rounded-2xl p-5 mb-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-mono text-chalk/60 text-xs uppercase tracking-wide">
+            <p className="font-mono text-sub text-xs uppercase tracking-wide">
               {lesson.isQuiz ? "Quiz Day" : lesson.isReview ? "Review" : lesson.concept.unit}
             </p>
-            <h2 className="text-2xl font-display font-bold">Day {dayNum}</h2>
+            <h2 className="text-2xl font-display font-bold text-ink">Day {dayNum}</h2>
           </div>
           <div className="text-right">
-            <p className="font-mono text-chalk/60 text-xs uppercase tracking-wide">Streak</p>
-            <p className="text-xl font-bold">🔥 {streak}</p>
+            <p className="font-mono text-sub text-xs uppercase tracking-wide">Streak</p>
+            <p className="text-xl font-bold text-accent">🔥 {streak}</p>
           </div>
         </div>
-        <p className="mt-3 text-chalk/80 text-sm">
+        <p className="mt-3 text-sub text-sm">
           {lesson.concept.level} · {lesson.concept.title}
         </p>
-        <div className="mt-3 h-1.5 bg-chalk/15 rounded-full overflow-hidden">
+        <div className="mt-3 h-1.5 bg-card-border rounded-full overflow-hidden">
           <div
             className="h-full bg-accent rounded-full transition-all"
             style={{ width: `${(todayDone / TASKS.length) * 100}%` }}
           />
         </div>
-        <p className="mt-1 font-mono text-chalk/60 text-xs">{todayDone}/{TASKS.length} done today</p>
+        <p className="mt-1 font-mono text-sub text-xs">{todayDone}/{TASKS.length} done today</p>
       </div>
 
       {/* Task cards */}
