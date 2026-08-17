@@ -5,7 +5,7 @@ function ReviewView({ review, onDone, dayKey, getAnswer, setAnswer }) {
   const { reviews } = review;
   return (
     <div className="p-4">
-      <p className="text-xs font-medium text-accent uppercase tracking-wide">Daily Review</p>
+      <p className="text-xs font-medium font-mono text-accent uppercase tracking-wide">Daily Review</p>
       <h2 className="text-xl font-display font-bold text-ink mt-1 mb-1">
         {reviews.length > 1
           ? `Days ${reviews[0].sourceDayNum}–${reviews[reviews.length - 1].sourceDayNum} recap`
@@ -16,7 +16,7 @@ function ReviewView({ review, onDone, dayKey, getAnswer, setAnswer }) {
       <div className="flex flex-col gap-5 mb-5">
         {reviews.map(({ sourceDayNum, concept, problem }, i) => (
           <div key={sourceDayNum}>
-            <p className="text-xs font-semibold text-accent mb-1">
+            <p className="text-xs font-mono font-semibold text-accent mb-1">
               DAY {sourceDayNum} · {concept.title}
             </p>
             <ul className="flex flex-col gap-1.5 mb-3">
@@ -29,7 +29,7 @@ function ReviewView({ review, onDone, dayKey, getAnswer, setAnswer }) {
             </ul>
 
             <div className="bg-card border border-card-border rounded-2xl p-4">
-              <p className="text-xs font-semibold text-sub mb-1">NEW PROBLEM</p>
+              <p className="text-xs font-mono font-semibold text-sub mb-1">NEW PROBLEM</p>
               <p className="font-medium text-ink">{problem.q}</p>
               {problem.diagram && <div className="mt-3"><Diagram {...problem.diagram} /></div>}
               <input
@@ -71,7 +71,7 @@ function ConceptView({ lesson, onDone }) {
   const { concept } = lesson;
   return (
     <div className="p-4">
-      <p className="text-xs font-medium text-accent uppercase tracking-wide">{concept.unit}</p>
+      <p className="text-xs font-medium font-mono text-accent uppercase tracking-wide">{concept.unit}</p>
       <h2 className="text-xl font-display font-bold text-ink mt-1 mb-4">{concept.title}</h2>
 
       {lesson.isQuiz && (
@@ -91,7 +91,7 @@ function ConceptView({ lesson, onDone }) {
 
       {concept.example && (
         <div className="bg-pill/40 border border-pill-border rounded-2xl p-4 mb-5">
-          <p className="text-xs font-semibold text-accent mb-2">WORKED EXAMPLE</p>
+          <p className="text-xs font-mono font-semibold text-accent mb-2">WORKED EXAMPLE</p>
           <p className="font-medium text-ink mb-3">{concept.example.problem}</p>
           {concept.example.diagram && <Diagram {...concept.example.diagram} />}
           <ol className="flex flex-col gap-1.5 mb-3">
@@ -118,14 +118,14 @@ function ConceptView({ lesson, onDone }) {
 function ProblemView({ lesson, onDone, dayKey, getAnswer, setAnswer }) {
   return (
     <div className="p-4">
-      <p className="text-xs font-medium text-accent uppercase tracking-wide">{lesson.concept.unit}</p>
+      <p className="text-xs font-medium font-mono text-accent uppercase tracking-wide">{lesson.concept.unit}</p>
       <h2 className="text-xl font-display font-bold text-ink mt-1 mb-1">{lesson.concept.title}</h2>
       <p className="text-sm text-sub mb-4">Try these on paper, then check the Solution Walkthrough.</p>
 
       <div className="flex flex-col gap-3 mb-5">
         {lesson.problems.map((p, i) => (
           <div key={i} className="bg-card border border-card-border rounded-2xl p-4">
-            <p className="text-xs font-semibold text-sub mb-1">
+            <p className="text-xs font-mono font-semibold text-sub mb-1">
               PROBLEM {i + 1}
               {p.sourceConceptTitle && <span className="text-accent"> · {p.sourceConceptTitle}</span>}
             </p>
@@ -159,7 +159,7 @@ function normalizeAnswer(s) {
 function SolutionView({ lesson, onDone, dayKey, getAnswer }) {
   return (
     <div className="p-4">
-      <p className="text-xs font-medium text-accent uppercase tracking-wide">{lesson.concept.unit}</p>
+      <p className="text-xs font-medium font-mono text-accent uppercase tracking-wide">{lesson.concept.unit}</p>
       <h2 className="text-xl font-display font-bold text-ink mt-1 mb-4">{lesson.concept.title}</h2>
 
       <div className="flex flex-col gap-3 mb-5">

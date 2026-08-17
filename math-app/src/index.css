@@ -1,45 +1,36 @@
 @import "tailwindcss";
 
 @theme {
-  --color-board: #1f2e28;
-  --color-board-soft: #263a32;
-  --color-chalk: #f4f1e6;
-  --color-cream: #fbf4e4;
-  --color-ink: #2e2a22;
-  --color-sub: #7d7256;
-  --color-accent: #a3761f;
-  --color-amber: #e8b04b;
-  --color-amber-ink: #2e2a22;
-  --color-card: #fffdf7;
-  --color-card-border: #ecdfba;
-  --color-pill: #f1e6c8;
-  --color-pill-ink: #4a4126;
-  --color-pill-border: #e3d5a8;
-  --color-done: #3f6b3a;
-  --color-done-soft: #dbe8d3;
-  --color-partial: #f3dfa8;
-  --color-partial-ink: #6b4f14;
-  --color-nav-border: #33453c;
+  --color-board: #3a2e26;
+  --color-board-soft: #4a3c30;
+  --color-chalk: #fdfbf6;
+  --color-cream: #fffdf8;
+  --color-ink: #3a2e26;
+  --color-sub: #6b5c4d;
+  --color-accent: #d97706;
+  --color-amber: #d97706;
+  --color-amber-ink: #fdfbf6;
+  --color-card: #ffffff;
+  --color-card-border: #f2e8d5;
+  --color-pill: #fdfbf6;
+  --color-pill-ink: #3a2e26;
+  --color-pill-border: #f2e8d5;
+  --color-done: #4f7a52;
+  --color-done-soft: #e3ece1;
+  --color-partial: #f3e3c4;
+  --color-partial-ink: #8a5a1f;
+  --color-nav-border: #f2e8d5;
 
-  --font-display: "Fraunces", Georgia, "Iowan Old Style", serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
 body {
   margin: 0;
   background: var(--color-cream);
   color: var(--color-ink);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image: radial-gradient(rgba(46, 42, 34, 0.05) 1px, transparent 1px);
-  background-size: 15px 15px;
-}
-
-.chalkboard-texture {
-  background-image: repeating-linear-gradient(
-    155deg,
-    var(--color-board) 0,
-    var(--color-board) 2px,
-    var(--color-board-soft) 2px,
-    var(--color-board-soft) 3px
-  );
 }

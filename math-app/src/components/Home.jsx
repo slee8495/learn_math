@@ -53,16 +53,16 @@ export default function Home({
       )}
 
       {/* Day header */}
-      <div className="chalkboard-texture rounded-3xl p-5 text-chalk mb-4">
+      <div className="bg-board rounded-2xl p-5 text-chalk mb-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-chalk/60 text-sm font-medium">
+            <p className="font-mono text-chalk/60 text-xs uppercase tracking-wide">
               {lesson.isQuiz ? "Quiz Day" : lesson.isReview ? "Review" : lesson.concept.unit}
             </p>
-            <h2 className="text-2xl font-display italic font-bold">Day {dayNum}</h2>
+            <h2 className="text-2xl font-display font-bold">Day {dayNum}</h2>
           </div>
           <div className="text-right">
-            <p className="text-chalk/60 text-xs">Streak</p>
+            <p className="font-mono text-chalk/60 text-xs uppercase tracking-wide">Streak</p>
             <p className="text-xl font-bold">🔥 {streak}</p>
           </div>
         </div>
@@ -71,11 +71,11 @@ export default function Home({
         </p>
         <div className="mt-3 h-1.5 bg-chalk/15 rounded-full overflow-hidden">
           <div
-            className="h-full bg-amber rounded-full transition-all"
+            className="h-full bg-accent rounded-full transition-all"
             style={{ width: `${(todayDone / TASKS.length) * 100}%` }}
           />
         </div>
-        <p className="mt-1 text-chalk/60 text-xs">{todayDone}/{TASKS.length} done today</p>
+        <p className="mt-1 font-mono text-chalk/60 text-xs">{todayDone}/{TASKS.length} done today</p>
       </div>
 
       {/* Task cards */}
@@ -114,21 +114,21 @@ export default function Home({
 
       {/* Recent days strip */}
       <div className="bg-card border border-card-border rounded-2xl p-4 mb-4">
-        <p className="text-sm font-medium text-sub mb-3">Recent days</p>
+        <p className="font-mono text-xs uppercase tracking-wide text-sub mb-3">Recent days</p>
         <div className="flex justify-between">
           {recentStatus.map((d) => {
             const isCurrent = d.day === dayNum;
             return (
               <div key={d.day} className="flex flex-col items-center gap-1">
-                <span className="text-[10px] text-sub">D{d.day}</span>
+                <span className="text-[10px] font-mono text-sub">D{d.day}</span>
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${
                     d.done
                       ? "bg-done text-chalk"
                       : d.count > 0
                       ? "bg-partial text-partial-ink"
-                      : "bg-pill/50 text-sub/60"
-                  } ${isCurrent ? "ring-2 ring-amber ring-offset-1" : ""}`}
+                      : "bg-card-border/60 text-sub/60"
+                  } ${isCurrent ? "ring-2 ring-accent ring-offset-1" : ""}`}
                 >
                   {d.done ? "✓" : d.count > 0 ? d.count : "·"}
                 </div>

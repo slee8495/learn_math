@@ -48,7 +48,7 @@ export default function Scratchpad() {
     ctx.clearRect(0, 0, canvas.width / ratio, canvas.height / ratio);
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    ctx.strokeStyle = "#2e2a22";
+    ctx.strokeStyle = "#3a2e26";
     ctx.lineWidth = PEN_WIDTH;
     for (const s of strokes.current) {
       if (s.points.length < 2) continue;

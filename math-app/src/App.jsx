@@ -33,13 +33,13 @@ function ProfileSetup({ onDone }) {
   }
 
   return (
-    <div className="min-h-screen chalkboard-texture flex flex-col items-center justify-center px-6">
+    <div className="min-h-screen bg-cream flex flex-col items-center justify-center px-6">
       <div className="text-center mb-10">
-        <p className="text-6xl mb-4">📐</p>
-        <h1 className="text-4xl font-display italic font-bold text-chalk">Daily Math</h1>
+        <p className="text-3xl mb-3">📐</p>
+        <h1 className="text-3xl font-display font-bold text-ink">Daily Math</h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full max-w-xs flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="w-full max-w-xs flex flex-col gap-3">
         <input
           type="text"
           value={name}
@@ -47,18 +47,18 @@ function ProfileSetup({ onDone }) {
           placeholder="Enter your name"
           maxLength={12}
           autoFocus
-          className="w-full px-4 py-4 rounded-2xl text-lg text-center font-medium bg-chalk text-ink placeholder:text-sub focus:outline-none focus:ring-2 focus:ring-amber"
+          className="w-full px-4 py-4 rounded-xl text-lg text-center font-medium bg-card border border-card-border text-ink placeholder:text-sub focus:outline-none focus:ring-2 focus:ring-accent"
         />
         <button
           type="submit"
           disabled={!name.trim()}
-          className="w-full py-4 bg-amber text-amber-ink font-bold text-lg rounded-2xl disabled:opacity-40 active:scale-95 transition-transform"
+          className="w-full py-4 bg-accent text-amber-ink font-semibold text-lg rounded-xl disabled:opacity-40 active:scale-95 transition-transform"
         >
           Start →
         </button>
       </form>
 
-      <p className="text-chalk/60 text-xs mt-8 text-center">
+      <p className="text-sub text-xs mt-8 text-center">
         Same link, different name — each person's progress is tracked separately
       </p>
     </div>
@@ -137,8 +137,8 @@ function MainApp({ profile, onSwitchProfile }) {
               ←
             </button>
             <div>
-              <p className="font-display font-bold text-ink">{TASK_LABEL[activeLesson.task]}</p>
-              {!isCurrent && <p className="text-xs text-accent font-medium">Day {activeLesson.dayNum} review</p>}
+              <p className="font-display font-semibold text-ink">{TASK_LABEL[activeLesson.task]}</p>
+              {!isCurrent && <p className="text-xs font-mono text-accent">Day {activeLesson.dayNum} review</p>}
             </div>
           </div>
         </header>
@@ -176,13 +176,13 @@ function MainApp({ profile, onSwitchProfile }) {
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
-          <h1 className="text-lg font-display italic font-bold text-ink">
+          <h1 className="text-lg font-display font-bold text-ink">
             {tab === "home" && "📐 Daily Math"}
             {tab === "library" && "Concept Library"}
           </h1>
           <button
             onClick={onSwitchProfile}
-            className="flex items-center gap-1.5 bg-pill border border-pill-border text-pill-ink rounded-full px-3 py-1 text-sm font-medium"
+            className="flex items-center gap-1.5 bg-card border border-card-border text-ink rounded-full px-3 py-1 text-sm font-medium"
           >
             <span>👤</span>
             <span>{profile}</span>
@@ -209,7 +209,7 @@ function MainApp({ profile, onSwitchProfile }) {
       </main>
 
       <nav
-        className="fixed bottom-0 left-0 right-0 chalkboard-texture border-t border-nav-border z-10"
+        className="fixed bottom-0 left-0 right-0 bg-card border-t border-nav-border z-10"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="max-w-lg mx-auto flex">
@@ -218,7 +218,7 @@ function MainApp({ profile, onSwitchProfile }) {
               key={t.id}
               onClick={() => setTab(t.id)}
               className={`flex-1 flex flex-col items-center py-2 gap-0.5 ${
-                tab === t.id ? "text-amber" : "text-chalk/50"
+                tab === t.id ? "text-accent" : "text-sub/60"
               }`}
             >
               <span className="text-xl">{t.icon}</span>

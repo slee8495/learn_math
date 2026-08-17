@@ -27,7 +27,7 @@ export default function ConceptLibrary() {
       <div className="flex flex-col gap-5">
         {groups.map((g) => (
           <div key={g.unit}>
-            <p className="text-xs font-semibold text-accent uppercase tracking-wide mb-2">
+            <p className="text-xs font-mono font-semibold text-accent uppercase tracking-wide mb-2">
               {g.unit} · {g.level}
             </p>
             <div className="flex flex-col gap-2">
