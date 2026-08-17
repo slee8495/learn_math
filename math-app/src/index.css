@@ -1,25 +1,25 @@
 @import "tailwindcss";
 
 @theme {
-  --color-board: #3a2e26;
-  --color-board-soft: #4a3c30;
-  --color-chalk: #fdfbf6;
+  --color-board: #4a3c30;
+  --color-board-soft: #5a4a3c;
+  --color-chalk: #fffdf8;
   --color-cream: #fffdf8;
-  --color-ink: #3a2e26;
-  --color-sub: #6b5c4d;
-  --color-accent: #d97706;
-  --color-amber: #d97706;
-  --color-amber-ink: #fdfbf6;
+  --color-ink: #46392e;
+  --color-sub: #7a6a58;
+  --color-accent: #e08a1a;
+  --color-amber: #e08a1a;
+  --color-amber-ink: #fffdf8;
   --color-card: #ffffff;
-  --color-card-border: #f2e8d5;
+  --color-card-border: #f5ecd9;
   --color-pill: #fdfbf6;
-  --color-pill-ink: #3a2e26;
-  --color-pill-border: #f2e8d5;
-  --color-done: #4f7a52;
-  --color-done-soft: #e3ece1;
-  --color-partial: #f3e3c4;
-  --color-partial-ink: #8a5a1f;
-  --color-nav-border: #f2e8d5;
+  --color-pill-ink: #46392e;
+  --color-pill-border: #f5ecd9;
+  --color-done: #5c8a5f;
+  --color-done-soft: #e7f0e4;
+  --color-partial: #f5e6c9;
+  --color-partial-ink: #97672a;
+  --color-nav-border: #f5ecd9;
 
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;

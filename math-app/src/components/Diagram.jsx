@@ -2,10 +2,10 @@
 // concepts and problems. Each renders from a small params object so the same
 // renderer can be reused across many concepts/problems with different numbers.
 
-const STROKE = "#3a2e26"; // ink
-const FILL = "#f7f0dc"; // parchment
-const DASHED = "#c9b98f"; // warm tan
-const LABEL = "#3a2e26"; // ink
+const STROKE = "#46392e"; // ink
+const FILL = "#f9f3e2"; // parchment
+const DASHED = "#d3c49c"; // warm tan
+const LABEL = "#46392e"; // ink
 
 function Wrap({ viewBox = "0 0 240 180", children }) {
   return (
@@ -255,8 +255,8 @@ function CoordinatePlane({ points = [], segment, quadrantHighlight, lines, shade
         const corner2 = above ? [x2, topY] : [x2, botY];
         return <polygon points={`${x1},${y1} ${x2},${y2} ${corner2} ${corner1}`} fill="#e7dab0" opacity="0.7" />;
       })()}
-      <line x1="20" y1={cy} x2="220" y2={cy} stroke="#c9b98f" strokeWidth="1.5" />
-      <line x1={cx} y1="20" x2={cx} y2="180" stroke="#c9b98f" strokeWidth="1.5" />
+      <line x1="20" y1={cy} x2="220" y2={cy} stroke="#d3c49c" strokeWidth="1.5" />
+      <line x1={cx} y1="20" x2={cx} y2="180" stroke="#d3c49c" strokeWidth="1.5" />
       {showQuadrantLabels && (
         <>
           <text x={cx + 92} y="32" fontSize="10" fill="#d8cba9" textAnchor="middle">I</text>
@@ -286,10 +286,10 @@ function CoordinatePlane({ points = [], segment, quadrantHighlight, lines, shade
         const [x2, y2] = toXY(riseRun.to[0], riseRun.to[1]);
         return (
           <g>
-            <line x1={x1} y1={y1} x2={x2} y2={y1} stroke="#d97706" strokeWidth="1.5" strokeDasharray="3 2" />
-            <line x1={x2} y1={y1} x2={x2} y2={y2} stroke="#d97706" strokeWidth="1.5" strokeDasharray="3 2" />
-            <text x={(x1 + x2) / 2} y={y1 + 14} fontSize="11" fill="#8a5a1f" textAnchor="middle">run</text>
-            <text x={x2 + 6} y={(y1 + y2) / 2} fontSize="11" fill="#8a5a1f">rise</text>
+            <line x1={x1} y1={y1} x2={x2} y2={y1} stroke="#e08a1a" strokeWidth="1.5" strokeDasharray="3 2" />
+            <line x1={x2} y1={y1} x2={x2} y2={y2} stroke="#e08a1a" strokeWidth="1.5" strokeDasharray="3 2" />
+            <text x={(x1 + x2) / 2} y={y1 + 14} fontSize="11" fill="#97672a" textAnchor="middle">run</text>
+            <text x={x2 + 6} y={(y1 + y2) / 2} fontSize="11" fill="#97672a">rise</text>
           </g>
         );
       })()}
@@ -314,8 +314,8 @@ function Parabola({ direction = "up", vertexLabel = "vertex" }) {
   const vy = direction === "up" ? cy + 40 : cy - 40;
   return (
     <Wrap>
-      <line x1="20" y1={cy} x2="220" y2={cy} stroke="#c9b98f" strokeWidth="1.5" />
-      <line x1={cx} y1="20" x2={cx} y2="180" stroke="#c9b98f" strokeWidth="1.5" />
+      <line x1="20" y1={cy} x2="220" y2={cy} stroke="#d3c49c" strokeWidth="1.5" />
+      <line x1={cx} y1="20" x2={cx} y2="180" stroke="#d3c49c" strokeWidth="1.5" />
       <path d={path} fill="none" stroke={STROKE} strokeWidth="2.5" />
       <circle cx={cx} cy={direction === "up" ? cy + 40 : cy - 40} r="3.5" fill={STROKE} />
       <text x={cx + 10} y={vy - (direction === "up" ? -16 : 16)} fontSize="11" fill={LABEL}>{vertexLabel}</text>
@@ -330,13 +330,13 @@ function UnitCircleDiagram({ angleDeg = 90 }) {
   const ey = cy + r * Math.sin(-rad);
   return (
     <Wrap viewBox="0 0 240 200">
-      <line x1="20" y1={cy} x2="220" y2={cy} stroke="#c9b98f" strokeWidth="1.5" />
-      <line x1={cx} y1="20" x2={cx} y2="180" stroke="#c9b98f" strokeWidth="1.5" />
+      <line x1="20" y1={cy} x2="220" y2={cy} stroke="#d3c49c" strokeWidth="1.5" />
+      <line x1={cx} y1="20" x2={cx} y2="180" stroke="#d3c49c" strokeWidth="1.5" />
       <circle cx={cx} cy={cy} r={r} fill="none" stroke={STROKE} strokeWidth="2" />
       <line x1={cx} y1={cy} x2={ex} y2={ey} stroke={STROKE} strokeWidth="2" />
-      <path d={`M ${cx + 20} ${cy} A 20 20 0 ${angleDeg > 180 ? 1 : 0} 0 ${cx + 20 * Math.cos(-rad)} ${cy + 20 * Math.sin(-rad)}`} fill="none" stroke="#d97706" strokeWidth="1.5" />
+      <path d={`M ${cx + 20} ${cy} A 20 20 0 ${angleDeg > 180 ? 1 : 0} 0 ${cx + 20 * Math.cos(-rad)} ${cy + 20 * Math.sin(-rad)}`} fill="none" stroke="#e08a1a" strokeWidth="1.5" />
       <circle cx={ex} cy={ey} r="3.5" fill={STROKE} />
-      <text x={cx + 30} y={cy - 26} fontSize="12" fill="#8a5a1f">{angleDeg}°</text>
+      <text x={cx + 30} y={cy - 26} fontSize="12" fill="#97672a">{angleDeg}°</text>
     </Wrap>
   );
 }
@@ -352,8 +352,8 @@ function SineCosineGraph({ which = "sin" }) {
   }
   return (
     <Wrap>
-      <line x1={cx} y1={cy} x2={cx + w} y2={cy} stroke="#c9b98f" strokeWidth="1.5" />
-      <line x1={cx} y1={cy - amp - 10} x2={cx} y2={cy + amp + 10} stroke="#c9b98f" strokeWidth="1.5" />
+      <line x1={cx} y1={cy} x2={cx + w} y2={cy} stroke="#d3c49c" strokeWidth="1.5" />
+      <line x1={cx} y1={cy - amp - 10} x2={cx} y2={cy + amp + 10} stroke="#d3c49c" strokeWidth="1.5" />
       <path d={d} fill="none" stroke={STROKE} strokeWidth="2.5" />
       <text x={cx - 18} y={cy - amp} fontSize="11" fill={LABEL}>1</text>
       <text x={cx - 18} y={cy + amp + 4} fontSize="11" fill={LABEL}>−1</text>
@@ -366,8 +366,8 @@ function Conic({ kind = "ellipse" }) {
   if (kind === "hyperbola") {
     return (
       <Wrap>
-        <line x1="20" y1={cy} x2="220" y2={cy} stroke="#c9b98f" strokeWidth="1.5" />
-        <line x1={cx} y1="20" x2={cx} y2="180" stroke="#c9b98f" strokeWidth="1.5" />
+        <line x1="20" y1={cy} x2="220" y2={cy} stroke="#d3c49c" strokeWidth="1.5" />
+        <line x1={cx} y1="20" x2={cx} y2="180" stroke="#d3c49c" strokeWidth="1.5" />
         <path d={`M ${cx + 25} 30 Q ${cx + 55} 100 ${cx + 25} 170`} fill="none" stroke={STROKE} strokeWidth="2.5" />
         <path d={`M ${cx - 25} 30 Q ${cx - 55} 100 ${cx - 25} 170`} fill="none" stroke={STROKE} strokeWidth="2.5" />
         <line x1={cx - 70} y1={30} x2={cx + 70} y2={170} stroke={DASHED} strokeWidth="1" strokeDasharray="3 2" />
@@ -377,8 +377,8 @@ function Conic({ kind = "ellipse" }) {
   }
   return (
     <Wrap>
-      <line x1="20" y1={cy} x2="220" y2={cy} stroke="#c9b98f" strokeWidth="1.5" />
-      <line x1={cx} y1="20" x2={cx} y2="180" stroke="#c9b98f" strokeWidth="1.5" />
+      <line x1="20" y1={cy} x2="220" y2={cy} stroke="#d3c49c" strokeWidth="1.5" />
+      <line x1={cx} y1="20" x2={cx} y2="180" stroke="#d3c49c" strokeWidth="1.5" />
       <ellipse cx={cx} cy={cy} rx={kind === "circle" ? 60 : 85} ry={60} fill={FILL} stroke={STROKE} strokeWidth="2.5" />
     </Wrap>
   );
@@ -394,8 +394,8 @@ function Vector({ x = 3, y = 4 }) {
           <path d="M0,0 L8,4 L0,8 Z" fill={STROKE} />
         </marker>
       </defs>
-      <line x1="20" y1={cy} x2="220" y2={cy} stroke="#c9b98f" strokeWidth="1.5" />
-      <line x1={cx} y1="20" x2={cx} y2="180" stroke="#c9b98f" strokeWidth="1.5" />
+      <line x1="20" y1={cy} x2="220" y2={cy} stroke="#d3c49c" strokeWidth="1.5" />
+      <line x1={cx} y1="20" x2={cx} y2="180" stroke="#d3c49c" strokeWidth="1.5" />
       <line x1={cx} y1={cy} x2={ex} y2={ey} stroke={STROKE} strokeWidth="2.5" markerEnd="url(#arrowhead)" />
       <text x={ex + 8} y={ey - 4} fontSize="12" fill={LABEL}>⟨{x}, {y}⟩</text>
     </Wrap>
