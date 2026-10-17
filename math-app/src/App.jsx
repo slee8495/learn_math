@@ -41,7 +41,7 @@ function Passcode({ onDone }) {
   );
 }
 
-function NoPlan({ firstDay, onMade }) {
+function NoPlan({ firstDay, onMade, compact = false }) {
   const { t } = useT();
   const [making, setMaking] = useState(false);
   const [error, setError] = useState("");
@@ -58,6 +58,22 @@ function NoPlan({ firstDay, onMade }) {
     } finally {
       setMaking(false);
     }
+  }
+
+  if (compact) {
+    return (
+      <div className="mb-6 rounded-xl bg-neutral-100 px-4 py-3 text-sm">
+        <p className="font-semibold">{t("noPlanTitle")}</p>
+        {making ? (
+          <p className="mt-1 text-neutral-500">{t("making")}</p>
+        ) : (
+          <button onClick={make} className="mt-2 rounded-full bg-neutral-900 px-4 py-1.5 font-medium text-white">
+            {t("makeNow")}
+          </button>
+        )}
+        {error && <p className="mt-1 text-red-600">{error}</p>}
+      </div>
+    );
   }
 
   return (
@@ -139,6 +155,7 @@ function Shell() {
               </button>
             </div>
           )}
+          {data.plan && !viewingPast && data.date < data.today && <NoPlan compact onMade={() => load()} />}
           {data.plan ? (
             <TodayView key={data.date} date={data.date} plan={data.plan} session={session} onSession={setSession} />
           ) : (
