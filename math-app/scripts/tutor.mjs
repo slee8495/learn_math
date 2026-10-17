@@ -6,6 +6,7 @@
 //   node scripts/tutor.mjs push <file> [date]   -> stores it as the plan for date (default: context's today)
 //
 // Needs TUTOR_URL (e.g. https://math-app-five-beta.vercel.app) and TUTOR_TOKEN.
+import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -24,17 +25,39 @@ function need(name, value) {
   }
 }
 
-async function call(method, body) {
+// curl rather than fetch: cloud sandboxes reach the internet through an
+// HTTPS_PROXY that curl honors and Node's fetch ignores.
+function call(method, body) {
   need("TUTOR_URL", TUTOR_URL);
   need("TUTOR_TOKEN", TUTOR_TOKEN);
-  const res = await fetch(`${TUTOR_URL.replace(/\/$/, "")}/api/tutor`, {
-    method,
-    headers: { Authorization: `Bearer ${TUTOR_TOKEN}`, "Content-Type": "application/json" },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    console.error(`HTTP ${res.status}:`, JSON.stringify(data, null, 2));
+  const marker = "\n__HTTP_STATUS__";
+  const out = execFileSync(
+    "curl",
+    [
+      "-sS",
+      "-X",
+      method,
+      "-H",
+      `Authorization: Bearer ${TUTOR_TOKEN}`,
+      "-H",
+      "Content-Type: application/json",
+      ...(body ? ["--data-binary", "@-"] : []),
+      "-w",
+      `${marker}%{http_code}`,
+      `${TUTOR_URL.replace(/\/$/, "")}/api/tutor`,
+    ],
+    { input: body ? JSON.stringify(body) : undefined, maxBuffer: 64 * 1024 * 1024, encoding: "utf8" },
+  );
+  const at = out.lastIndexOf(marker);
+  const status = Number(out.slice(at + marker.length));
+  let data = {};
+  try {
+    data = JSON.parse(out.slice(0, at));
+  } catch {
+    data = { raw: out.slice(0, at).slice(0, 500) };
+  }
+  if (status < 200 || status >= 300) {
+    console.error(`HTTP ${status}:`, JSON.stringify(data, null, 2));
     process.exit(1);
   }
   return data;
@@ -65,7 +88,7 @@ function validate(file) {
 const [cmd, file, dateArg] = process.argv.slice(2);
 
 if (cmd === "pull") {
-  const context = await call("GET");
+  const context = call("GET");
   mkdirSync(workDir, { recursive: true });
   writeFileSync(contextFile, JSON.stringify(context, null, 2));
   console.log(
@@ -76,7 +99,7 @@ if (cmd === "pull") {
 } else if (cmd === "push" && file) {
   const output = validate(file);
   const date = dateArg || JSON.parse(readFileSync(contextFile, "utf8")).today;
-  const result = await call("POST", { date, output });
+  const result = call("POST", { date, output });
   console.log("Pushed:", JSON.stringify(result));
 } else {
   console.log("usage: node scripts/tutor.mjs pull | validate <file> | push <file> [date]");
