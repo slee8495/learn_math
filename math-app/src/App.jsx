@@ -1,259 +1,184 @@
-import { useState } from "react";
-import { useDailyProgress, getStoredProfile, setStoredProfile, TASKS } from "./hooks/useDailyProgress";
-import { useUserAnswers } from "./hooks/useUserAnswers";
-import { getDayLesson } from "./data/curriculum";
-import Home from "./components/Home";
-import DailyLesson from "./components/DailyLesson";
-import ConceptLibrary from "./components/ConceptLibrary";
-import CalendarView from "./components/CalendarView";
-import ChatWidget from "./components/ChatWidget";
-import Scratchpad from "./components/Scratchpad";
+import { useCallback, useContext, useEffect, useState } from "react";
+import TodayView from "./components/TodayView.jsx";
+import RecordView from "./components/RecordView.jsx";
+import { LangContext, useT } from "./lib/i18n.js";
+import { api, PasscodeError, setPasscode } from "./lib/api.js";
 
-const BOTTOM_TABS = [
-  { id: "home", icon: "🏠", label: "Home" },
-  { id: "library", icon: "📚", label: "Concepts" },
-];
+const LANG_KEY = "mp_lang";
 
-const TASK_LABEL = {
-  review: "Review",
-  concept: "Concept",
-  problem: "Practice Problems",
-  solution: "Solution Walkthrough",
-};
-
-function ProfileSetup({ onDone }) {
-  const [name, setName] = useState("");
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    const trimmed = name.trim();
-    if (!trimmed) return;
-    setStoredProfile(trimmed);
-    onDone(trimmed);
+function readLang() {
+  try {
+    return localStorage.getItem(LANG_KEY) || "ko";
+  } catch {
+    return "ko";
   }
+}
 
+function Passcode({ onDone }) {
+  const { t } = useT();
+  const [value, setValue] = useState("");
   return (
-    <div className="min-h-screen bg-cream flex flex-col items-center justify-center px-6">
-      <div className="text-center mb-10">
-        <p className="text-3xl mb-3">📐</p>
-        <h1 className="text-3xl font-display font-bold text-ink">Daily Math</h1>
-      </div>
-
-      <form onSubmit={handleSubmit} className="w-full max-w-xs flex flex-col gap-3">
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Enter your name"
-          maxLength={12}
-          autoFocus
-          className="w-full px-4 py-4 rounded-xl text-lg text-center font-medium bg-card border border-card-border text-ink placeholder:text-sub focus:outline-none focus:ring-2 focus:ring-accent"
-        />
-        <button
-          type="submit"
-          disabled={!name.trim()}
-          className="w-full py-4 bg-accent text-amber-ink font-semibold text-lg rounded-xl disabled:opacity-40 active:scale-95 transition-transform"
-        >
-          Start →
-        </button>
-      </form>
-
-      <p className="text-sub text-xs mt-8 text-center">
-        Same link, different name — each person's progress is tracked separately
-      </p>
+    <div className="mx-auto max-w-xs pt-32">
+      <p className="mb-3 font-semibold">{t("passTitle")}</p>
+      <input
+        type="password"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && (setPasscode(value), onDone())}
+        className="w-full rounded-xl border border-neutral-300 px-4 py-3 text-[16px] outline-none focus:border-neutral-900"
+        autoFocus
+      />
+      <button
+        onClick={() => {
+          setPasscode(value);
+          onDone();
+        }}
+        className="mt-3 w-full rounded-xl bg-neutral-900 py-3 font-medium text-white"
+      >
+        {t("passEnter")}
+      </button>
     </div>
   );
 }
 
-function MainApp({ profile, onSwitchProfile }) {
-  const [tab, setTab] = useState("home");
-  const [activeLesson, setActiveLesson] = useState(null); // { task, dayNum }
-  const [calendarOpen, setCalendarOpen] = useState(false);
-  const [viewedDay, setViewedDay] = useState(null); // non-null while browsing a past day on Home
+function NoPlan({ firstDay, onMade }) {
+  const { t } = useT();
+  const [making, setMaking] = useState(false);
+  const [error, setError] = useState("");
 
-  const { daily, markTask, unmarkTask, isTaskDone, getDoneCount, getCurrentDay, getStreak, getRecentStatus } =
-    useDailyProgress(profile);
-  const { getAnswer, setAnswer } = useUserAnswers(profile);
-
-  const currentDay = getCurrentDay();
-  const displayDay = viewedDay ?? currentDay;
-  const todayDone = getDoneCount(String(displayDay));
-  const streak = getStreak();
-  const recentStatus = getRecentStatus();
-  const isPastView = viewedDay !== null && viewedDay !== currentDay;
-
-  function handleNavigate(task, dayNum = displayDay) {
-    setActiveLesson({ task, dayNum });
-  }
-
-  function handleTaskDone() {
-    const { task, dayNum } = activeLesson;
-    const dayKey = String(dayNum);
-    // Checked against the pre-update state, on purpose: this tells us
-    // whether the *other* core tasks were already done and today's mission
-    // was not yet complete, i.e. whether this specific completion is the
-    // one that finishes it. Review doesn't count — it's a bonus, not a gate.
-    const isTodaysMission = dayNum === currentDay;
-    const finishesMission =
-      isTodaysMission &&
-      TASKS.includes(task) &&
-      getDoneCount(dayKey) < TASKS.length &&
-      TASKS.filter((t) => t !== task).every((t) => isTaskDone(t, dayKey));
-
-    markTask(task, dayKey);
-    setActiveLesson(null);
-
-    // Finishing today's mission silently unlocks tomorrow (getCurrentDay
-    // advances) without yanking the screen forward — pin the view to the
-    // day just finished so it stays put; Calendar (or the resulting "Back
-    // to Today" banner) is how the user chooses to move on.
-    if (finishesMission) setViewedDay(dayNum);
-  }
-
-  function handleSelectCalendarDay(dayNum) {
-    setCalendarOpen(false);
-    setViewedDay(dayNum);
-  }
-
-  if (activeLesson) {
-    const isCurrent = activeLesson.dayNum === currentDay;
-    const lesson = getDayLesson(activeLesson.dayNum);
-    const chatContext = {
-      profile,
-      view: activeLesson.task,
-      dayNum: activeLesson.dayNum,
-      isReview: lesson.isReview,
-      concept: lesson.concept,
-      problems: lesson.problems,
-    };
-    return (
-      <div className="min-h-screen bg-cream">
-        <header
-          className="bg-card border-b border-card-border sticky top-0 z-10"
-          style={{ paddingTop: "env(safe-area-inset-top)" }}
-        >
-          <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
-            <button onClick={() => setActiveLesson(null)} className="text-sub text-2xl leading-none">
-              ←
-            </button>
-            <div>
-              <p className="font-display font-semibold text-ink">{TASK_LABEL[activeLesson.task]}</p>
-              {!isCurrent && <p className="text-xs font-mono text-accent">Day {activeLesson.dayNum} review</p>}
-            </div>
-          </div>
-        </header>
-        <main
-          className="max-w-lg mx-auto"
-          style={{ paddingBottom: "calc(10rem + env(safe-area-inset-bottom))" }}
-        >
-          <DailyLesson
-            task={activeLesson.task}
-            dayNum={activeLesson.dayNum}
-            onDone={handleTaskDone}
-            getAnswer={getAnswer}
-            setAnswer={setAnswer}
-          />
-        </main>
-        <ChatWidget context={chatContext} />
-        {activeLesson.task !== "concept" && <Scratchpad />}
-      </div>
-    );
-  }
-
-  const todayLesson = getDayLesson(displayDay);
-  const homeChatContext = {
-    profile,
-    view: tab,
-    dayNum: displayDay,
-    isReview: todayLesson.isReview,
-    concept: todayLesson.concept,
-  };
-
-  return (
-    <div className="min-h-screen bg-cream pb-20">
-      <header
-        className="bg-card border-b border-card-border sticky top-0 z-10"
-        style={{ paddingTop: "env(safe-area-inset-top)" }}
-      >
-        <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
-          <h1 className="text-lg font-display font-bold text-ink">
-            {tab === "home" && "📐 Daily Math"}
-            {tab === "library" && "Concept Library"}
-          </h1>
-          <button
-            onClick={onSwitchProfile}
-            className="flex items-center gap-1.5 bg-card border border-card-border text-ink rounded-full px-3 py-1 text-sm font-medium"
-          >
-            <span>👤</span>
-            <span>{profile}</span>
-          </button>
-        </div>
-      </header>
-
-      <main className="max-w-lg mx-auto">
-        {tab === "home" && (
-          <Home
-            onNavigate={handleNavigate}
-            onOpenCalendar={() => setCalendarOpen(true)}
-            isTaskDone={isTaskDone}
-            onUndoTask={unmarkTask}
-            dayNum={displayDay}
-            todayDone={todayDone}
-            streak={streak}
-            recentStatus={recentStatus}
-            isPastView={isPastView}
-            onBackToToday={() => setViewedDay(null)}
-          />
-        )}
-        {tab === "library" && <ConceptLibrary />}
-      </main>
-
-      <nav
-        className="fixed bottom-0 left-0 right-0 bg-card border-t border-nav-border z-10"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
-      >
-        <div className="max-w-lg mx-auto flex">
-          {BOTTOM_TABS.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              className={`flex-1 flex flex-col items-center py-2 gap-0.5 ${
-                tab === t.id ? "text-accent" : "text-sub/60"
-              }`}
-            >
-              <span className="text-xl">{t.icon}</span>
-              <span className="text-xs font-medium">{t.label}</span>
-            </button>
-          ))}
-        </div>
-      </nav>
-
-      {calendarOpen && (
-        <CalendarView
-          daily={daily}
-          currentDay={currentDay}
-          onSelectDay={handleSelectCalendarDay}
-          onClose={() => setCalendarOpen(false)}
-        />
-      )}
-      <ChatWidget context={homeChatContext} />
-    </div>
-  );
-}
-
-export default function App() {
-  const [profile, setProfile] = useState(() => getStoredProfile());
-
-  function handleSwitchProfile() {
-    if (window.confirm(`Switch profile?\nCurrent: ${profile}`)) {
-      setStoredProfile("");
-      setProfile(null);
+  async function make() {
+    setMaking(true);
+    setError("");
+    try {
+      await api.makePlan();
+      await onMade();
+    } catch (err) {
+      // 409: another request is already generating; wait for it
+      setError(err.message === "already generating" ? t("making") : t("loadFailed"));
+    } finally {
+      setMaking(false);
     }
   }
 
-  if (!profile) {
-    return <ProfileSetup onDone={setProfile} />;
-  }
+  return (
+    <div className="pt-16">
+      <h1 className="text-2xl font-bold tracking-tight">{t("noPlanTitle")}</h1>
+      <p className="mt-3 text-[15px] leading-relaxed text-neutral-600">{firstDay ? t("firstDayBody") : t("noPlanBody")}</p>
+      {making ? (
+        <p className="mt-8 text-[15px] text-neutral-500">{t("making")}</p>
+      ) : (
+        <button onClick={make} className="mt-8 w-full rounded-xl bg-neutral-900 py-3.5 font-medium text-white">
+          {t("makeNow")}
+        </button>
+      )}
+      {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+    </div>
+  );
+}
 
-  return <MainApp profile={profile} onSwitchProfile={handleSwitchProfile} />;
+function Shell() {
+  const { t } = useT();
+  const { lang, setLang } = useContext(LangContext);
+  const [tab, setTab] = useState("today");
+  const [data, setData] = useState(null);
+  const [session, setSession] = useState(null);
+  const [status, setStatus] = useState("loading"); // loading | ready | error | passcode
+
+  const load = useCallback(async (date) => {
+    try {
+      const d = await api.today(date);
+      setData(d);
+      setSession(d.session || null);
+      setStatus("ready");
+    } catch (err) {
+      setStatus(err instanceof PasscodeError ? "passcode" : "error");
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const viewingPast = data?.date && data.dates?.length && data.date !== data.dates.filter((d) => d <= data.today).at(-1);
+
+  return (
+    <div className="mx-auto max-w-xl px-4" style={{ paddingTop: "calc(env(safe-area-inset-top) + 0.75rem)" }}>
+      <header className="mb-6 flex items-center justify-between">
+        <div className="flex items-center gap-4 text-[15px]">
+          {["today", "record"].map((key) => (
+            <button key={key} onClick={() => setTab(key)} className={tab === key ? "font-bold" : "text-neutral-400"}>
+              {key === "today" && data?.dayNum ? `${t("day")} ${data.dayNum}` : t(key)}
+            </button>
+          ))}
+        </div>
+        <button onClick={() => setLang(lang === "ko" ? "en" : "ko")} className="rounded-full border border-neutral-300 px-3 py-1 text-xs font-medium">
+          {lang === "ko" ? "EN" : "한국어"}
+        </button>
+      </header>
+
+      {status === "loading" && <p className="pt-16 text-neutral-400">{t("loading")}</p>}
+      {status === "passcode" && <Passcode onDone={() => (setStatus("loading"), load())} />}
+      {status === "error" && (
+        <div className="pt-16">
+          <p className="text-neutral-600">{t("loadFailed")}</p>
+          <button onClick={() => (setStatus("loading"), load())} className="mt-4 rounded-full border border-neutral-300 px-4 py-2 text-sm">
+            {t("retry")}
+          </button>
+        </div>
+      )}
+
+      {status === "ready" && tab === "today" && (
+        <>
+          {viewingPast && (
+            <div className="mb-4 flex items-center justify-between rounded-xl bg-neutral-100 px-4 py-2.5 text-sm">
+              <span>
+                {t("viewingPast")} · {data.date}
+              </span>
+              <button onClick={() => load()} className="font-semibold">
+                {t("backToToday")}
+              </button>
+            </div>
+          )}
+          {data.plan ? (
+            <TodayView key={data.date} date={data.date} plan={data.plan} session={session} onSession={setSession} />
+          ) : (
+            <NoPlan firstDay={!data.dates?.length} onMade={() => load()} />
+          )}
+        </>
+      )}
+
+      {status === "ready" && tab === "record" && (
+        <RecordView
+          state={data.state}
+          journals={data.journals}
+          dates={data.dates || []}
+          currentDate={data.date}
+          onOpenDay={(d) => {
+            setTab("today");
+            setStatus("loading");
+            load(d);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+// Lang lives in context so every component can render { ko, en } content.
+export default function App() {
+  const [lang, setLangState] = useState(readLang);
+  const setLang = (value) => {
+    setLangState(value);
+    document.documentElement.lang = value;
+    try {
+      localStorage.setItem(LANG_KEY, value);
+    } catch {
+      // not remembered, still switches
+    }
+  };
+  return (
+    <LangContext.Provider value={{ lang, setLang }}>
+      <Shell />
+    </LangContext.Provider>
+  );
 }

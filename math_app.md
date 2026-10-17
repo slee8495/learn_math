@@ -1,5 +1,7 @@
 # math-app — Project Reference
 
+> **2026-10: superseded.** The app was rebuilt as a personal AI math professor (v2). See `REDESIGN.md` for the design and `math-app/tutor/ROUTINE.md` for the daily Max-plan routine. The sections below describe the retired v1 day-by-day curriculum app and are kept for history.
+
 **GitHub repo:** https://github.com/slee8495/learn_math
 **Live app:** https://math-app-five-beta.vercel.app (deployed on Vercel, `math-app` project)
 **App subdirectory:** `math-app/` (the actual Vite app lives one level below repo root)

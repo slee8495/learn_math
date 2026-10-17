@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/plan.js": { "maxDuration": 300 },
+    "api/lecture.js": { "maxDuration": 120 },
+    "api/chat.js": { "maxDuration": 120 }
+  }
+}

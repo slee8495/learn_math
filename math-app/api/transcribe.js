@@ -1,4 +1,5 @@
 import { gateway, transcribe } from "ai";
+import { checkPasscode } from "./_lib/http.js";
 
 // JSON body with base64 audio (like api/chat.js), not multipart/form-data — Vercel's Node
 // function helper only auto-parses json/urlencoded/text bodies into req.body, so multipart
@@ -14,6 +15,7 @@ export default async function handler(req, res) {
     res.status(405).json({ error: "Method not allowed" });
     return;
   }
+  if (!checkPasscode(req, res)) return;
 
   try {
     const { audio: audioBase64 } = req.body || {};
