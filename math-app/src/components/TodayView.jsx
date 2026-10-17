@@ -24,10 +24,10 @@ function suggestNext(problems, session, currentId) {
   return remaining[0];
 }
 
-export default function TodayView({ date, plan, session, onSession }) {
+export default function TodayView({ date, initialPid, plan, session, onSession }) {
   const { t, bi } = useT();
   const problems = plan.problems;
-  const [activeId, setActiveId] = useState(problems[0]?.id);
+  const [activeId, setActiveId] = useState(initialPid || problems[0]?.id);
   const [sheet, setSheet] = useState(null); // "scratch" | "chat" | "lecture"
   const scratchRef = useRef(null);
 

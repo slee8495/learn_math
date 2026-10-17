@@ -54,6 +54,36 @@ export async function getJournals() {
   return Object.values(all).sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
+// Every day's problems with how each went, for the archive tab. Only what a
+// list needs (no solutions, hints or lectures), fetched in one round trip.
+export async function getArchive() {
+  const dates = await getPlanDates();
+  if (!dates.length) return [];
+  const values = await redis.mget(...dates.flatMap((d) => [`v2:plan:${d}`, `v2:session:${d}`]));
+  return dates.map((date, i) => {
+    const plan = values[i * 2];
+    const session = { ...emptySession(), ...(values[i * 2 + 1] || {}) };
+    return {
+      date,
+      dayNum: i + 1,
+      headline: plan?.headline,
+      problems: (plan?.problems || []).map((p) => {
+        const attempts = session.attempts[p.id] || [];
+        return {
+          id: p.id,
+          role: p.role,
+          topicId: p.topicId,
+          prompt: p.prompt,
+          solved: attempts.some((a) => a.correct),
+          attempts: attempts.length,
+          hints: session.hints[p.id] || 0,
+          gaveUp: !!session.solutionViewed[p.id],
+        };
+      }),
+    };
+  });
+}
+
 // The ongoing professor conversation. Messages are only ever appended, so list
 // indices are stable and work as paging cursors.
 //   { id, role: "user" | "assistant", text, images: [imageId], at }

@@ -72,6 +72,7 @@ async function talkImage(id) {
 
 export const api = {
   today: (date) => json(`/api/today${date ? `?date=${date}` : ""}`),
+  archive: () => json("/api/today?archive=1"),
   makePlan: () => json("/api/plan", { method: "POST" }),
   check: (body) => json("/api/check", { method: "POST", body }),
   event: (body) => json("/api/session", { method: "POST", body }),

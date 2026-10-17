@@ -2,6 +2,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import TodayView from "./components/TodayView.jsx";
 import RecordView from "./components/RecordView.jsx";
 import TalkView from "./components/TalkView.jsx";
+import ArchiveView from "./components/ArchiveView.jsx";
 import { LangContext, useT } from "./lib/i18n.js";
 import { api, PasscodeError, setPasscode } from "./lib/api.js";
 
@@ -99,6 +100,8 @@ function Shell() {
   const [tab, setTab] = useState("today");
   // The talk tab stays mounted once opened so its thread and draft survive tab switches.
   const [talkOpened, setTalkOpened] = useState(false);
+  // The problem to show first when a day is opened from the archive.
+  const [openPid, setOpenPid] = useState(null);
   const [data, setData] = useState(null);
   const [session, setSession] = useState(null);
   const [status, setStatus] = useState("loading"); // loading | ready | error | passcode
@@ -124,7 +127,7 @@ function Shell() {
     <div className="mx-auto max-w-xl px-4" style={{ paddingTop: "calc(env(safe-area-inset-top) + 0.75rem)" }}>
       <header className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4 text-[15px]">
-          {["today", "talk", "record"].map((key) => (
+          {["today", "talk", "archive", "record"].map((key) => (
             <button
               key={key}
               onClick={() => {
@@ -158,14 +161,18 @@ function Shell() {
               <span>
                 {t("viewingPast")} · {data.date}
               </span>
-              <button onClick={() => load()} className="font-semibold">
+              <button onClick={() => (setOpenPid(null), load())} className="font-semibold">
                 {t("backToToday")}
               </button>
             </div>
           )}
           {data.plan && !viewingPast && data.date < data.today && <NoPlan compact onMade={() => load()} />}
           {data.plan ? (
-            <TodayView key={data.date} date={data.date} plan={data.plan} session={session} onSession={setSession} />
+            <TodayView
+              key={`${data.date}-${openPid}`}
+              date={data.date}
+              initialPid={openPid}
+              plan={data.plan} session={session} onSession={setSession} />
           ) : (
             <NoPlan firstDay={!data.dates?.length} onMade={() => load()} />
           )}
@@ -178,19 +185,18 @@ function Shell() {
         </div>
       )}
 
-      {status === "ready" && tab === "record" && (
-        <RecordView
-          state={data.state}
-          journals={data.journals}
-          dates={data.dates || []}
-          currentDate={data.date}
-          onOpenDay={(d) => {
+      {status === "ready" && tab === "archive" && (
+        <ArchiveView
+          onOpen={(date, pid) => {
+            setOpenPid(pid);
             setTab("today");
             setStatus("loading");
-            load(d);
+            load(date);
           }}
         />
       )}
+
+      {status === "ready" && tab === "record" && <RecordView state={data.state} journals={data.journals} />}
     </div>
   );
 }

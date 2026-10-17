@@ -20,8 +20,9 @@ function Section({ title, children }) {
   );
 }
 
-// The back office: where the student stands, the professor's records, past days.
-export default function RecordView({ state, journals, dates, currentDate, onOpenDay }) {
+// The back office: where the student stands and the professor's records.
+// Past problems live in the archive tab.
+export default function RecordView({ state, journals }) {
   const { t, bi } = useT();
   const stageIndex = Math.max(0, roadmap.stages.findIndex((s) => s.id === state.stage));
   const mastery = state.mastery || {};
@@ -94,24 +95,6 @@ export default function RecordView({ state, journals, dates, currentDate, onOpen
         </div>
       </Section>
 
-      {dates.length > 0 && (
-        <Section title={t("history")}>
-          <div className="divide-y divide-neutral-100">
-            {[...dates].reverse().map((d, i) => (
-              <button
-                key={d}
-                onClick={() => onOpenDay(d)}
-                className="flex w-full items-center justify-between py-3 text-left text-sm"
-              >
-                <span>
-                  {t("day")} {dates.length - i} <span className="text-neutral-400">· {d}</span>
-                </span>
-                <span className={d === currentDate ? "font-semibold" : "text-neutral-400"}>{t("open")} →</span>
-              </button>
-            ))}
-          </div>
-        </Section>
-      )}
     </div>
   );
 }
