@@ -48,7 +48,7 @@ function drawStrokes(ctx, strokes, offsetX = 0, offsetY = 0) {
 // Handwriting scratchpad, one page per problem (storageKey), kept on the device.
 // One finger (or Apple Pencil) writes, two fingers scroll. The parent can grab
 // a cropped image of the work via ref.exportImage() to show the tutor.
-export default function Scratchpad({ open, onClose, storageKey, ref }) {
+export default function Scratchpad({ open, onClose, storageKey, ref, onAttach }) {
   const { t } = useT();
   const [mode, setMode] = useState("pen");
   const canvasRef = useRef(null);
@@ -88,30 +88,32 @@ export default function Scratchpad({ open, onClose, storageKey, ref }) {
     if (open) resize();
   }, [open]);
 
+  // Crop to the written area on a white background, small enough to send.
+  function exportCropped() {
+    const all = strokes.current.flat();
+    if (!all.length) return null;
+    const pad = 16;
+    const xs = all.map((p) => p[0]);
+    const ys = all.map((p) => p[1]);
+    const minX = Math.max(0, Math.min(...xs) - pad);
+    const minY = Math.max(0, Math.min(...ys) - pad);
+    const w = Math.max(...xs) + pad - minX;
+    const h = Math.max(...ys) + pad - minY;
+    const scale = Math.min(2, 1200 / w, 1600 / h);
+    const out = document.createElement("canvas");
+    out.width = Math.round(w * scale);
+    out.height = Math.round(h * scale);
+    const ctx = out.getContext("2d");
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, out.width, out.height);
+    ctx.scale(scale, scale);
+    drawStrokes(ctx, strokes.current, minX, minY);
+    return out.toDataURL("image/jpeg", 0.85);
+  }
+
   useImperativeHandle(ref, () => ({
     hasWork: () => strokes.current.length > 0,
-    // Crop to the written area on a white background, small enough to send.
-    exportImage() {
-      const all = strokes.current.flat();
-      if (!all.length) return null;
-      const pad = 16;
-      const xs = all.map((p) => p[0]);
-      const ys = all.map((p) => p[1]);
-      const minX = Math.max(0, Math.min(...xs) - pad);
-      const minY = Math.max(0, Math.min(...ys) - pad);
-      const w = Math.max(...xs) + pad - minX;
-      const h = Math.max(...ys) + pad - minY;
-      const scale = Math.min(2, 1200 / w, 1600 / h);
-      const out = document.createElement("canvas");
-      out.width = Math.round(w * scale);
-      out.height = Math.round(h * scale);
-      const ctx = out.getContext("2d");
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(0, 0, out.width, out.height);
-      ctx.scale(scale, scale);
-      drawStrokes(ctx, strokes.current, minX, minY);
-      return out.toDataURL("image/jpeg", 0.85);
-    },
+    exportImage: exportCropped,
   }));
 
   function pos(e) {
@@ -209,7 +211,24 @@ export default function Scratchpad({ open, onClose, storageKey, ref }) {
     `rounded-full px-3 py-1.5 text-sm ${active ? "bg-neutral-900 text-white" : "border border-neutral-300"}`;
 
   return (
-    <Sheet open={open} onClose={onClose} title={t("scratch")}>
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title={t("scratch")}
+      actions={
+        onAttach && (
+          <button
+            onClick={() => {
+              const img = strokes.current.length ? exportCropped() : null;
+              if (img) onAttach(img);
+            }}
+            className="rounded-full border border-neutral-300 px-3 py-1.5 text-sm font-medium"
+          >
+            {t("attach")}
+          </button>
+        )
+      }
+    >
       <div className="flex items-center gap-2 border-b border-neutral-200 px-4 py-2">
         <button className={tool(mode === "pen")} onClick={() => setMode("pen")}>
           {t("pen")}

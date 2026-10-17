@@ -10,6 +10,8 @@ import roadmap from "../../tutor/roadmap.js";
 //   v2:plan:<date>      the day's Plan (see tutor/schema.js) + { date }
 //   v2:session:<date>   what happened that day: attempts, hints, solutions seen, chat
 //   v2:journal          hash date -> Journal (the teacher's record)
+//   v2:talk             list of messages in the ongoing professor conversation (not tied to a problem)
+//   v2:talkimg:<id>     a photo the student sent there, as a data URL
 export const redis = Redis.fromEnv();
 
 const TZ = "America/Los_Angeles";
@@ -52,6 +54,29 @@ export async function getJournals() {
   return Object.values(all).sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
+// The ongoing professor conversation. Messages are only ever appended, so list
+// indices are stable and work as paging cursors.
+//   { id, role: "user" | "assistant", text, images: [imageId], at }
+export async function getTalk({ before, limit = 50 } = {}) {
+  const total = await redis.llen("v2:talk");
+  const end = Math.min(before ?? total, total);
+  const start = Math.max(0, end - limit);
+  const messages = end > start ? await redis.lrange("v2:talk", start, end - 1) : [];
+  return { messages, start };
+}
+
+export async function appendTalk(...messages) {
+  await redis.rpush("v2:talk", ...messages);
+}
+
+export async function saveTalkImage(id, dataUrl) {
+  await redis.set(`v2:talkimg:${id}`, dataUrl);
+}
+
+export async function getTalkImage(id) {
+  return redis.get(`v2:talkimg:${id}`);
+}
+
 // The most recent plan at or before today. Before the 5am routine runs, this is
 // still yesterday's plan, so the app always has something to work on.
 export async function getCurrentPlanDate() {
@@ -64,8 +89,14 @@ export async function getCurrentPlanDate() {
 // Everything the professor needs to decide the next move. Shared by the daily
 // routine (via /api/tutor) and the API fallback generator.
 export async function buildTutorContext({ recentDays = 7 } = {}) {
-  const [state, dates, journals] = await Promise.all([getState(), getPlanDates(), getJournals()]);
+  const [state, dates, journals, talk] = await Promise.all([
+    getState(),
+    getPlanDates(),
+    getJournals(),
+    getTalk({ limit: 120 }),
+  ]);
   const recent = dates.slice(-recentDays);
+  const talkSince = new Date(Date.now() - recentDays * 86400000).toISOString();
   const days = await Promise.all(
     recent.map(async (date) => {
       const [plan, session] = await Promise.all([getPlan(date), getSession(date)]);
@@ -96,6 +127,9 @@ export async function buildTutorContext({ recentDays = 7 } = {}) {
       chat: session.chat.map((m) => ({ role: m.role, problem: m.pid, text: m.text, at: m.at })),
       lectureRequests: session.lectures.map((l) => l.request),
     })),
+    talk: talk.messages
+      .filter((m) => m.at >= talkSince)
+      .map((m) => ({ role: m.role, text: m.text, photos: m.images?.length || 0, at: m.at })),
   };
 }
 

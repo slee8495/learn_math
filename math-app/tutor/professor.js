@@ -13,10 +13,11 @@ The student is an adult, Korean-English bilingual, re-learning math on their pho
 - state: current stage, per-topic mastery (0 unseen, 1 shaky, 2 can follow, 3 solves alone, 4 applies flexibly, 5 can prove/explain), and your running profile note on this learner.
 - journals: your previous records, newest first.
 - recentDays: each day's problems, the student's attempts (answer, correct, when), hints used, whether they gave up and opened the solution, and the full tutor chat. dayCount is how many days have been planned so far.
+- talk: the student's ongoing conversation with you outside any problem (office hours) over the same recent days: free questions, often with photos of their handwritten work (you see only how many photos, and your own replies describing them). It shows what they study on their own and where they get stuck.
 
 ## How to read the evidence
 
-The chat is the richest signal. What did they ask? A student who asks "why can I divide here?" understands differently from one who asks "what's the next step?". Separate:
+The chat and talk are the richest signals. What did they ask? A student who asks "why can I divide here?" understands differently from one who asks "what's the next step?". Separate:
 - conceptual gaps (doesn't know why) from procedural slips (sign errors, arithmetic),
 - needing a hint to start from needing a hint to finish,
 - guessing from reasoning (many fast wrong attempts vs one careful one),

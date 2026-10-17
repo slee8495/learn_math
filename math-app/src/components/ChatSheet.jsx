@@ -3,20 +3,7 @@ import Sheet from "./Sheet.jsx";
 import Md from "./Md.jsx";
 import { api } from "../lib/api.js";
 import { useT } from "../lib/i18n.js";
-
-const RECORDING_MIME_TYPES = ["audio/webm", "audio/mp4", "audio/ogg"];
-
-function pickRecordingMimeType() {
-  if (typeof MediaRecorder === "undefined") return undefined;
-  return RECORDING_MIME_TYPES.find((type) => MediaRecorder.isTypeSupported(type));
-}
-
-async function blobToBase64(blob) {
-  const bytes = new Uint8Array(await blob.arrayBuffer());
-  let binary = "";
-  for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-  return btoa(binary);
-}
+import { useDictation } from "../lib/voice.js";
 
 // Live tutoring chat for one problem. The whole thread is kept server-side in
 // the day's session (that's what the professor reads at night); `initial` is
@@ -27,8 +14,9 @@ export default function ChatSheet({ open, onClose, date, problem, initial, scrat
   const [input, setInput] = useState("");
   const [image, setImage] = useState(null);
   const [busy, setBusy] = useState(false);
-  const [recording, setRecording] = useState(false);
-  const recorderRef = useRef(null);
+  const { recording, toggle: toggleRecording } = useDictation((text) =>
+    setInput((prev) => (prev ? `${prev} ${text}` : text)),
+  );
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -69,36 +57,6 @@ export default function ChatSheet({ open, onClose, date, problem, initial, scrat
       setMessages([...thread, { role: "assistant", text: t("loadFailed"), error: true }]);
     } finally {
       setBusy(false);
-    }
-  }
-
-  async function toggleRecording() {
-    if (recording) {
-      recorderRef.current?.stop();
-      setRecording(false);
-      return;
-    }
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mimeType = pickRecordingMimeType();
-      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
-      const chunks = [];
-      recorder.ondataavailable = (e) => e.data.size > 0 && chunks.push(e.data);
-      recorder.onstop = async () => {
-        stream.getTracks().forEach((track) => track.stop());
-        try {
-          const blob = new Blob(chunks, { type: mimeType || "audio/webm" });
-          const { text } = await api.transcribe({ audio: await blobToBase64(blob) });
-          if (text?.trim()) setInput((prev) => (prev ? `${prev} ${text.trim()}` : text.trim()));
-        } catch {
-          // fall back to typing
-        }
-      };
-      recorderRef.current = recorder;
-      recorder.start();
-      setRecording(true);
-    } catch {
-      // mic unavailable: typing still works
     }
   }
 

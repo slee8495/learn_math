@@ -20,7 +20,7 @@ every shell command that runs `scripts/tutor.mjs`.
    - `tutor/professor.js` — your standing instructions as the professor. Follow them exactly.
    - `tutor/schema.js` — the exact output shape (`TutorOutput`).
    - `tutor/roadmap.js` — stages and topic ids.
-   - `tutor/work/context.json` — everything about the student. Read every chat message.
+   - `tutor/work/context.json` — everything about the student. Read every chat message and the `talk` thread (their free questions to you outside the problems).
 4. Think like the professor. Decide the record, mastery changes and today's move.
 5. Write `tutor/work/output.json` as a `TutorOutput` object.
 6. Verify every problem's answer independently with code before trusting it:

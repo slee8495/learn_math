@@ -1,6 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import TodayView from "./components/TodayView.jsx";
 import RecordView from "./components/RecordView.jsx";
+import TalkView from "./components/TalkView.jsx";
 import { LangContext, useT } from "./lib/i18n.js";
 import { api, PasscodeError, setPasscode } from "./lib/api.js";
 
@@ -96,6 +97,8 @@ function Shell() {
   const { t } = useT();
   const { lang, setLang } = useContext(LangContext);
   const [tab, setTab] = useState("today");
+  // The talk tab stays mounted once opened so its thread and draft survive tab switches.
+  const [talkOpened, setTalkOpened] = useState(false);
   const [data, setData] = useState(null);
   const [session, setSession] = useState(null);
   const [status, setStatus] = useState("loading"); // loading | ready | error | passcode
@@ -121,8 +124,13 @@ function Shell() {
     <div className="mx-auto max-w-xl px-4" style={{ paddingTop: "calc(env(safe-area-inset-top) + 0.75rem)" }}>
       <header className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4 text-[15px]">
-          {["today", "record"].map((key) => (
-            <button key={key} onClick={() => setTab(key)} className={tab === key ? "font-bold" : "text-neutral-400"}>
+          {["today", "talk", "record"].map((key) => (
+            <button
+              key={key}
+              onClick={() => {
+                setTab(key);
+                if (key === "talk") setTalkOpened(true);
+              }} className={tab === key ? "font-bold" : "text-neutral-400"}>
               {key === "today" && data?.dayNum ? `${t("day")} ${data.dayNum}` : t(key)}
             </button>
           ))}
@@ -162,6 +170,12 @@ function Shell() {
             <NoPlan firstDay={!data.dates?.length} onMade={() => load()} />
           )}
         </>
+      )}
+
+      {status === "ready" && talkOpened && (
+        <div hidden={tab !== "talk"}>
+          <TalkView active={tab === "talk"} />
+        </div>
       )}
 
       {status === "ready" && tab === "record" && (

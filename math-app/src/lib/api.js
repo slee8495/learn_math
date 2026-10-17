@@ -35,6 +35,41 @@ async function json(path, options) {
   return data;
 }
 
+// Reads a streamed plain-text reply; onText receives the growing reply.
+async function streamText(path, body, onText) {
+  const res = await request(path, { method: "POST", body });
+  if (!res.ok || !res.body) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || "request failed");
+  }
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let text = "";
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    text += decoder.decode(value, { stream: true });
+    onText(text);
+  }
+  return text;
+}
+
+// Stored photos need the passcode header, so they're fetched rather than
+// linked, and kept as object URLs for the rest of the visit.
+const imageUrls = new Map();
+
+async function talkImage(id) {
+  if (!imageUrls.has(id)) {
+    const pending = request(`/api/talk?img=${encodeURIComponent(id)}`).then(async (res) => {
+      if (!res.ok) throw new Error("image failed");
+      return URL.createObjectURL(await res.blob());
+    });
+    imageUrls.set(id, pending);
+    pending.catch(() => imageUrls.delete(id));
+  }
+  return imageUrls.get(id);
+}
+
 export const api = {
   today: (date) => json(`/api/today${date ? `?date=${date}` : ""}`),
   makePlan: () => json("/api/plan", { method: "POST" }),
@@ -42,23 +77,8 @@ export const api = {
   event: (body) => json("/api/session", { method: "POST", body }),
   lecture: (body) => json("/api/lecture", { method: "POST", body }),
   transcribe: (body) => json("/api/transcribe", { method: "POST", body }),
-
-  // Streams the tutor's reply; onText receives the growing reply.
-  async chat(body, onText) {
-    const res = await request("/api/chat", { method: "POST", body });
-    if (!res.ok || !res.body) {
-      const data = await res.json().catch(() => ({}));
-      throw new Error(data.error || "chat failed");
-    }
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let text = "";
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      text += decoder.decode(value, { stream: true });
-      onText(text);
-    }
-    return text;
-  },
+  chat: (body, onText) => streamText("/api/chat", body, onText),
+  talk: (before) => json(`/api/talk${before != null ? `?before=${before}` : ""}`),
+  sendTalk: (body, onText) => streamText("/api/talk", body, onText),
+  talkImage,
 };

@@ -3,6 +3,7 @@ import { createContext, useContext } from "react";
 const STRINGS = {
   today: { ko: "오늘", en: "Today" },
   record: { ko: "기록", en: "Record" },
+  talk: { ko: "교수님", en: "Professor" },
   day: { ko: "Day", en: "Day" },
   loading: { ko: "불러오는 중…", en: "Loading…" },
   retry: { ko: "다시 시도", en: "Retry" },
@@ -53,6 +54,15 @@ const STRINGS = {
   scratchAttached: { ko: "연습장 첨부됨", en: "Scratchpad attached" },
   scratchMsg: { ko: "제 연습장 봐주세요.", en: "Please look at my scratchpad." },
   close: { ko: "닫기", en: "Close" },
+  attach: { ko: "첨부", en: "Attach" },
+  photo: { ko: "사진", en: "Photo" },
+  photoMsg: { ko: "제 풀이 봐주세요.", en: "Please check my work." },
+  talkPlaceholder: { ko: "무엇이든 물어보세요", en: "Ask me anything" },
+  talkEmpty: {
+    ko: "언제든 편하게 물어보세요. 푼 흔적을 사진으로 올리면 어디서 막혔는지, 맞게 풀었는지 같이 봐요. 여기서 나눈 이야기도 다음 수업 준비에 반영돼요.",
+    en: "Ask me anything, anytime. Send a photo of your work and we'll find where you got stuck or check that it's right. What we talk about here shapes your next lessons.",
+  },
+  loadEarlier: { ko: "이전 대화 더 보기", en: "Load earlier" },
   done: { ko: "완료", en: "Done" },
   pen: { ko: "펜", en: "Pen" },
   eraser: { ko: "지우개", en: "Eraser" },
