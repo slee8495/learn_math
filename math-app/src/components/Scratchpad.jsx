@@ -48,7 +48,7 @@ function drawStrokes(ctx, strokes, offsetX = 0, offsetY = 0) {
 // Handwriting scratchpad, one page per problem (storageKey), kept on the device.
 // One finger (or Apple Pencil) writes, two fingers scroll. The parent can grab
 // a cropped image of the work via ref.exportImage() to show the tutor.
-export default function Scratchpad({ open, onClose, storageKey, ref, onAttach }) {
+export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, attachLabel }) {
   const { t } = useT();
   const [mode, setMode] = useState("pen");
   const canvasRef = useRef(null);
@@ -224,7 +224,7 @@ export default function Scratchpad({ open, onClose, storageKey, ref, onAttach })
             }}
             className="rounded-full border border-neutral-300 px-3 py-1.5 text-sm font-medium"
           >
-            {t("attach")}
+            {attachLabel || t("attach")}
           </button>
         )
       }

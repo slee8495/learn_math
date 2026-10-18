@@ -30,6 +30,7 @@ export default function TodayView({ date, initialPid, plan, session, onSession }
   const [activeId, setActiveId] = useState(initialPid || problems[0]?.id);
   const [sheet, setSheet] = useState(null); // "scratch" | "chat" | "lecture"
   const scratchRef = useRef(null);
+  const problemRef = useRef(null);
 
   const problem = problems.find((p) => p.id === activeId) || problems[0];
   const done = isDone(session, problem.id);
@@ -71,7 +72,16 @@ export default function TodayView({ date, initialPid, plan, session, onSession }
         </div>
       )}
 
-      <ProblemView key={`${date}-${problem.id}`} date={date} problem={problem} session={session} onSession={onSession} />
+      <ProblemView
+        key={`${date}-${problem.id}`}
+        ref={problemRef}
+        date={date}
+        problem={problem}
+        session={session}
+        onSession={onSession}
+        scratchpad={scratchRef}
+        onOpenScratch={() => setSheet("scratch")}
+      />
 
       {done && (
         <div className="mt-8 border-t border-neutral-200 pt-5">
@@ -107,6 +117,12 @@ export default function TodayView({ date, initialPid, plan, session, onSession }
         open={sheet === "scratch"}
         onClose={() => setSheet(null)}
         storageKey={`mp_scratch_${date}_${problem.id}`}
+        attachLabel={t("grade")}
+        onAttach={(img) => {
+          setSheet(null);
+          problemRef.current?.checkImage(img);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
       />
       <ChatSheet
         open={sheet === "chat"}

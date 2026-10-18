@@ -131,6 +131,8 @@ function Shell() {
             <button
               key={key}
               onClick={() => {
+                // the professor may have marked a problem solved in talk
+                if (key === "today" && tab === "talk" && data) load(data.date);
                 setTab(key);
                 if (key === "talk") setTalkOpened(true);
               }} className={tab === key ? "font-bold" : "text-neutral-400"}>

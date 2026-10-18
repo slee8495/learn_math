@@ -10,6 +10,7 @@ import {
   getState,
   getTalk,
   getTalkImage,
+  saveSession,
   saveTalkImage,
 } from "./_lib/store.js";
 
@@ -40,7 +41,8 @@ function buildSystem({ lang, student, today }) {
 - They may ask anything: a concept, a problem from a book, today's assigned problem, how to study. Answer as their professor who knows them.
 - When they send photos of their handwritten work, read every line carefully. Say which steps are right, point at the first line where it goes wrong and why, and name the misconception if there is one. Be concrete ("line 3: the 2 should be squared too"), not vague.
 - If they are stuck, find where, and give the smallest push that gets them moving. Ask one question at a time. If they ask for a full explanation or solution, give it clearly.
-- For today's assigned problems: don't reveal the final answer unless they ask for it directly or have already opened the solution.
+- For today's assigned problems: when their work (a photo or what they type) reaches the correct final answer to one that isn't solved yet, tell them, then call record_solved so it counts as solved in the app. Write your whole reply first; the call comes last. Don't call it for a wrong or unfinished answer, or for a different problem.
+- Don't reveal the final answer unless they ask for it directly or have already opened the solution.
 - If a photo is unreadable, say which part and ask for a clearer one.
 - What they ask here is recorded and read when their next lessons are planned.
 - Keep replies fairly short: this is a phone chat. Use Markdown and LaTeX ($...$ inline, $$...$$ display).
@@ -50,6 +52,41 @@ function buildSystem({ lang, student, today }) {
   ]
     .filter(Boolean)
     .join("\n\n");
+}
+
+const isSolved = (session, pid) => (session.attempts[pid] || []).some((a) => a.correct);
+
+// Offered while some of today's problems are still open, so a solution checked
+// here doesn't have to be typed into the problem again.
+function solveTool(plan, session) {
+  const open = plan?.problems.filter((p) => !isSolved(session, p.id)).map((p) => p.id) || [];
+  if (!open.length) return [];
+  return [
+    {
+      name: "record_solved",
+      description: "Mark one of today's assigned problems solved, after confirming the student's own final answer to it is correct.",
+      input_schema: {
+        type: "object",
+        properties: {
+          problemId: { type: "string", enum: open },
+          answer: { type: "string", description: "Their final answer as they wrote it, plain text or LaTeX." },
+        },
+        required: ["problemId", "answer"],
+      },
+    },
+  ];
+}
+
+async function recordSolved(planDate, calls) {
+  const session = await getSession(planDate);
+  for (const { problemId, answer } of calls) {
+    if (isSolved(session, problemId)) continue;
+    session.attempts[problemId] = [
+      ...(session.attempts[problemId] || []),
+      { answer: `✎ ${answer}`, correct: true, via: "talk", feedback: "", at: new Date().toISOString() },
+    ];
+  }
+  await saveSession(planDate, session);
 }
 
 function imageBlock(dataUrl) {
@@ -117,14 +154,14 @@ export default async function handler(req, res) {
     return;
   }
 
-  let thread, student, today;
+  let thread, student, today, tools, planDate;
   try {
     // Store the question (and its photos) first so nothing is lost if the reply fails.
     const imageIds = photos.map(() => randomUUID());
     await Promise.all(photos.map((url, i) => saveTalkImage(imageIds[i], url)));
     await appendTalk({ id: randomUUID(), role: "user", text: text.trim(), images: imageIds, at: new Date().toISOString() });
 
-    const planDate = await getCurrentPlanDate();
+    planDate = await getCurrentPlanDate();
     const [talk, state, journals, plan, session] = await Promise.all([
       getTalk({ limit: HISTORY }),
       getState(),
@@ -135,6 +172,7 @@ export default async function handler(req, res) {
     thread = await toApiMessages(talk.messages);
     student = describeStudent(state, journals);
     today = describeToday(plan, session);
+    tools = solveTool(plan, session);
   } catch (err) {
     fail(res, err, "talk load");
     return;
@@ -143,6 +181,7 @@ export default async function handler(req, res) {
   res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-cache" });
 
   let reply = "";
+  let solved = [];
   try {
     const stream = client.beta.messages.stream({
       model: MODEL,
@@ -150,6 +189,7 @@ export default async function handler(req, res) {
       output_config: { effort: "medium" },
       system: buildSystem({ lang, student, today }),
       messages: thread,
+      ...(tools.length && { tools }),
       ...FALLBACK,
     });
     for await (const event of stream) {
@@ -158,6 +198,8 @@ export default async function handler(req, res) {
         res.write(event.delta.text);
       }
     }
+    const final = await stream.finalMessage();
+    solved = final.content.filter((b) => b.type === "tool_use" && b.name === "record_solved").map((b) => b.input);
   } catch (err) {
     console.error("talk stream error:", err);
     if (!reply) res.write(lang === "ko" ? "지금 연결이 안 돼요. 잠시 후 다시 시도해 주세요." : "I couldn't connect just now. Please try again.");
@@ -167,6 +209,7 @@ export default async function handler(req, res) {
 
   // Save before ending the response: Vercel may freeze the function right after.
   try {
+    if (solved.length) await recordSolved(planDate, solved);
     await appendTalk({ id: randomUUID(), role: "assistant", text: reply, images: [], at: new Date().toISOString() });
   } catch (err) {
     console.error("talk save error:", err);

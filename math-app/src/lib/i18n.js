@@ -48,6 +48,8 @@ const STRINGS = {
   yourAnswers: { ko: "내 답", en: "Your answers" },
 
   scratch: { ko: "연습장", en: "Scratchpad" },
+  checkScratch: { ko: "연습장 풀이로 채점", en: "Grade my scratchpad" },
+  grade: { ko: "채점", en: "Grade" },
   ask: { ko: "질문", en: "Ask" },
   lecture: { ko: "강의", en: "Lecture" },
   hint: { ko: "힌트", en: "Hint" },

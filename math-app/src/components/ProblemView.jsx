@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useImperativeHandle, useState } from "react";
 import Md from "./Md.jsx";
 import { api } from "../lib/api.js";
 import { matchesLocally } from "../lib/answer.js";
 import { useT } from "../lib/i18n.js";
 
 // One problem: statement, answer box with instant grading, hints and solution.
-export default function ProblemView({ date, problem, session, onSession }) {
+// The answer can also be the handwritten scratchpad: ref.checkImage(dataUrl).
+export default function ProblemView({ date, problem, session, onSession, scratchpad, onOpenScratch, ref }) {
   const { t, bi, lang } = useT();
   const [answer, setAnswer] = useState("");
   const [checking, setChecking] = useState(false);
@@ -19,13 +20,17 @@ export default function ProblemView({ date, problem, session, onSession }) {
   const solved = attempts.some((a) => a.correct);
   const isLong = problem.answerType === "proof" || problem.answerType === "text";
 
-  async function check(value = answer) {
+  async function check(value = answer, image) {
     const given = value.trim();
-    if (!given || checking) return;
+    if ((!given && !image) || checking) return;
     setChecking(true);
     setError(false);
     try {
-      const res = await api.check({ date, pid: problem.id, answer: given, lang, localCorrect: matchesLocally(problem, given) });
+      const res = await api.check(
+        image
+          ? { date, pid: problem.id, answer: given, image, lang }
+          : { date, pid: problem.id, answer: given, lang, localCorrect: matchesLocally(problem, given) },
+      );
       onSession(res.session);
       if (res.correct) setAnswer("");
     } catch {
@@ -33,6 +38,15 @@ export default function ProblemView({ date, problem, session, onSession }) {
     } finally {
       setChecking(false);
     }
+  }
+
+  useImperativeHandle(ref, () => ({ checkImage: (image) => check(answer, image) }));
+
+  // Grade straight from the scratchpad; with nothing written yet, open it.
+  function checkScratch() {
+    const image = scratchpad?.current?.hasWork() ? scratchpad.current.exportImage() : null;
+    if (image) check(answer, image);
+    else onOpenScratch?.();
   }
 
   async function event(op) {
@@ -99,6 +113,12 @@ export default function ProblemView({ date, problem, session, onSession }) {
             {checking ? t("checking") : t("check")}
           </button>
         </div>
+      )}
+
+      {problem.answerType !== "choice" && !solved && (
+        <button onClick={checkScratch} disabled={checking} className="mt-2 text-sm text-neutral-500 underline-offset-2 active:underline disabled:opacity-30">
+          ✎ {t("checkScratch")}
+        </button>
       )}
 
       {last && (
