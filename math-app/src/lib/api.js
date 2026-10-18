@@ -76,7 +76,6 @@ export const api = {
   makePlan: () => json("/api/plan", { method: "POST" }),
   check: (body) => json("/api/check", { method: "POST", body }),
   event: (body) => json("/api/session", { method: "POST", body }),
-  lecture: (body) => json("/api/lecture", { method: "POST", body }),
   transcribe: (body) => json("/api/transcribe", { method: "POST", body }),
   chat: (body, onText) => streamText("/api/chat", body, onText),
   talk: (before) => json(`/api/talk${before != null ? `?before=${before}` : ""}`),

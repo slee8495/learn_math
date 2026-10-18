@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import ProblemView from "./ProblemView.jsx";
 import Scratchpad from "./Scratchpad.jsx";
 import ChatSheet from "./ChatSheet.jsx";
-import LectureSheet from "./LectureSheet.jsx";
 import { useT } from "../lib/i18n.js";
 
 const isDone = (session, pid) =>
@@ -28,7 +27,7 @@ export default function TodayView({ date, initialPid, plan, session, onSession }
   const { t, bi } = useT();
   const problems = plan.problems;
   const [activeId, setActiveId] = useState(initialPid || problems[0]?.id);
-  const [sheet, setSheet] = useState(null); // "scratch" | "chat" | "lecture"
+  const [sheet, setSheet] = useState(null); // "scratch" | "chat"
   const scratchRef = useRef(null);
   const problemRef = useRef(null);
 
@@ -40,7 +39,6 @@ export default function TodayView({ date, initialPid, plan, session, onSession }
   const chatThread = session.chat
     .filter((m) => m.pid === problem.id)
     .map((m) => ({ role: m.role, text: m.text, image: m.image || undefined }));
-  const requested = session.lectures.filter((l) => l.pid === problem.id);
 
   function open(p) {
     setActiveId(p.id);
@@ -106,9 +104,6 @@ export default function TodayView({ date, initialPid, plan, session, onSession }
           <button onClick={() => setSheet("chat")} className="flex-1 rounded-xl bg-neutral-900 py-3 font-medium text-white">
             {t("ask")}
           </button>
-          <button onClick={() => setSheet("lecture")} className="flex-1 rounded-xl border border-neutral-300 py-3 font-medium">
-            ▶ {t("lecture")}
-          </button>
         </div>
       </div>
 
@@ -144,15 +139,6 @@ export default function TodayView({ date, initialPid, plan, session, onSession }
             ],
           }));
         }}
-      />
-      <LectureSheet
-        open={sheet === "lecture"}
-        onClose={() => setSheet(null)}
-        date={date}
-        problem={problem}
-        plan={plan}
-        requested={requested}
-        onLecture={(entry) => onSession((s) => ({ ...s, lectures: [...s.lectures, entry] }))}
       />
     </div>
   );

@@ -3,7 +3,7 @@
 This runs every morning at 5am (California) as a Claude Code routine on the Max
 plan. You are the student's personal math professor. Your job this morning:
 read what happened, write the teacher's record, decide the next move, and
-prepare today's problems and lecture.
+prepare today's problems.
 
 The routine prompt provides `TUTOR_URL` and `TUTOR_TOKEN`; export them in
 every shell command that runs `scripts/tutor.mjs`.
@@ -28,10 +28,8 @@ every shell command that runs `scripts/tutor.mjs`.
    computes the answer from the problem statement, and confirm it matches
    `answer` and every entry in `accept`. Fix the problem or answer if not.
    For `choice` problems, `answer` must be exactly one of `choices`.
-7. For `videos`, only include URLs you have checked exist (WebSearch / WebFetch).
-   If you can't verify, leave the list empty.
-8. Validate: `node scripts/tutor.mjs validate tutor/work/output.json`. Fix all errors and warnings.
-9. Push: `node scripts/tutor.mjs push tutor/work/output.json`.
-10. Finish with a short summary: the move you chose and why, and today's problems.
+7. Validate: `node scripts/tutor.mjs validate tutor/work/output.json`. Fix all errors and warnings.
+8. Push: `node scripts/tutor.mjs push tutor/work/output.json`.
+9. Finish with a short summary: the move you chose and why, and today's problems.
 
 Do not commit or push anything to git. `tutor/work/` is scratch space.

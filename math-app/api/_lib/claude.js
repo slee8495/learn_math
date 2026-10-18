@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import roadmap from "../../tutor/roadmap.js";
 
-// Live features (chat, grading, on-demand lectures, fallback planning) run on
+// Live features (chat, talk, grading, fallback planning) run on
 // the API. The heavy daily planning normally runs on the Max plan via the
 // scheduled routine (tutor/ROUTINE.md) and only falls back to this when needed.
 export const MODEL = "claude-sonnet-5-5";

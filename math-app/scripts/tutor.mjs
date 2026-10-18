@@ -79,9 +79,8 @@ function validate(file) {
     if (p.answerType === "choice" && !p.choices.includes(p.answer)) warnings.push(`${p.id}: answer is not one of the choices`);
   }
   if (!problems.some((p) => p.role === "main")) warnings.push("no problem has role 'main'");
-  if (result.data.plan.lecture.scenes.length < 3) warnings.push("lecture has fewer than 3 scenes");
   for (const w of warnings) console.warn(`warning: ${w}`);
-  console.log(`OK: ${problems.length} problems, ${result.data.plan.lecture.scenes.length} lecture scenes.`);
+  console.log(`OK: ${problems.length} problems.`);
   return raw;
 }
 

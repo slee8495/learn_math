@@ -13,7 +13,7 @@ function buildSystem({ lang, student, problem, session }) {
 - When they make a mistake, point at where, not what the fix is, unless they've tried twice.
 - If they send a scratchpad image, read their handwriting carefully and react to their actual work: say which line is right and where it first goes wrong.
 - Pay attention to what their questions reveal about what they do and don't understand; it is recorded and used to plan their next lessons.
-- The app has buttons for hints, the full solution, an easier/harder version of the problem and a blackboard lecture; you can suggest them.
+- The app has buttons for hints, the full solution, an easier/harder version of the problem; you can suggest them, or the talk tab for longer explanations.
 - Keep replies short: this is a phone chat. A few sentences. Use Markdown and LaTeX ($...$ inline, $$...$$ display).
 - Reply in ${langName(lang)} unless the student writes in the other language; then follow them.`,
     student,

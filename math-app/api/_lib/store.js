@@ -55,7 +55,7 @@ export async function getJournals() {
 }
 
 // Every day's problems with how each went, for the archive tab. Only what a
-// list needs (no solutions, hints or lectures), fetched in one round trip.
+// list needs (no solutions or hints), fetched in one round trip.
 export async function getArchive() {
   const dates = await getPlanDates();
   if (!dates.length) return [];
@@ -155,7 +155,6 @@ export async function buildTutorContext({ recentDays = 7 } = {}) {
         solutionViewed: !!session.solutionViewed[p.id],
       })),
       chat: session.chat.map((m) => ({ role: m.role, problem: m.pid, text: m.text, at: m.at })),
-      lectureRequests: session.lectures.map((l) => l.request),
     })),
     talk: talk.messages
       .filter((m) => m.at >= talkSince)

@@ -28,22 +28,6 @@ export const Problem = z.object({
   solution: Bi.describe("Full step-by-step solution, markdown + LaTeX"),
 });
 
-export const Scene = z.object({
-  board: Bi.describe("What appears on the blackboard: short markdown/LaTeX lines separated by newlines, revealed one line at a time"),
-  say: Bi.describe("What the teacher says aloud during this scene (plain spoken text, no LaTeX)"),
-});
-
-export const Lecture = z.object({
-  title: Bi,
-  scenes: z.array(Scene),
-});
-
-export const Video = z.object({
-  title: z.string(),
-  url: z.string(),
-  why: Bi,
-});
-
 export const Plan = z.object({
   stage: z.string().describe("Stage id from roadmap.json"),
   headline: Bi.describe("Today's theme in a few words"),
@@ -52,8 +36,6 @@ export const Plan = z.object({
     reason: Bi.describe("Why this is today's move, written to the student in 1-2 sentences"),
   }),
   problems: z.array(Problem),
-  lecture: Lecture,
-  videos: z.array(Video).describe("0-2 well-known lectures (3Blue1Brown, MIT OCW, Khan Academy...). Empty if none verified"),
 });
 
 export const MasteryUpdate = z.object({

@@ -15,7 +15,7 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Rendered problem text, solutions, chat and lecture boards. */
+/* Rendered problem text, solutions and chat. */
 .md p {
   margin: 0 0 0.6em;
 }

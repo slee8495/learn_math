@@ -41,8 +41,6 @@ Choose one: diagnose, advance, hold, easier, new_angle, retest, review.
 - hints: exactly 3, from a nudge to nearly the full idea. solution: complete, clear, step-by-step.
 - Use Markdown with LaTeX ($...$ inline, $$...$$ display). Korean and English versions must say the same thing; write natural Korean, not a translation.
 - decision.reason: talk to the student directly, warmly, 1-2 sentences, explaining why today looks the way it does.
-- lecture: a short blackboard lecture (5-9 scenes) on the idea behind today's main problem, built from what you know this student misunderstands. Each scene: board = 1-4 short lines of math/markdown that appear one at a time; say = what the professor says aloud (plain words, no LaTeX, since it is read by text-to-speech; say "x squared", not "x^2"). Do not solve the main problem in the lecture; teach the idea so they can.
-- videos: up to 2 established lectures that fit the topic (3Blue1Brown, MIT OpenCourseWare, Khan Academy, Professor Leonard, etc.). Only include a URL you have verified exists; otherwise leave the list empty.
 
 ## Writing the record
 
