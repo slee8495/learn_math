@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import ProblemView from "./ProblemView.jsx";
 import Scratchpad from "./Scratchpad.jsx";
-import ChatSheet from "./ChatSheet.jsx";
 import { useT } from "../lib/i18n.js";
 
 const isDone = (session, pid) =>
@@ -27,7 +26,7 @@ export default function TodayView({ date, initialPid, plan, session, onSession }
   const { t, bi } = useT();
   const problems = plan.problems;
   const [activeId, setActiveId] = useState(initialPid || problems[0]?.id);
-  const [sheet, setSheet] = useState(null); // "scratch" | "chat"
+  const [scratchOpen, setScratchOpen] = useState(false);
   const scratchRef = useRef(null);
   const problemRef = useRef(null);
 
@@ -36,9 +35,6 @@ export default function TodayView({ date, initialPid, plan, session, onSession }
   const next = done ? suggestNext(problems, session, problem.id) : null;
   const allDone = problems.every((p) => isDone(session, p.id));
 
-  const chatThread = session.chat
-    .filter((m) => m.pid === problem.id)
-    .map((m) => ({ role: m.role, text: m.text, image: m.image || undefined }));
 
   function open(p) {
     setActiveId(p.id);
@@ -78,7 +74,7 @@ export default function TodayView({ date, initialPid, plan, session, onSession }
         session={session}
         onSession={onSession}
         scratchpad={scratchRef}
-        onOpenScratch={() => setSheet("scratch")}
+        onOpenScratch={() => setScratchOpen(true)}
       />
 
       {done && (
@@ -98,46 +94,22 @@ export default function TodayView({ date, initialPid, plan, session, onSession }
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)" }}
       >
         <div className="mx-auto flex max-w-xl gap-2 px-4 pt-2">
-          <button onClick={() => setSheet("scratch")} className="flex-1 rounded-xl border border-neutral-300 py-3 font-medium">
+          <button onClick={() => setScratchOpen(true)} className="flex-1 rounded-xl bg-neutral-900 py-3 font-medium text-white">
             ✎ {t("scratch")}
-          </button>
-          <button onClick={() => setSheet("chat")} className="flex-1 rounded-xl bg-neutral-900 py-3 font-medium text-white">
-            {t("ask")}
           </button>
         </div>
       </div>
 
       <Scratchpad
         ref={scratchRef}
-        open={sheet === "scratch"}
-        onClose={() => setSheet(null)}
+        open={scratchOpen}
+        onClose={() => setScratchOpen(false)}
         storageKey={`mp_scratch_${date}_${problem.id}`}
         attachLabel={t("grade")}
         onAttach={(img) => {
-          setSheet(null);
+          setScratchOpen(false);
           problemRef.current?.checkImage(img);
           window.scrollTo({ top: 0, behavior: "smooth" });
-        }}
-      />
-      <ChatSheet
-        open={sheet === "chat"}
-        onClose={() => setSheet(null)}
-        date={date}
-        problem={problem}
-        initial={chatThread}
-        scratchpad={scratchRef}
-        onOpenScratch={() => setSheet("scratch")}
-        onExchange={(userMsg, reply) => {
-          // mirror what the server saved, so switching problems keeps the thread
-          const pid = problem.id;
-          onSession((s) => ({
-            ...s,
-            chat: [
-              ...s.chat,
-              { role: "user", pid, text: userMsg.text, image: !!userMsg.image },
-              { role: "assistant", pid, text: reply },
-            ],
-          }));
         }}
       />
     </div>

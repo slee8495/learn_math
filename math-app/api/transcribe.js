@@ -1,7 +1,7 @@
 import { gateway, transcribe } from "ai";
 import { checkPasscode } from "./_lib/http.js";
 
-// JSON body with base64 audio (like api/chat.js), not multipart/form-data — Vercel's Node
+// JSON body with base64 audio (like api/talk.js photos), not multipart/form-data — Vercel's Node
 // function helper only auto-parses json/urlencoded/text bodies into req.body, so multipart
 // uploads arrived as undefined here even though the mime type was allowed through.
 

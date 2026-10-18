@@ -77,7 +77,6 @@ export const api = {
   check: (body) => json("/api/check", { method: "POST", body }),
   event: (body) => json("/api/session", { method: "POST", body }),
   transcribe: (body) => json("/api/transcribe", { method: "POST", body }),
-  chat: (body, onText) => streamText("/api/chat", body, onText),
   talk: (before) => json(`/api/talk${before != null ? `?before=${before}` : ""}`),
   sendTalk: (body, onText) => streamText("/api/talk", body, onText),
   talkImage,
