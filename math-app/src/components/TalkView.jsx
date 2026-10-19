@@ -26,13 +26,18 @@ function dayLabel(at, lang) {
   return new Date(at).toLocaleDateString(lang === "ko" ? "ko-KR" : "en-US", { month: "long", day: "numeric", weekday: "short" });
 }
 
+const dayKey = (at) => new Date(at).toLocaleDateString("en-CA"); // local YYYY-MM-DD
+
 // Office hours: one ongoing conversation with the professor, outside any single
 // problem. Photos of handwritten work can be sent for checking. The thread lives
-// on the server and is read when the next days are planned.
+// on the server and is read when the next days are planned. The screen opens on
+// today only; earlier days are a tap away (the professor still sees them).
 export default function TalkView({ active }) {
   const { t, lang } = useT();
   const [messages, setMessages] = useState([]);
   const [start, setStart] = useState(0);
+  const [today, setToday] = useState(() => dayKey(Date.now()));
+  const [shownFrom, setShownFrom] = useState(null); // earliest day shown; null = today
   const [status, setStatus] = useState("loading"); // loading | ready | error
   const [input, setInput] = useState("");
   const [photos, setPhotos] = useState([]);
@@ -65,12 +70,39 @@ export default function TalkView({ active }) {
     if (active) requestAnimationFrame(scrollToBottom);
   }, [active]);
 
-  async function loadEarlier() {
-    const page = await api.talk(start).catch(() => null);
-    if (!page) return;
+  // The app can sit open overnight: roll over to the new day when it's opened
+  // again, not in the middle of a conversation.
+  useEffect(() => {
+    const roll = () => {
+      if (document.visibilityState !== "visible") return;
+      const now = dayKey(Date.now());
+      if (now === today) return;
+      setToday(now);
+      setShownFrom(null);
+      requestAnimationFrame(scrollToBottom);
+    };
+    if (active) roll();
+    document.addEventListener("visibilitychange", roll);
+    return () => document.removeEventListener("visibilitychange", roll);
+  }, [active, today]);
+
+  const from = shownFrom ?? today;
+  const visible = messages.filter((m) => dayKey(m.at) >= from);
+  const hidden = messages.length - visible.length;
+
+  // Reveal one more day: from what's already loaded, or the next page back.
+  async function showEarlier() {
+    let older = messages.slice(0, hidden);
+    if (!older.length) {
+      const page = await api.talk(start).catch(() => null);
+      if (!page) return;
+      older = page.messages;
+      setMessages((prev) => [...page.messages, ...prev]);
+      setStart(page.start);
+    }
+    if (!older.length) return;
     const before = document.documentElement.scrollHeight;
-    setMessages((prev) => [...page.messages, ...prev]);
-    setStart(page.start);
+    setShownFrom(dayKey(older[older.length - 1].at));
     // keep the view where it was instead of jumping to the new top
     requestAnimationFrame(() => window.scrollBy(0, document.documentElement.scrollHeight - before));
   }
@@ -120,16 +152,18 @@ export default function TalkView({ active }) {
 
   return (
     <div className="pb-44">
-      {start > 0 && (
-        <button onClick={loadEarlier} className="mb-4 w-full text-center text-sm text-neutral-500">
+      {(hidden > 0 || start > 0) && (
+        <button onClick={showEarlier} className="mb-4 w-full text-center text-sm text-neutral-500">
           {t("loadEarlier")}
         </button>
       )}
-      {messages.length === 0 && <p className="pt-8 text-[15px] leading-relaxed text-neutral-500">{t("talkEmpty")}</p>}
+      {visible.length === 0 && (
+        <p className="pt-8 text-[15px] leading-relaxed text-neutral-500">{t(messages.length ? "talkNewDay" : "talkEmpty")}</p>
+      )}
 
       <div className="space-y-3">
-        {messages.map((m, i) => {
-          const newDay = i === 0 || dayLabel(m.at, lang) !== dayLabel(messages[i - 1].at, lang);
+        {visible.map((m, i) => {
+          const newDay = i === 0 || dayLabel(m.at, lang) !== dayLabel(visible[i - 1].at, lang);
           return (
             <div key={m.id || i}>
               {newDay && <p className="py-3 text-center text-xs text-neutral-400">{dayLabel(m.at, lang)}</p>}

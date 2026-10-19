@@ -67,7 +67,11 @@ const STRINGS = {
     ko: "언제든 편하게 물어보세요. 푼 흔적을 사진으로 올리면 어디서 막혔는지, 맞게 풀었는지 같이 봐요. 여기서 나눈 이야기도 다음 수업 준비에 반영돼요.",
     en: "Ask me anything, anytime. Send a photo of your work and we'll find where you got stuck or check that it's right. What we talk about here shapes your next lessons.",
   },
-  loadEarlier: { ko: "이전 대화 더 보기", en: "Load earlier" },
+  loadEarlier: { ko: "지난 대화 보기", en: "Show earlier days" },
+  talkNewDay: {
+    ko: "새 하루예요. 지난 대화는 위에서 볼 수 있고, 교수님도 다 기억하고 있어요.",
+    en: "A new day. Earlier days are above, and your professor remembers all of it.",
+  },
   done: { ko: "완료", en: "Done" },
   pen: { ko: "펜", en: "Pen" },
   eraser: { ko: "지우개", en: "Eraser" },
