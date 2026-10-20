@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import CodeKeys from "./CodeKeys.jsx";
 import { runSql, sqlTables } from "../lib/sqlrun.js";
-import { pythonReady, runPython } from "../lib/pyrun.js";
+import { pythonData, pythonReady, runPython } from "../lib/pyrun.js";
 import { brief, sameOutput } from "../lib/compare.js";
 import { useT } from "../lib/i18n.js";
 
@@ -68,8 +69,15 @@ function Output({ run }) {
   const { t } = useT();
   return (
     <div className="mt-3 rounded-xl bg-neutral-50 px-3 py-2.5">
-      <p className="mb-1.5 text-xs text-neutral-400">{t("output")}</p>
+      {run.last && (
+        <div className="mb-3">
+          <p className="mb-1.5 text-xs text-neutral-400">{t("lastLine")}</p>
+          <ResultTable result={run.last} />
+        </div>
+      )}
+      <p className="mb-1.5 text-xs text-neutral-400">{run.error ? t("output") : "result"}</p>
       {run.error && <pre className="overflow-x-auto font-mono text-[12px] whitespace-pre-wrap text-red-600">{run.error}</pre>}
+      {(run.missing || run.none) && <p className="text-sm text-neutral-500">{t(run.missing ? "resultMissing" : "resultNone")}</p>}
       {!run.error && <ResultTable result={run} />}
       {run.stdout && (
         <>
@@ -81,29 +89,71 @@ function Output({ run }) {
   );
 }
 
-// The problem's sample data: SQL tables as tables, Python setup as code.
-function DataPanel({ language, setup }) {
-  const [tables, setTables] = useState(null);
-  useEffect(() => {
-    if (language === "sql") sqlTables(setup).then(setTables, () => setTables([]));
-  }, [language, setup]);
-  if (language === "python")
-    return <pre className="overflow-x-auto rounded-xl bg-neutral-50 px-3 py-2.5 font-mono text-[12px]">{setup}</pre>;
-  if (!tables) return null;
+// The problem's sample data: SQL tables, or the Python variables the setup makes.
+const loadData = (language, setup) => (language === "sql" ? sqlTables(setup) : pythonData(setup)).catch(() => []);
+
+function DataPanel({ data }) {
+  const { t } = useT();
+  if (!data) return <p className="text-sm text-neutral-500">{t("loading")}</p>;
   return (
     <div className="space-y-4 rounded-xl bg-neutral-50 px-3 py-2.5">
-      {tables.map((tb) => (
-        <ResultTable key={tb.name} result={tb} title={tb.name} />
+      {data.map((d) => (
+        <div key={d.name}>
+          {d.columns ? (
+            <ResultTable result={d} title={d.name} />
+          ) : (
+            <>
+              <p className="mb-1 font-mono text-xs font-semibold">{d.name}</p>
+              <pre className="overflow-x-auto font-mono text-[12px]">{asText(d.value)}</pre>
+            </>
+          )}
+        </div>
       ))}
     </div>
   );
 }
 
+// A JSON value from Python as you'd read it: strings unquoted, with real line breaks.
+function asText(json) {
+  try {
+    const v = JSON.parse(json);
+    return typeof v === "string" ? v : json;
+  } catch {
+    return json;
+  }
+}
+
+// Names worth a key: SQL tables and columns; Python variables and quoted column names.
+function namesOf(language, data) {
+  const names = new Set();
+  for (const d of data || []) {
+    names.add(d.name);
+    for (const c of d.columns || []) names.add(language === "python" ? `'${c}'` : c);
+  }
+  return [...names];
+}
+
+// Type text at the editor's cursor the way the keyboard would, so the caret
+// moves with it at once and undo still works; the input event updates state.
+// "|" in a token marks where the caret should land.
+function typeInto(el, token) {
+  el.focus();
+  let text = token.replace("|", "");
+  const back = token.includes("|") ? text.length - token.indexOf("|") : 0;
+  // a word typed right after another word gets a space between them
+  if (/[\w)'"]$/.test(el.value.slice(0, el.selectionStart)) && /^[A-Za-z]/.test(text)) text = ` ${text}`;
+  if (!document.execCommand("insertText", false, text)) {
+    el.setRangeText(text, el.selectionStart, el.selectionEnd, "end");
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+  if (back) el.selectionStart = el.selectionEnd = el.selectionStart - back;
+}
+
 // Keep the indentation of the line above on Enter (one more level after a
 // Python colon); Tab inserts spaces. No autocomplete, by design.
-function onEditorKey(e, setCode, language) {
+function onEditorKey(e, language) {
   const el = e.currentTarget;
-  const { selectionStart: a, selectionEnd: b, value } = el;
+  const { selectionStart: a, value } = el;
   let insert = null;
   if (e.key === "Tab" && !e.shiftKey) insert = "    ";
   if (e.key === "Enter" && !e.nativeEvent.isComposing) {
@@ -113,11 +163,7 @@ function onEditorKey(e, setCode, language) {
   }
   if (insert === null) return;
   e.preventDefault();
-  const next = value.slice(0, a) + insert + value.slice(b);
-  setCode(next);
-  requestAnimationFrame(() => {
-    el.selectionStart = el.selectionEnd = a + insert.length;
-  });
+  typeInto(el, insert);
 }
 
 // The answer box of a SQL/Python problem: a plain code editor, a run button
@@ -131,7 +177,25 @@ export default function CodeAnswer({ problem, draftKey, disabled, onSubmit }) {
   const [run, setRun] = useState(null);
   const [busy, setBusy] = useState(null); // null | "run" | "submit"
   const [showData, setShowData] = useState(false);
+  const [data, setData] = useState(null);
+  const [focused, setFocused] = useState(false);
   const editor = useRef(null);
+  const blurTimer = useRef(null);
+
+  // the data feeds both the panel and the name keys; fetched once it's needed
+  const needData = showData || focused;
+  useEffect(() => {
+    if (needData && !data) loadData(language, setup).then(setData);
+  }, [needData, data, language, setup]);
+
+  const type = (token) => typeInto(editor.current, token);
+
+  function move(step) {
+    const el = editor.current;
+    const at = Math.max(0, Math.min(code.length, el.selectionStart + step));
+    el.focus();
+    el.selectionStart = el.selectionEnd = at;
+  }
 
   const setCode = (value) => {
     setCodeState(value);
@@ -178,7 +242,7 @@ export default function CodeAnswer({ problem, draftKey, disabled, onSubmit }) {
       </button>
       {showData && (
         <div className="mb-3">
-          <DataPanel language={language} setup={setup} />
+          <DataPanel data={data} />
         </div>
       )}
 
@@ -186,7 +250,10 @@ export default function CodeAnswer({ problem, draftKey, disabled, onSubmit }) {
         ref={editor}
         value={code}
         onChange={(e) => setCode(e.target.value)}
-        onKeyDown={(e) => onEditorKey(e, setCode, language)}
+        onKeyDown={(e) => onEditorKey(e, language)}
+        onFocus={() => (clearTimeout(blurTimer.current), setFocused(true))}
+        // a tapped key may blur for a moment before it refocuses the editor
+        onBlur={() => (blurTimer.current = setTimeout(() => setFocused(false), 200))}
         placeholder={t("codePlaceholder")}
         autoCapitalize="off"
         autoCorrect="off"
@@ -215,6 +282,7 @@ export default function CodeAnswer({ problem, draftKey, disabled, onSubmit }) {
       {busy && language === "python" && !pythonReady && <p className="mt-2 text-sm text-neutral-500">{t("loadingPython")}</p>}
       {busy === "run" && (language === "sql" || pythonReady) && <p className="mt-2 text-sm text-neutral-500">{t("running")}</p>}
       {run && !busy && <Output run={run} />}
+      <CodeKeys active={focused} language={language} names={namesOf(language, data)} onType={type} onMove={move} />
     </div>
   );
 }

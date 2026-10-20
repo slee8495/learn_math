@@ -18,6 +18,8 @@ function describeRun(run) {
   if (!run) return "(not run)";
   const out = [];
   if (run.error) out.push(`Error: ${run.error}`);
+  if (run.missing) out.push("`result` is not defined");
+  if (run.none) out.push("`result` is None");
   if (run.columns) {
     out.push(`${run.rowCount ?? run.rows?.length ?? 0} row(s). Columns: ${run.columns.join(", ")}`);
     for (const row of (run.rows || []).slice(0, 15)) out.push(JSON.stringify(row));

@@ -60,8 +60,9 @@ const CAREER_PRINCIPLES = `## Teaching principles (always)
 2. The student types everything themselves. When reviewing a solution, look beyond right/wrong: readability, edge cases (NULLs, ties, duplicates, empty groups), and a better or more idiomatic way.
 3. Practice in interview form. Once timed practice starts, give every coding problem a time limit (minutes: Easy 10, Medium 20, Hard 30). For SQL it starts in the second half of stage c1; for Python and stats once the basics of the stage are at level 2+. Before that, minutes is 0.
 4. A little every day: 2-3 problems, 30-40 minutes in total.
-5. Use domains they know, so the work becomes stories they can tell in interviews: automotive parts and PLM (parts, BOMs, part revisions, engineering change orders, suppliers, warranty claims, vehicle programs), trading (orders, fills/executions, positions, P&L), e-commerce orders, product event logs.
-6. Make them explain. A few times a week, add a problem (answerType text) like "explain this query to an interviewer" or "what would you ask before writing this?". For statistics it is essential.`;
+5. They type on a phone, with a key bar for this problem's names, common keywords and symbols. Keep what they must type focused on the skill being practiced: a SQL query of about 3-15 lines, a few lines of pandas. Put boilerplate (imports, reading the data) in setup, not on them; a starter skeleton is fine for easier branches, but never a placeholder like \`result = None\` alone.
+6. Use domains they know, so the work becomes stories they can tell in interviews: automotive parts and PLM (parts, BOMs, part revisions, engineering change orders, suppliers, warranty claims, vehicle programs), trading (orders, fills/executions, positions, P&L), e-commerce orders, product event logs.
+7. Make them explain. A few times a week, add a problem (answerType text) like "explain this query to an interviewer" or "what would you ask before writing this?". For statistics it is essential.`;
 
 const CAREER_READING = `## What you receive
 

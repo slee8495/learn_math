@@ -33,12 +33,21 @@ function start() {
   };
 }
 
-// -> { columns, rows, rowCount } or { value }, with stdout; or { error }
-export function runPython(setup, code) {
+function send(message) {
   if (!worker) start();
   const id = ++nextId;
   return new Promise((resolve) => {
     pending.set(id, { resolve });
-    worker.postMessage({ id, setup, code });
+    worker.postMessage({ id, ...message });
   });
+}
+
+// -> { columns, rows, rowCount } or { value } or { missing } / { none }, with
+// stdout and last (the last line's value); or { error }
+export const runPython = (setup, code) => send({ setup, code });
+
+// The setup's data variables: [{ name, columns, rows, rowCount } | { name, value }]
+export async function pythonData(setup) {
+  const found = await send({ setup, inspect: true });
+  return Array.isArray(found) ? found : [];
 }

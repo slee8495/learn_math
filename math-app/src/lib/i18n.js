@@ -119,6 +119,12 @@ const STRINGS = {
   noRows: { ko: "결과 없음 (0행)", en: "No rows" },
   output: { ko: "실행 결과", en: "Output" },
   printed: { ko: "출력", en: "Printed" },
+  lastLine: { ko: "마지막 줄 값", en: "Last line" },
+  resultMissing: { ko: "아직 result가 없어요. 최종 답을 result = ... 로 넣으세요.", en: "No result yet. Put your final answer in result = ..." },
+  resultNone: {
+    ko: "result가 아직 None이에요. 코드를 완성해 답을 넣으세요. (함수에 return이 없거나, inplace=True처럼 None을 돌려주는 메서드를 result에 넣었을 수도 있어요.)",
+    en: "result is still None. Finish the code and put your answer in it. (A function without return, or a method like inplace=True, gives None.)",
+  },
   submissions: { ko: "제출 기록", en: "Submissions" },
   timeLimit: { ko: "제한", en: "Limit" },
   overTime: { ko: "시간 초과", en: "Over time" },

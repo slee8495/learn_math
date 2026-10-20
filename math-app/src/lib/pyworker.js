@@ -4,9 +4,12 @@ const PYODIDE = "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/";
 
 // _run executes setup then the code in a fresh namespace and returns `result`
 // as JSON: a table ({ columns, rows, rowCount }) for a DataFrame/Series (a
-// non-default index becomes columns), otherwise { value }; plus what it printed.
+// non-default index becomes columns), otherwise { value }; plus what it printed,
+// and, like a notebook, the value of the last line when it's an expression
+// ({ last }). A missing or None result is flagged (missing / none), not an error.
+// _inspect runs only the setup and returns its data variables, for the data panel.
 const HELPER = `
-import io, json, contextlib, traceback
+import ast, io, json, contextlib, traceback, types
 import numpy as np
 import pandas as pd
 
@@ -41,17 +44,41 @@ def _error(e, label):
 def _run(setup, code):
     ns = {}
     out = io.StringIO()
+    last = None
     try:
         with contextlib.redirect_stdout(out):
             exec(compile(setup, "<setup>", "exec"), ns)
-            exec(compile(code, "<code>", "exec"), ns)
-            if "result" not in ns:
-                raise NameError("result is not defined: assign your final answer to result")
+            tree = ast.parse(code, "<code>")
+            tail = tree.body.pop() if tree.body and isinstance(tree.body[-1], ast.Expr) else None
+            exec(compile(tree, "<code>", "exec"), ns)
+            if tail is not None:
+                last = eval(compile(ast.Expression(tail.value), "<code>", "eval"), ns)
+        if "result" not in ns:
+            r = {"missing": True}
+        elif ns["result"] is None:
+            r = {"none": True}
+        else:
             r = _norm(ns["result"])
+        if last is not None:
+            r["last"] = _norm(last)
     except Exception as e:
         r = {"error": _error(e, "<code>")}
     r["stdout"] = out.getvalue()[-4000:]
     return json.dumps(r, ensure_ascii=False)
+
+def _inspect(setup):
+    ns = {}
+    try:
+        with contextlib.redirect_stdout(io.StringIO()):
+            exec(compile(setup, "<setup>", "exec"), ns)
+    except Exception:
+        return "[]"
+    found = []
+    for name, v in ns.items():
+        if name.startswith("_") or isinstance(v, (types.ModuleType, types.FunctionType, type)):
+            continue
+        found.append({"name": name, **_norm(v)})
+    return json.dumps(found, ensure_ascii=False)
 `;
 
 let ready;
@@ -64,14 +91,20 @@ async function boot() {
   return py;
 }
 
-self.onmessage = async ({ data: { id, setup, code } }) => {
+self.onmessage = async ({ data: { id, setup, code, inspect } }) => {
+  let py;
   try {
-    const py = await (ready ??= boot());
-    self.postMessage({ id, started: true });
-    const run = py.globals.get("_run");
-    self.postMessage({ id, result: JSON.parse(run(setup, code)) });
+    py = await (ready ??= boot());
   } catch (err) {
-    ready = null;
+    ready = null; // try loading again next time
     self.postMessage({ id, result: { error: `Python could not load: ${err.message}` } });
+    return;
+  }
+  try {
+    self.postMessage({ id, started: true });
+    const result = inspect ? py.globals.get("_inspect")(setup) : py.globals.get("_run")(setup, code);
+    self.postMessage({ id, result: JSON.parse(result) });
+  } catch (err) {
+    self.postMessage({ id, result: { error: err.message } });
   }
 };
