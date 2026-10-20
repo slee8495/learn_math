@@ -163,8 +163,24 @@ export async function buildTutorContext({ recentDays = 7 } = {}) {
 }
 
 // Validate and store one tutoring cycle's output as the plan for `date`.
-export async function applyTutorOutput(raw, date) {
+// With extraRound, the new problems are added to that day's existing plan as
+// its next round (ids prefixed so each round's attempts stay separate), and the
+// day's headline and decision become the new round's.
+export async function applyTutorOutput(raw, date, { extraRound = false } = {}) {
   const out = TutorOutput.parse(raw);
+  let plan = { ...out.plan, date };
+  if (extraRound) {
+    const prev = await getPlan(date);
+    const round = (prev.round || 1) + 1;
+    plan = {
+      ...plan,
+      round,
+      problems: [
+        ...prev.problems.map((p) => ({ round: 1, ...p })),
+        ...out.plan.problems.map((p) => ({ ...p, id: `r${round}${p.id}`, round })),
+      ],
+    };
+  }
   const state = await getState();
   const mastery = { ...state.mastery };
   for (const m of out.mastery) {
@@ -178,10 +194,10 @@ export async function applyTutorOutput(raw, date) {
     startedOn: state.startedOn || date,
   };
   await Promise.all([
-    redis.set(`v2:plan:${date}`, { ...out.plan, date }),
+    redis.set(`v2:plan:${date}`, plan),
     redis.zadd("v2:dates", { score: dateScore(date), member: date }),
     redis.set("v2:state", nextState),
     out.journal ? redis.hset("v2:journal", { [out.journal.date]: out.journal }) : null,
   ]);
-  return { date, problems: out.plan.problems.length };
+  return { date, problems: out.plan.problems.length, round: plan.round || 1 };
 }

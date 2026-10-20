@@ -22,9 +22,15 @@ function suggestNext(problems, session, currentId) {
   return remaining[0];
 }
 
-export default function TodayView({ date, initialPid, plan, session, onSession }) {
+const roundOf = (p) => p.round || 1;
+
+export default function TodayView({ date, initialPid, plan, session, onSession, onMore }) {
   const { t, bi } = useT();
-  const problems = plan.problems;
+  // Only one round is shown at a time: the latest, or the one an archive link points into.
+  const start = plan.problems.find((p) => p.id === initialPid);
+  const round = start ? roundOf(start) : plan.round || 1;
+  const problems = plan.problems.filter((p) => roundOf(p) === round);
+  const [more, setMore] = useState("idle"); // idle | making | failed
   const [activeId, setActiveId] = useState(initialPid || problems[0]?.id);
   const [scratchOpen, setScratchOpen] = useState(false);
   const scratchRef = useRef(null);
@@ -35,6 +41,14 @@ export default function TodayView({ date, initialPid, plan, session, onSession }
   const next = done ? suggestNext(problems, session, problem.id) : null;
   const allDone = problems.every((p) => isDone(session, p.id));
 
+  async function makeMore() {
+    setMore("making");
+    try {
+      await onMore();
+    } catch {
+      setMore("failed");
+    }
+  }
 
   function open(p) {
     setActiveId(p.id);
@@ -84,7 +98,20 @@ export default function TodayView({ date, initialPid, plan, session, onSession }
               {t("next")}: {t(`role_${next.role}`)} →
             </button>
           ) : (
-            allDone && <p className="text-[15px] leading-relaxed text-neutral-600">{t("allDone")}</p>
+            allDone && (
+              <>
+                <p className="text-[15px] leading-relaxed text-neutral-600">{t("allDone")}</p>
+                {onMore && round === (plan.round || 1) &&
+                  (more === "making" ? (
+                    <p className="mt-5 text-[15px] text-neutral-500">{t("makingMore")}</p>
+                  ) : (
+                    <button onClick={makeMore} className="mt-5 w-full rounded-xl border border-neutral-900 py-3.5 font-medium">
+                      {t("oneMore")}
+                    </button>
+                  ))}
+                {more === "failed" && <p className="mt-2 text-sm text-red-600">{t("loadFailed")}</p>}
+              </>
+            )
           )}
         </div>
       )}

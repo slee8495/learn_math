@@ -55,6 +55,8 @@ const STRINGS = {
   showSolution: { ko: "풀이 보기", en: "Show solution" },
   confirmSolution: { ko: "정말 볼까요? 한 번 더 누르세요", en: "Sure? Tap again" },
   next: { ko: "다음 문제", en: "Next problem" },
+  oneMore: { ko: "↻ 한 세트 더 풀기", en: "↻ Another set" },
+  makingMore: { ko: "AI 교수가 새 문제를 준비하고 있어요… (1~3분)", en: "Your professor is preparing a new set… (1–3 min)" },
   allDone: { ko: "오늘 문제를 모두 마쳤어요. 내일 새벽에 AI 교수가 오늘 기록을 읽고 다음 문제를 준비해요.", en: "All done for today. Tomorrow morning your professor will read today's work and plan what's next." },
 
   send: { ko: "보내기", en: "Send" },

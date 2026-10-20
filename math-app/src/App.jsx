@@ -171,10 +171,15 @@ function Shell() {
           {data.plan && !viewingPast && data.date < data.today && <NoPlan compact onMade={() => load()} />}
           {data.plan ? (
             <TodayView
-              key={`${data.date}-${openPid}`}
+              key={`${data.date}-${openPid}-${data.plan.round || 1}`}
               date={data.date}
               initialPid={openPid}
-              plan={data.plan} session={session} onSession={setSession} />
+              plan={data.plan} session={session} onSession={setSession}
+              onMore={!viewingPast && data.date === data.today ? async () => {
+                await api.makePlan({ more: true });
+                setOpenPid(null);
+                await load();
+              } : null} />
           ) : (
             <NoPlan firstDay={!data.dates?.length} onMade={() => load()} />
           )}
