@@ -81,7 +81,8 @@ export const python = {
         en: "Cleans a messy CSV, aggregates it and draws a conclusion in 30 minutes.",
       },
       topics: [
-        { id: "py-basics", ko: "Python 기본기: 리스트/딕셔너리/컴프리헨션, 함수", en: "Python fundamentals: lists, dicts, comprehensions, functions" },
+        { id: "py-basics", ko: "Python 기본기: 리스트/딕셔너리/컴프리헨션", en: "Python fundamentals: lists, dicts, comprehensions" },
+        { id: "py-functions", ko: "함수 잘 쓰기: def, 인자/기본값, return, 작은 함수로 나누기", en: "Writing functions well: def, parameters/defaults, return, splitting into small functions" },
         { id: "pd-io-clean", ko: "pandas: 불러오기, 타입 정리, 결측치/중복 처리", en: "pandas: loading, dtypes, missing values, duplicates" },
         { id: "pd-groupby", ko: "pandas: groupby, agg, transform, pivot", en: "pandas: groupby, agg, transform, pivot" },
         { id: "pd-merge", ko: "pandas: merge/join/concat, SQL과 대응시키기", en: "pandas: merge/join/concat, mapping to SQL" },
