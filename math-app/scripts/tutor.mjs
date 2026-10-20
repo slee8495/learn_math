@@ -175,6 +175,11 @@ const [cmd, file, dateArg] = positional;
 
 if (cmd === "pull") {
   const context = call("GET");
+  // A deployment from before the library ignores ?subject= and answers with math.
+  if ((context.subject || "math") !== subject) {
+    console.error(`The server answered with ${context.subject || "math"} data for subject=${subject}; it needs the library deploy first. Skip this subject.`);
+    process.exit(1);
+  }
   mkdirSync(workDir, { recursive: true });
   writeFileSync(contextFile, JSON.stringify(context, null, 2));
   console.log(
