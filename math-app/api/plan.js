@@ -1,9 +1,9 @@
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { allowMethods, checkPasscode, fail } from "./_lib/http.js";
 import { FALLBACK, MODEL, client } from "./_lib/claude.js";
-import { applyTutorOutput, buildTutorContext, getPlan, redis, todayCA } from "./_lib/store.js";
-import { PROFESSOR_GUIDE } from "../tutor/professor.js";
-import { TutorOutput } from "../tutor/schema.js";
+import { applyTutorOutput, buildTutorContext, getPlan, key, redis, subjectOf, todayCA } from "./_lib/store.js";
+import { professorGuide } from "../tutor/professor.js";
+import { tutorOutputFor } from "../tutor/schema.js";
 
 // Fallback planner on the API. Normally the 5am Max-plan routine writes each
 // day's plan; this runs only when the student asks for today's plan and the
@@ -14,8 +14,9 @@ export default async function handler(req, res) {
   if (!allowMethods(req, res, ["POST"]) || !checkPasscode(req, res)) return;
   const date = todayCA();
   const more = !!req.body?.more;
+  const subject = subjectOf(req.body?.subject);
   try {
-    const existing = await getPlan(date);
+    const existing = await getPlan(subject, date);
     if (existing && !more) {
       res.status(200).json({ date, created: false });
       return;
@@ -24,19 +25,20 @@ export default async function handler(req, res) {
       res.status(400).json({ error: "no plan today yet" });
       return;
     }
-    const locked = await redis.set(`v2:lock:plan:${date}`, 1, { nx: true, ex: 600 });
+    const lock = key(subject, `lock:plan:${date}`);
+    const locked = await redis.set(lock, 1, { nx: true, ex: 600 });
     if (!locked) {
       res.status(409).json({ error: "already generating" });
       return;
     }
 
     try {
-      const context = await buildTutorContext();
+      const context = await buildTutorContext(subject);
       const stream = client.beta.messages.stream({
         model: MODEL,
         max_tokens: 64000,
-        output_config: { effort: "medium", format: betaZodOutputFormat(TutorOutput) },
-        system: PROFESSOR_GUIDE,
+        output_config: { effort: "medium", format: betaZodOutputFormat(tutorOutputFor(subject)) },
+        system: professorGuide(subject),
         messages: [
           {
             role: "user",
@@ -50,10 +52,10 @@ export default async function handler(req, res) {
       const message = await stream.finalMessage();
       if (message.stop_reason !== "end_turn") throw new Error(`Planning stopped early: ${message.stop_reason}`);
       const text = message.content.find((b) => b.type === "text")?.text;
-      const result = await applyTutorOutput(JSON.parse(text), date, { extraRound: more });
+      const result = await applyTutorOutput(subject, JSON.parse(text), date, { extraRound: more });
       res.status(200).json({ ...result, created: true });
     } finally {
-      await redis.del(`v2:lock:plan:${date}`);
+      await redis.del(lock);
     }
   } catch (err) {
     fail(res, err, "plan");

@@ -58,26 +58,36 @@ async function streamText(path, body, onText) {
 // linked, and kept as object URLs for the rest of the visit.
 const imageUrls = new Map();
 
-async function talkImage(id) {
-  if (!imageUrls.has(id)) {
-    const pending = request(`/api/talk?img=${encodeURIComponent(id)}`).then(async (res) => {
+async function talkImage(subject, id) {
+  const path = `/api/talk?subject=${subject}&img=${encodeURIComponent(id)}`;
+  if (!imageUrls.has(path)) {
+    const pending = request(path).then(async (res) => {
       if (!res.ok) throw new Error("image failed");
       return URL.createObjectURL(await res.blob());
     });
-    imageUrls.set(id, pending);
-    pending.catch(() => imageUrls.delete(id));
+    imageUrls.set(path, pending);
+    pending.catch(() => imageUrls.delete(path));
   }
-  return imageUrls.get(id);
+  return imageUrls.get(path);
+}
+
+// Calls about one subject of the library; every one names the subject.
+export function subjectApi(subject) {
+  const q = `subject=${subject}`;
+  const post = (path) => (body) => json(path, { method: "POST", body: { ...body, subject } });
+  return {
+    today: (date) => json(`/api/today?${q}${date ? `&date=${date}` : ""}`),
+    archive: () => json(`/api/today?${q}&archive=1`),
+    makePlan: post("/api/plan"),
+    check: post("/api/check"),
+    event: post("/api/session"),
+    talk: (before) => json(`/api/talk?${q}${before != null ? `&before=${before}` : ""}`),
+    sendTalk: (body, onText) => streamText("/api/talk", { ...body, subject }, onText),
+    talkImage: (id) => talkImage(subject, id),
+  };
 }
 
 export const api = {
-  today: (date) => json(`/api/today${date ? `?date=${date}` : ""}`),
-  archive: () => json("/api/today?archive=1"),
-  makePlan: (body) => json("/api/plan", { method: "POST", body }),
-  check: (body) => json("/api/check", { method: "POST", body }),
-  event: (body) => json("/api/session", { method: "POST", body }),
+  library: () => json("/api/today?library=1"),
   transcribe: (body) => json("/api/transcribe", { method: "POST", body }),
-  talk: (before) => json(`/api/talk${before != null ? `?before=${before}` : ""}`),
-  sendTalk: (body, onText) => streamText("/api/talk", body, onText),
-  talkImage,
 };

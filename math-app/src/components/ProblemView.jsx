@@ -1,13 +1,53 @@
-import { useImperativeHandle, useState } from "react";
+import { useEffect, useImperativeHandle, useState } from "react";
 import Md from "./Md.jsx";
-import { api } from "../lib/api.js";
+import CodeAnswer from "./CodeAnswer.jsx";
 import { matchesLocally } from "../lib/answer.js";
 import { useT } from "../lib/i18n.js";
+import { useSubject } from "../lib/subject.js";
+
+// When this problem was first opened on this device, kept so the clock
+// survives leaving and coming back.
+function startedAt(key) {
+  try {
+    const saved = Number(localStorage.getItem(key));
+    if (saved) return saved;
+    localStorage.setItem(key, String(Date.now()));
+  } catch {
+    // counts from now
+  }
+  return Date.now();
+}
+
+const clock = (sec) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
+
+// Interview-style time limit: counts up against problem.minutes until solved.
+function useTimer(key, running) {
+  const [start] = useState(() => startedAt(key));
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    if (!running) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [running]);
+  return (now - start) / 1000;
+}
+
+function Timer({ elapsed, minutes }) {
+  const { t } = useT();
+  const over = elapsed > minutes * 60;
+  return (
+    <p className={`mb-3 font-mono text-sm ${over ? "font-semibold text-red-600" : "text-neutral-500"}`}>
+      ⏱ {clock(elapsed)} / {minutes}:00{over ? ` · ${t("overTime")}` : ""}
+    </p>
+  );
+}
 
 // One problem: statement, answer box with instant grading, hints and solution.
 // The answer can also be the handwritten scratchpad: ref.checkImage(dataUrl).
+// SQL/Python problems are answered with code instead (CodeAnswer).
 export default function ProblemView({ date, problem, session, onSession, scratchpad, onOpenScratch, ref }) {
   const { t, bi, lang } = useT();
+  const { id: subject, api, local } = useSubject();
   const [answer, setAnswer] = useState("");
   const [checking, setChecking] = useState(false);
   const [confirmSolution, setConfirmSolution] = useState(false);
@@ -19,17 +59,36 @@ export default function ProblemView({ date, problem, session, onSession, scratch
   const last = attempts[attempts.length - 1];
   const solved = attempts.some((a) => a.correct);
   const isLong = problem.answerType === "proof" || problem.answerType === "text";
+  const isCode = !!problem.code && ["sql", "python"].includes(problem.answerType);
+  // math-style answer keys are bare LaTeX; career subjects' choices and code answers are prose
+  const asMath = ["number", "expression"].includes(problem.answerType) || (problem.answerType === "choice" && subject === "math");
+  const timed = problem.minutes > 0 && !solved && !solutionShown;
+  const elapsed = useTimer(local(`timer_${date}_${problem.id}`), timed);
+
+  async function submitCode(graded) {
+    setChecking(true);
+    setError(false);
+    try {
+      const res = await api.check({ date, pid: problem.id, lang, ...graded, ...(problem.minutes > 0 && { elapsed }) });
+      onSession(res.session);
+    } catch {
+      setError(true);
+    } finally {
+      setChecking(false);
+    }
+  }
 
   async function check(value = answer, image) {
     const given = value.trim();
     if ((!given && !image) || checking) return;
     setChecking(true);
     setError(false);
+    const time = problem.minutes > 0 ? { elapsed } : {};
     try {
       const res = await api.check(
         image
-          ? { date, pid: problem.id, answer: given, image, lang }
-          : { date, pid: problem.id, answer: given, lang, localCorrect: matchesLocally(problem, given) },
+          ? { date, pid: problem.id, answer: given, image, lang, ...time }
+          : { date, pid: problem.id, answer: given, lang, localCorrect: matchesLocally(problem, given), ...time },
       );
       onSession(res.session);
       if (res.correct) setAnswer("");
@@ -68,9 +127,12 @@ export default function ProblemView({ date, problem, session, onSession, scratch
 
   return (
     <div>
+      {timed && <Timer elapsed={elapsed} minutes={problem.minutes} />}
       <Md className="text-[17px] leading-relaxed">{bi(problem.prompt)}</Md>
 
-      {problem.answerType === "choice" && problem.choices.length > 0 ? (
+      {isCode ? (
+        <CodeAnswer problem={problem} draftKey={local(`code_${date}_${problem.id}`)} disabled={checking} onSubmit={submitCode} />
+      ) : problem.answerType === "choice" && problem.choices.length > 0 ? (
         <div className="mt-5 space-y-2">
           {problem.choices.map((c) => (
             <button
@@ -115,7 +177,7 @@ export default function ProblemView({ date, problem, session, onSession, scratch
         </div>
       )}
 
-      {problem.answerType !== "choice" && !solved && (
+      {problem.answerType !== "choice" && !isCode && !solved && (
         <button onClick={checkScratch} disabled={checking} className="mt-2 text-sm text-neutral-500 underline-offset-2 active:underline disabled:opacity-30">
           ✎ {t("checkScratch")}
         </button>
@@ -133,7 +195,9 @@ export default function ProblemView({ date, problem, session, onSession, scratch
 
       {attempts.length > 1 && (
         <p className="mt-2 text-xs text-neutral-400">
-          {t("yourAnswers")}: {attempts.map((a) => `${a.answer}${a.correct ? " ✓" : " ✗"}`).join(" · ")}
+          {isCode
+            ? `${t("submissions")}: ${attempts.map((a) => (a.correct ? "✓" : "✗")).join(" ")}`
+            : `${t("yourAnswers")}: ${attempts.map((a) => `${a.answer}${a.correct ? " ✓" : " ✗"}`).join(" · ")}`}
         </p>
       )}
 
@@ -169,7 +233,7 @@ export default function ProblemView({ date, problem, session, onSession, scratch
           <Md className="text-[15px] leading-relaxed">{bi(problem.solution)}</Md>
           <div className="mt-3 flex gap-2 text-[15px]">
             <span>→</span>
-            <Md>{isLong || problem.answer.includes("$") ? problem.answer : `$${problem.answer}$`}</Md>
+            <Md>{asMath && !problem.answer.includes("$") ? `$${problem.answer}$` : problem.answer}</Md>
           </div>
         </div>
       )}

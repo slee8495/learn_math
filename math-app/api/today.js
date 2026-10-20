@@ -1,23 +1,40 @@
 import { allowMethods, checkPasscode, fail } from "./_lib/http.js";
-import { getArchive, getCurrentPlanDate, getJournals, getPlan, getPlanDates, getSession, getState, todayCA } from "./_lib/store.js";
+import {
+  getArchive,
+  getCurrentPlanDate,
+  getJournals,
+  getLibrary,
+  getPlan,
+  getPlanDates,
+  getSession,
+  getState,
+  subjectOf,
+  todayCA,
+} from "./_lib/store.js";
 
-// Everything the app needs on open: the current day's plan and what has been
-// done on it so far, plus the student's state for the header and records.
-// ?archive=1 instead returns every past problem for the archive tab.
+// Everything the app needs on open: the current day's plan for ?subject= and
+// what has been done on it so far, plus the student's state for the header
+// and records. ?archive=1 instead returns every past problem for the archive
+// tab, and ?library=1 a one-line status of every subject.
 export default async function handler(req, res) {
   if (!allowMethods(req, res, ["GET"]) || !checkPasscode(req, res)) return;
+  const subject = subjectOf(req.query.subject);
   try {
-    if (req.query.archive) {
-      res.status(200).json({ days: await getArchive() });
+    if (req.query.library) {
+      res.status(200).json({ today: todayCA(), subjects: await getLibrary() });
       return;
     }
-    const date = req.query.date || (await getCurrentPlanDate());
-    const [dates, state, journals] = await Promise.all([getPlanDates(), getState(), getJournals()]);
+    if (req.query.archive) {
+      res.status(200).json({ days: await getArchive(subject) });
+      return;
+    }
+    const date = req.query.date || (await getCurrentPlanDate(subject));
+    const [dates, state, journals] = await Promise.all([getPlanDates(subject), getState(subject), getJournals(subject)]);
     if (!date) {
       res.status(200).json({ today: todayCA(), date: null, plan: null, state, journals, dates });
       return;
     }
-    const [plan, session] = await Promise.all([getPlan(date), getSession(date)]);
+    const [plan, session] = await Promise.all([getPlan(subject, date), getSession(subject, date)]);
     res.status(200).json({
       today: todayCA(),
       date,

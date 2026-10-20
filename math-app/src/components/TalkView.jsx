@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import Md from "./Md.jsx";
 import Scratchpad from "./Scratchpad.jsx";
-import { api } from "../lib/api.js";
 import { fileToJpeg } from "../lib/image.js";
 import { useT } from "../lib/i18n.js";
 import { useDictation } from "../lib/voice.js";
+import { useSubject } from "../lib/subject.js";
 
 const MAX_PHOTOS = 4;
 
@@ -13,11 +13,12 @@ const scrollToBottom = () => window.scrollTo({ top: document.documentElement.scr
 // A photo in the thread: a data URL while it's still local, otherwise the
 // stored image id (fetched with the passcode header).
 function Photo({ src, onOpen }) {
+  const { api } = useSubject();
   const local = src.startsWith("data:");
   const [url, setUrl] = useState(local ? src : null);
   useEffect(() => {
     if (!local) api.talkImage(src).then(setUrl, () => {});
-  }, [src, local]);
+  }, [api, src, local]);
   if (!url) return <div className="h-32 w-24 rounded-lg bg-neutral-100" />;
   return <img src={url} alt="" onClick={() => onOpen(url)} className="max-h-48 rounded-lg border border-neutral-200" />;
 }
@@ -34,6 +35,7 @@ const dayKey = (at) => new Date(at).toLocaleDateString("en-CA"); // local YYYY-M
 // today only; earlier days are a tap away (the professor still sees them).
 export default function TalkView({ active }) {
   const { t, lang } = useT();
+  const { info, api, local } = useSubject();
   const [messages, setMessages] = useState([]);
   const [start, setStart] = useState(0);
   const [today, setToday] = useState(() => dayKey(Date.now()));
@@ -158,7 +160,7 @@ export default function TalkView({ active }) {
         </button>
       )}
       {visible.length === 0 && (
-        <p className="pt-8 text-[15px] leading-relaxed text-neutral-500">{t(messages.length ? "talkNewDay" : "talkEmpty")}</p>
+        <p className="pt-8 text-[15px] leading-relaxed text-neutral-500">{t(messages.length ? "talkNewDay" : info.code ? "talkEmptyCode" : "talkEmpty")}</p>
       )}
 
       <div className="space-y-3">
@@ -273,7 +275,7 @@ export default function TalkView({ active }) {
       <Scratchpad
         open={scratchOpen}
         onClose={() => setScratchOpen(false)}
-        storageKey="mp_scratch_talk"
+        storageKey={local("scratch_talk")}
         onAttach={(img) => {
           setPhotos((prev) => [...prev, img].slice(0, MAX_PHOTOS));
           setScratchOpen(false);

@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import roadmap from "../../tutor/roadmap.js";
+import { topicById } from "../../tutor/subjects.js";
 
 // Live features (chat, talk, grading, fallback planning) run on
 // the API. The heavy daily planning normally runs on the Max plan via the
@@ -12,12 +12,8 @@ export const client = new Anthropic(); // reads ANTHROPIC_API_KEY
 // Anthropic's recommended substitute instead of returning a refusal.
 export const FALLBACK = { betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" };
 
-const topicNames = Object.fromEntries(
-  roadmap.stages.flatMap((s) => s.topics.map((t) => [t.id, t])),
-);
-
 export function topicName(id, lang = "en") {
-  return topicNames[id]?.[lang] || id;
+  return topicById(id)?.[lang] || id;
 }
 
 export function langName(lang) {
@@ -41,10 +37,12 @@ export function describeStudent(state, journals) {
 
 export function describeProblem(p) {
   return [
-    `Problem (${p.id}, ${p.role}, topic: ${topicName(p.topicId)}, difficulty ${p.difficulty}/5):`,
+    `Problem (${p.id}, ${p.role}, topic: ${topicName(p.topicId)}, difficulty ${p.difficulty}/5${p.minutes ? `, time limit ${p.minutes} min` : ""}):`,
     p.prompt.en,
     `Answer type: ${p.answerType}. Correct answer: ${p.answer}`,
     p.choices?.length ? `Choices: ${p.choices.join(" | ")}` : "",
+    p.code ? `Data setup:\n${p.code.setup}\nReference solution:\n${p.code.solution}` : "",
+    p.rubric?.length ? `Rubric (key points of a strong answer): ${p.rubric.map((r, i) => `${i + 1}) ${r}`).join(" ")}` : "",
     `Hints prepared: ${p.hints.map((h, i) => `${i + 1}) ${h.en}`).join(" ")}`,
     `Full solution: ${p.solution.en}`,
   ]

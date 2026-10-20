@@ -59,3 +59,39 @@ export const TutorOutput = z.object({
   profileNote: Bi.describe("Running one-paragraph summary of who this student is as a learner, rewritten each time"),
   plan: Plan,
 });
+
+// ---- Career subjects (sql, python, stats) ----
+// Same cycle, plus coding problems whose answer is the student's own code. The
+// app runs it in the browser (SQLite via sql.js, Python via Pyodide) next to
+// the reference solution and compares the two results.
+
+export const CAREER_ANSWER_TYPES = ["number", "expression", "choice", "text", "sql", "python"];
+
+export const CodeSpec = z.object({
+  setup: z
+    .string()
+    .describe("sql: SQLite CREATE TABLE + INSERT statements. python: code that imports pandas as pd and builds the inputs. Runs before the student's code"),
+  starter: z.string().describe("Optional code shown in the editor at the start (a comment or skeleton); empty for a blank editor"),
+  solution: z.string().describe("Reference solution. sql: one query. python: code that assigns the answer to `result`"),
+  ordered: z.boolean().describe("true only if the prompt requires a specific row order"),
+});
+
+export const CareerProblem = Problem.extend({
+  answerType: z.enum(CAREER_ANSWER_TYPES),
+  code: CodeSpec.nullable().describe("Required for sql/python problems, null otherwise"),
+  rubric: z
+    .array(z.string())
+    .describe("For text answers: 3-6 key points a strong interview answer covers (English, for the grader). Empty otherwise"),
+  minutes: z.number().int().describe("Time limit in minutes (Easy 10, Medium 20, Hard 30) once timed practice starts; 0 for no timer"),
+});
+
+export const CareerPlan = Plan.extend({ problems: z.array(CareerProblem) });
+
+export const CareerTutorOutput = TutorOutput.extend({
+  plan: CareerPlan,
+  passedStages: z
+    .array(z.string())
+    .describe("Every stage id whose gate (pass criterion) the student has met so far, cumulative"),
+});
+
+export const tutorOutputFor = (subject) => (subject === "math" ? TutorOutput : CareerTutorOutput);

@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import ProblemView from "./ProblemView.jsx";
 import Scratchpad from "./Scratchpad.jsx";
 import { useT } from "../lib/i18n.js";
+import { useSubject } from "../lib/subject.js";
 
 const isDone = (session, pid) =>
   (session.attempts[pid] || []).some((a) => a.correct) || !!session.solutionViewed[pid];
@@ -26,6 +27,7 @@ const roundOf = (p) => p.round || 1;
 
 export default function TodayView({ date, initialPid, plan, session, onSession, onMore }) {
   const { t, bi } = useT();
+  const { local } = useSubject();
   // Only one round is shown at a time: the latest, or the one an archive link points into.
   const start = plan.problems.find((p) => p.id === initialPid);
   const round = start ? roundOf(start) : plan.round || 1;
@@ -131,7 +133,7 @@ export default function TodayView({ date, initialPid, plan, session, onSession, 
         ref={scratchRef}
         open={scratchOpen}
         onClose={() => setScratchOpen(false)}
-        storageKey={`mp_scratch_${date}_${problem.id}`}
+        storageKey={local(`scratch_${date}_${problem.id}`)}
         attachLabel={t("grade")}
         onAttach={(img) => {
           setScratchOpen(false);

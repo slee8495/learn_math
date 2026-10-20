@@ -1,5 +1,5 @@
-import roadmap from "../../tutor/roadmap.js";
 import { useT } from "../lib/i18n.js";
+import { useSubject } from "../lib/subject.js";
 
 function Level({ level }) {
   return (
@@ -24,6 +24,8 @@ function Section({ title, children }) {
 // Past problems live in the archive tab.
 export default function RecordView({ state, journals }) {
   const { t, bi } = useT();
+  const { roadmap } = useSubject().info;
+  const passed = state.passed || [];
   const stageIndex = Math.max(0, roadmap.stages.findIndex((s) => s.id === state.stage));
   const mastery = state.mastery || {};
 
@@ -54,6 +56,16 @@ export default function RecordView({ state, journals }) {
           return (
             <div key={stage.id} className="mb-5">
               <p className="mb-2 text-sm font-semibold">{bi(stage.name)}</p>
+              {stage.gate && (
+                <p className="-mt-1 mb-2.5 text-xs leading-relaxed text-neutral-500">
+                  {passed.includes(stage.id) ? (
+                    <span className="font-semibold text-green-700">✓ {t("passed")}</span>
+                  ) : (
+                    t("gate")
+                  )}{" "}
+                  · {bi(stage.gate)}
+                </p>
+              )}
               <div className="space-y-2.5">
                 {stage.topics.map((tp) => {
                   const m = mastery[tp.id];

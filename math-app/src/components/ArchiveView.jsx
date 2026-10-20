@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import Md from "./Md.jsx";
-import roadmap from "../../tutor/roadmap.js";
-import { api } from "../lib/api.js";
+import { topicById } from "../../tutor/subjects.js";
 import { useT } from "../lib/i18n.js";
-
-const topics = Object.fromEntries(roadmap.stages.flatMap((s) => s.topics.map((tp) => [tp.id, tp])));
+import { useSubject } from "../lib/subject.js";
 
 // Not solved on their own: never got it right, or only after opening the solution.
 const needsRedo = (p) => !p.solved || p.gaveUp;
@@ -19,6 +17,7 @@ function status(p) {
 // problem, with the answers, chat and solution from then, ready to retry.
 export default function ArchiveView({ onOpen }) {
   const { t, bi } = useT();
+  const { api } = useSubject();
   const [days, setDays] = useState(null);
   const [error, setError] = useState(false);
   const [onlyRedo, setOnlyRedo] = useState(false);
@@ -26,7 +25,7 @@ export default function ArchiveView({ onOpen }) {
 
   useEffect(() => {
     api.archive().then((d) => setDays(d.days), () => setError(true));
-  }, []);
+  }, [api]);
 
   if (error) return <p className="pt-16 text-neutral-600">{t("loadFailed")}</p>;
   if (!days) return <p className="pt-16 text-neutral-400">{t("loading")}</p>;
@@ -56,7 +55,7 @@ export default function ArchiveView({ onOpen }) {
             <option value="">{t("allTopics")}</option>
             {seenTopics.map((id) => (
               <option key={id} value={id}>
-                {topics[id] ? bi(topics[id]) : id}
+                {topicById(id) ? bi(topicById(id)) : id}
               </option>
             ))}
           </select>
@@ -92,7 +91,7 @@ export default function ArchiveView({ onOpen }) {
                           · {t("hint")} {p.hints}
                         </span>
                       )}
-                      <span className="truncate text-neutral-400">· {topics[p.topicId] ? bi(topics[p.topicId]) : p.topicId}</span>
+                      <span className="truncate text-neutral-400">· {topicById(p.topicId) ? bi(topicById(p.topicId)) : p.topicId}</span>
                     </div>
                     <div className="line-clamp-3 text-[15px] leading-relaxed">
                       <Md>{bi(p.prompt)}</Md>

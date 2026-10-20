@@ -48,3 +48,29 @@ body {
   padding: 0 4px;
   border-radius: 4px;
 }
+.md pre {
+  margin: 0 0 0.6em;
+  padding: 10px 12px;
+  overflow-x: auto;
+  background: #f4f4f5;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.md pre code {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+}
+.md table {
+  display: block;
+  overflow-x: auto;
+  margin: 0 0 0.6em;
+  font-size: 13px;
+}
+.md th,
+.md td {
+  padding: 2px 8px;
+  border-bottom: 1px solid #e5e5e5;
+  text-align: left;
+}

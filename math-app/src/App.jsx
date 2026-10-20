@@ -1,10 +1,12 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import TodayView from "./components/TodayView.jsx";
 import RecordView from "./components/RecordView.jsx";
 import TalkView from "./components/TalkView.jsx";
 import ArchiveView from "./components/ArchiveView.jsx";
 import { LangContext, useT } from "./lib/i18n.js";
-import { api, PasscodeError, setPasscode } from "./lib/api.js";
+import { api, subjectApi, PasscodeError, setPasscode } from "./lib/api.js";
+import { localKey, SubjectContext, useSubject } from "./lib/subject.js";
+import { SUBJECTS, subjectById } from "../tutor/subjects.js";
 
 const LANG_KEY = "mp_lang";
 
@@ -45,6 +47,7 @@ function Passcode({ onDone }) {
 
 function NoPlan({ firstDay, onMade, compact = false }) {
   const { t } = useT();
+  const { api } = useSubject();
   const [making, setMaking] = useState(false);
   const [error, setError] = useState("");
 
@@ -94,9 +97,90 @@ function NoPlan({ firstDay, onMade, compact = false }) {
   );
 }
 
-function Shell() {
-  const { t } = useT();
+function LangToggle() {
   const { lang, setLang } = useContext(LangContext);
+  return (
+    <button onClick={() => setLang(lang === "ko" ? "en" : "ko")} className="rounded-full border border-neutral-300 px-3 py-1 text-xs font-medium">
+      {lang === "ko" ? "EN" : "한국어"}
+    </button>
+  );
+}
+
+function ErrorRetry({ onRetry }) {
+  const { t } = useT();
+  return (
+    <div className="pt-16">
+      <p className="text-neutral-600">{t("loadFailed")}</p>
+      <button onClick={onRetry} className="mt-4 rounded-full border border-neutral-300 px-4 py-2 text-sm">
+        {t("retry")}
+      </button>
+    </div>
+  );
+}
+
+const pagePad = { paddingTop: "calc(env(safe-area-inset-top) + 0.75rem)" };
+
+// The first screen: every subject like a book on a shelf, with where it stands today.
+function Library({ onOpen }) {
+  const { t, bi } = useT();
+  const [list, setList] = useState(null);
+  const [status, setStatus] = useState("loading"); // loading | ready | error | passcode
+
+  const load = useCallback(async () => {
+    try {
+      const d = await api.library();
+      setList(Object.fromEntries(d.subjects.map((s) => [s.subject, s])));
+      setStatus("ready");
+    } catch (err) {
+      setStatus(err instanceof PasscodeError ? "passcode" : "error");
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  function line(subject) {
+    const s = list?.[subject.id];
+    if (!s) return "";
+    const stage = subject.roadmap.stages.find((st) => st.id === s.stage) || subject.roadmap.stages[0];
+    if (!s.date) return t("notStarted");
+    const today = s.total && s.done === s.total ? t("allClear") : `${t("todayCount")} ${s.done}/${s.total}`;
+    return `${bi(stage.name)} · ${today}`;
+  }
+
+  return (
+    <div className="mx-auto max-w-xl px-4" style={pagePad}>
+      <header className="mb-8 flex items-center justify-between">
+        <p className="text-[15px] font-bold">duth</p>
+        <LangToggle />
+      </header>
+      {status === "passcode" && <Passcode onDone={() => (setStatus("loading"), load())} />}
+      {status === "error" && <ErrorRetry onRetry={() => (setStatus("loading"), load())} />}
+      {status !== "passcode" && status !== "error" && (
+        <>
+          <h1 className="text-2xl font-bold tracking-tight">{t("library")}</h1>
+          <p className="mt-1 text-[15px] text-neutral-500">{t("libraryNote")}</p>
+          <div className="mt-6 divide-y divide-neutral-100 border-y border-neutral-100">
+            {SUBJECTS.map((subject) => (
+              <button key={subject.id} onClick={() => onOpen(subject.id)} className="flex w-full items-center justify-between gap-3 py-4 text-left">
+                <div className="min-w-0">
+                  <p className="text-lg font-semibold">{bi(subject.name)}</p>
+                  <p className="mt-0.5 truncate text-sm text-neutral-500">{status === "loading" ? " " : line(subject)}</p>
+                </div>
+                <span className="text-neutral-300">›</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function Shell({ onBack }) {
+  const { t, bi } = useT();
+  const { info, api } = useSubject();
   const [tab, setTab] = useState("today");
   // The talk tab stays mounted once opened so its thread and draft survive tab switches.
   const [talkOpened, setTalkOpened] = useState(false);
@@ -115,7 +199,7 @@ function Shell() {
     } catch (err) {
       setStatus(err instanceof PasscodeError ? "passcode" : "error");
     }
-  }, []);
+  }, [api]);
 
   useEffect(() => {
     load();
@@ -124,7 +208,13 @@ function Shell() {
   const viewingPast = data?.date && data.dates?.length && data.date !== data.dates.filter((d) => d <= data.today).at(-1);
 
   return (
-    <div className="mx-auto max-w-xl px-4" style={{ paddingTop: "calc(env(safe-area-inset-top) + 0.75rem)" }}>
+    <div className="mx-auto max-w-xl px-4" style={pagePad}>
+      <div className="mb-3 flex items-center justify-between">
+        <button onClick={onBack} className="-ml-1 px-1 text-[15px] font-bold">
+          ‹ {bi(info.name)}
+        </button>
+        <LangToggle />
+      </div>
       <header className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4 text-[15px]">
           {["today", "talk", "archive", "record"].map((key) => (
@@ -140,21 +230,11 @@ function Shell() {
             </button>
           ))}
         </div>
-        <button onClick={() => setLang(lang === "ko" ? "en" : "ko")} className="rounded-full border border-neutral-300 px-3 py-1 text-xs font-medium">
-          {lang === "ko" ? "EN" : "한국어"}
-        </button>
       </header>
 
       {status === "loading" && <p className="pt-16 text-neutral-400">{t("loading")}</p>}
       {status === "passcode" && <Passcode onDone={() => (setStatus("loading"), load())} />}
-      {status === "error" && (
-        <div className="pt-16">
-          <p className="text-neutral-600">{t("loadFailed")}</p>
-          <button onClick={() => (setStatus("loading"), load())} className="mt-4 rounded-full border border-neutral-300 px-4 py-2 text-sm">
-            {t("retry")}
-          </button>
-        </div>
-      )}
+      {status === "error" && <ErrorRetry onRetry={() => (setStatus("loading"), load())} />}
 
       {status === "ready" && tab === "today" && (
         <>
@@ -208,6 +288,38 @@ function Shell() {
   );
 }
 
+// Which subject is open lives in the URL hash (#/sql), so the back gesture
+// returns to the library; no hash is the library itself.
+function readSubject() {
+  const id = window.location.hash.replace(/^#\/?/, "");
+  return SUBJECTS.some((s) => s.id === id) ? id : null;
+}
+
+function Subject({ id }) {
+  const value = useMemo(
+    () => ({ id, info: subjectById(id), api: subjectApi(id), local: (name) => localKey(id, name) }),
+    [id],
+  );
+  return (
+    <SubjectContext.Provider value={value}>
+      <Shell onBack={() => (window.location.hash = "")} />
+    </SubjectContext.Provider>
+  );
+}
+
+function Router() {
+  const [subject, setSubject] = useState(readSubject);
+  useEffect(() => {
+    const onHash = () => {
+      setSubject(readSubject());
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+  return subject ? <Subject key={subject} id={subject} /> : <Library onOpen={(id) => (window.location.hash = `#/${id}`)} />;
+}
+
 // Lang lives in context so every component can render { ko, en } content.
 export default function App() {
   const [lang, setLangState] = useState(readLang);
@@ -222,7 +334,7 @@ export default function App() {
   };
   return (
     <LangContext.Provider value={{ lang, setLang }}>
-      <Shell />
+      <Router />
     </LangContext.Provider>
   );
 }
