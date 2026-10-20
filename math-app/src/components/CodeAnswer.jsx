@@ -7,6 +7,9 @@ import { useT } from "../lib/i18n.js";
 
 const MAX_SHOWN = 50;
 
+// A phone or tablet: the key bar helps there; a computer has a real keyboard.
+const touch = typeof window !== "undefined" && window.matchMedia?.("(pointer: coarse)").matches;
+
 function readDraft(key, fallback) {
   try {
     return localStorage.getItem(key) ?? fallback;
@@ -150,8 +153,14 @@ function typeInto(el, token) {
 }
 
 // Keep the indentation of the line above on Enter (one more level after a
-// Python colon); Tab inserts spaces. No autocomplete, by design.
-function onEditorKey(e, language) {
+// Python colon); Tab inserts spaces; Shift/Cmd/Ctrl+Enter runs, as in Jupyter.
+// No autocomplete, by design.
+function onEditorKey(e, language, onRun) {
+  if (e.key === "Enter" && (e.shiftKey || e.metaKey || e.ctrlKey)) {
+    e.preventDefault();
+    onRun();
+    return;
+  }
   const el = e.currentTarget;
   const { selectionStart: a, value } = el;
   let insert = null;
@@ -250,7 +259,7 @@ export default function CodeAnswer({ problem, draftKey, disabled, onSubmit }) {
         ref={editor}
         value={code}
         onChange={(e) => setCode(e.target.value)}
-        onKeyDown={(e) => onEditorKey(e, language)}
+        onKeyDown={(e) => onEditorKey(e, language, doRun)}
         onFocus={() => (clearTimeout(blurTimer.current), setFocused(true))}
         // a tapped key may blur for a moment before it refocuses the editor
         onBlur={() => (blurTimer.current = setTimeout(() => setFocused(false), 200))}
@@ -270,6 +279,7 @@ export default function CodeAnswer({ problem, draftKey, disabled, onSubmit }) {
           className="rounded-xl border border-neutral-900 px-4 py-3 font-medium disabled:opacity-30"
         >
           {t("run")}
+          {!touch && <span className="ml-1.5 text-xs font-normal text-neutral-400">⇧↵</span>}
         </button>
         <button
           onClick={submit}
@@ -282,7 +292,7 @@ export default function CodeAnswer({ problem, draftKey, disabled, onSubmit }) {
       {busy && language === "python" && !pythonReady && <p className="mt-2 text-sm text-neutral-500">{t("loadingPython")}</p>}
       {busy === "run" && (language === "sql" || pythonReady) && <p className="mt-2 text-sm text-neutral-500">{t("running")}</p>}
       {run && !busy && <Output run={run} />}
-      <CodeKeys active={focused} language={language} names={namesOf(language, data)} onType={type} onMove={move} />
+      <CodeKeys active={focused && touch} language={language} names={namesOf(language, data)} onType={type} onMove={move} />
     </div>
   );
 }
