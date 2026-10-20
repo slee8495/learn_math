@@ -22,6 +22,9 @@ Every `scripts/tutor.mjs` command takes `--subject=<id>`. Files live in
 1. Pull: `node scripts/tutor.mjs pull --subject=<id>`.
    - If it prints `todayPlanExists=true`, today's plan was already made (the
      student generated it in the app). Skip this subject; do not overwrite.
+   - If it prints `lastPlanUntouched=true`, the student hasn't worked on the
+     last set at all yet (no answers, hints, solutions or messages). Leave it
+     for them: skip this subject, so a skipped day doesn't bury unfinished work.
    - If it prints `dayCount=0` and the subject is not math, the student hasn't
      started this subject yet (they start it from the app). Skip it.
 2. Read, fully:

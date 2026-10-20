@@ -149,6 +149,18 @@ export async function getCurrentPlanDate(subject) {
   return past.length ? past[past.length - 1] : null;
 }
 
+// Did the student do anything with the most recent set: answer, hint,
+// solution, or a message to the professor since it was planned? If not, the
+// routine leaves it in place instead of replacing it with a new one.
+export async function lastPlanTouched(subject) {
+  const date = await getCurrentPlanDate(subject);
+  if (!date) return true;
+  const [session, talk] = await Promise.all([getSession(subject, date), getTalk(subject, { limit: 20 })]);
+  const used = (o) => Object.keys(o || {}).length > 0;
+  if (used(session.attempts) || used(session.hints) || used(session.solutionViewed)) return true;
+  return talk.messages.some((m) => m.role === "user" && m.at >= date);
+}
+
 // Math topics the stats professor calibrates against.
 const RELATED_MATH = ["probability", "random-variables", "limit-theorems"];
 

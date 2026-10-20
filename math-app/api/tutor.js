@@ -1,5 +1,5 @@
 import { allowMethods, fail } from "./_lib/http.js";
-import { applyTutorOutput, buildTutorContext, getPlan, subjectOf } from "./_lib/store.js";
+import { applyTutorOutput, buildTutorContext, getPlan, lastPlanTouched, subjectOf } from "./_lib/store.js";
 
 // The daily routine's door into the app's data. The routine (a Claude Code
 // session on the Max plan, see tutor/ROUTINE.md) GETs the student's context,
@@ -17,7 +17,8 @@ export default async function handler(req, res) {
     if (req.method === "GET") {
       const subject = subjectOf(req.query.subject);
       const context = await buildTutorContext(subject);
-      res.status(200).json({ ...context, todayPlanExists: !!(await getPlan(subject, context.today)) });
+      const [todayPlan, touched] = await Promise.all([getPlan(subject, context.today), lastPlanTouched(subject)]);
+      res.status(200).json({ ...context, todayPlanExists: !!todayPlan, lastPlanUntouched: !touched });
       return;
     }
     const { date, output, force } = req.body || {};

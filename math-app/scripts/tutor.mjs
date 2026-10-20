@@ -183,7 +183,7 @@ if (cmd === "pull") {
   mkdirSync(workDir, { recursive: true });
   writeFileSync(contextFile, JSON.stringify(context, null, 2));
   console.log(
-    `Wrote ${contextFile}. subject=${subject} today=${context.today} dayCount=${context.dayCount} todayPlanExists=${context.todayPlanExists}`,
+    `Wrote ${contextFile}. subject=${subject} today=${context.today} dayCount=${context.dayCount} todayPlanExists=${context.todayPlanExists} lastPlanUntouched=${context.lastPlanUntouched}`,
   );
 } else if (cmd === "validate" && file) {
   await validate(file);
