@@ -1,3 +1,4 @@
+import Md from "./Md.jsx";
 import { useT } from "../lib/i18n.js";
 import { useSubject } from "../lib/subject.js";
 
@@ -45,7 +46,7 @@ export default function RecordView({ state, journals }) {
 
       {state.profileNote && (
         <Section title={t("profile")}>
-          <p className="text-[15px] leading-relaxed text-neutral-700">{bi(state.profileNote)}</p>
+          <Md className="text-[15px] leading-relaxed text-neutral-700">{bi(state.profileNote)}</Md>
         </Section>
       )}
 
@@ -75,7 +76,7 @@ export default function RecordView({ state, journals }) {
                         <span className={`text-sm ${m ? "" : "text-neutral-400"}`}>{bi(tp)}</span>
                         <Level level={m?.level || 0} />
                       </div>
-                      {m?.note && <p className="mt-0.5 text-xs leading-relaxed text-neutral-500">{bi(m.note)}</p>}
+                      {m?.note && <Md className="mt-0.5 text-xs leading-relaxed text-neutral-500">{bi(m.note)}</Md>}
                     </div>
                   );
                 })}
@@ -91,15 +92,15 @@ export default function RecordView({ state, journals }) {
           {journals.map((j) => (
             <article key={j.date}>
               <p className="text-xs text-neutral-400">{j.date}</p>
-              <p className="mt-1 text-[15px] leading-relaxed">{bi(j.entry)}</p>
+              <Md className="mt-1 text-[15px] leading-relaxed">{bi(j.entry)}</Md>
               {j.strengths?.length > 0 && (
                 <p className="mt-2 text-sm text-neutral-600">
-                  <span className="font-semibold text-green-700">{t("strengths")}</span> · {j.strengths.map(bi).join(" · ")}
+                  <span className="font-semibold text-green-700">{t("strengths")}</span> · <Md inline>{j.strengths.map(bi).join(" · ")}</Md>
                 </p>
               )}
               {j.struggles?.length > 0 && (
                 <p className="mt-1 text-sm text-neutral-600">
-                  <span className="font-semibold text-red-600">{t("struggles")}</span> · {j.struggles.map(bi).join(" · ")}
+                  <span className="font-semibold text-red-600">{t("struggles")}</span> · <Md inline>{j.struggles.map(bi).join(" · ")}</Md>
                 </p>
               )}
             </article>
