@@ -3,6 +3,7 @@ import TodayView from "./components/TodayView.jsx";
 import RecordView from "./components/RecordView.jsx";
 import TalkView from "./components/TalkView.jsx";
 import ArchiveView from "./components/ArchiveView.jsx";
+import NotesView from "./components/NotesView.jsx";
 import { LangContext, useT } from "./lib/i18n.js";
 import { api, subjectApi, PasscodeError, setPasscode } from "./lib/api.js";
 import { localKey, SubjectContext, useSubject } from "./lib/subject.js";
@@ -217,7 +218,7 @@ function Shell({ onBack }) {
       </div>
       <header className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4 text-[15px]">
-          {["today", "talk", "archive", "record"].map((key) => (
+          {["today", "talk", "archive", "notes", "record"].map((key) => (
             <button
               key={key}
               onClick={() => {
@@ -282,6 +283,8 @@ function Shell({ onBack }) {
           }}
         />
       )}
+
+      {status === "ready" && tab === "notes" && <NotesView />}
 
       {status === "ready" && tab === "record" && <RecordView state={data.state} journals={data.journals} />}
     </div>

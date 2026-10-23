@@ -4,6 +4,7 @@ import {
   getCurrentPlanDate,
   getJournals,
   getLibrary,
+  getNotes,
   getPlan,
   getPlanDates,
   getSession,
@@ -15,7 +16,7 @@ import {
 // Everything the app needs on open: the current day's plan for ?subject= and
 // what has been done on it so far, plus the student's state for the header
 // and records. ?archive=1 instead returns every past problem for the archive
-// tab, and ?library=1 a one-line status of every subject.
+// tab, ?notes=1 the notes tab, and ?library=1 a one-line status of every subject.
 export default async function handler(req, res) {
   if (!allowMethods(req, res, ["GET"]) || !checkPasscode(req, res)) return;
   const subject = subjectOf(req.query.subject);
@@ -26,6 +27,10 @@ export default async function handler(req, res) {
     }
     if (req.query.archive) {
       res.status(200).json({ days: await getArchive(subject) });
+      return;
+    }
+    if (req.query.notes) {
+      res.status(200).json({ notes: await getNotes(subject) });
       return;
     }
     const date = req.query.date || (await getCurrentPlanDate(subject));

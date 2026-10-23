@@ -78,6 +78,7 @@ export function subjectApi(subject) {
   return {
     today: (date) => json(`/api/today?${q}${date ? `&date=${date}` : ""}`),
     archive: () => json(`/api/today?${q}&archive=1`),
+    notes: () => json(`/api/today?${q}&notes=1`),
     makePlan: post("/api/plan"),
     check: post("/api/check"),
     event: post("/api/session"),

@@ -4,6 +4,7 @@
 //   node scripts/tutor.mjs pull                 -> tutor/work/context.json
 //   node scripts/tutor.mjs validate <file>      -> checks a TutorOutput JSON file
 //   node scripts/tutor.mjs push <file> [date]   -> stores it as the plan for date (default: context's today)
+//   node scripts/tutor.mjs notes <file>         -> adds a JSON array of Notes to the notes tab
 //
 // Add --subject=<math|sql|python|stats> to work on that subject (default math;
 // other subjects use tutor/work/<subject>/). For sql and python problems,
@@ -15,7 +16,7 @@ import { execFileSync, spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { tutorOutputFor } from "../tutor/schema.js";
+import { NotesPush, tutorOutputFor } from "../tutor/schema.js";
 import { SUBJECT_IDS } from "../tutor/subjects.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -192,7 +193,22 @@ if (cmd === "pull") {
   const date = dateArg || JSON.parse(readFileSync(contextFile, "utf8")).today;
   const result = call("POST", { subject, date, output });
   console.log("Pushed:", JSON.stringify(result));
+} else if (cmd === "notes" && file) {
+  const result = NotesPush.safeParse(JSON.parse(readFileSync(file, "utf8")));
+  if (!result.success) {
+    console.error("Invalid notes:");
+    for (const issue of result.error.issues) console.error(`  ${issue.path.join(".")}: ${issue.message}`);
+    process.exit(1);
+  }
+  for (const n of result.data) {
+    if (n.kind === "code" && !n.code.trim()) console.warn(`warning: ${n.id}: code note without code`);
+  }
+  if (!result.data.length) {
+    console.log("No notes to add.");
+  } else {
+    console.log("Pushed:", JSON.stringify(call("POST", { subject, notes: result.data })));
+  }
 } else {
-  console.log("usage: node scripts/tutor.mjs pull | validate <file> | push <file> [date]  [--subject=math|sql|python|stats]");
+  console.log("usage: node scripts/tutor.mjs pull | validate <file> | push <file> [date] | notes <file>  [--subject=math|sql|python|stats]");
   process.exit(1);
 }

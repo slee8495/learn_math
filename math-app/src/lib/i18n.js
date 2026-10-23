@@ -5,6 +5,13 @@ const STRINGS = {
   record: { ko: "기록", en: "Record" },
   talk: { ko: "교수님", en: "Professor" },
   archive: { ko: "문제집", en: "Problems" },
+  notes: { ko: "노트", en: "Notes" },
+  filterCode: { ko: "코드", en: "Code" },
+  filterConcept: { ko: "개념", en: "Concepts" },
+  notesEmpty: {
+    ko: "아직 노트가 없어요. 문제를 풀고 나면 새벽마다 완성한 코드와 익힌 개념이 여기 정리돼요.",
+    en: "No notes yet. After you solve problems, the code you finished and the ideas you learned are filed here every morning.",
+  },
   filterAll: { ko: "전체", en: "All" },
   filterRedo: { ko: "다시 풀 것", en: "To redo" },
   allTopics: { ko: "모든 주제", en: "All topics" },

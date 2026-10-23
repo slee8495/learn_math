@@ -13,6 +13,7 @@ import { SUBJECT_IDS, subjectById } from "../../tutor/subjects.js";
 //   <p>journal          hash date -> Journal (the teacher's record)
 //   <p>talk             list of messages in the ongoing professor conversation (not tied to a problem)
 //   <p>talkimg:<id>     a photo the student sent there, as a data URL
+//   <p>notes            hash id -> Note: code and concepts the student has finished, kept by the routine
 export const redis = Redis.fromEnv();
 
 const TZ = "America/Los_Angeles";
@@ -138,6 +139,25 @@ export async function saveTalkImage(subject, id, dataUrl) {
 
 export async function getTalkImage(subject, id) {
   return redis.get(key(subject, `talkimg:${id}`));
+}
+
+// The notes tab, newest first.
+export async function getNotes(subject) {
+  const all = (await redis.hgetall(key(subject, "notes"))) || {};
+  return Object.values(all).sort((a, b) => (a.savedOn < b.savedOn ? 1 : a.savedOn > b.savedOn ? -1 : a.id < b.id ? -1 : 1));
+}
+
+// Add or replace notes by id. savedOn is kept from the first save so an
+// improved note stays where it was in the list.
+export async function saveNotes(subject, notes) {
+  if (!notes.length) return 0;
+  const existing = (await redis.hgetall(key(subject, "notes"))) || {};
+  const today = todayCA();
+  await redis.hset(
+    key(subject, "notes"),
+    Object.fromEntries(notes.map((n) => [n.id, { ...n, savedOn: existing[n.id]?.savedOn || today, updatedOn: today }])),
+  );
+  return notes.length;
 }
 
 // The most recent plan at or before today. Before the 5am routine runs, this is

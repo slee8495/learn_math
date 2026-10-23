@@ -20,13 +20,34 @@ Every `scripts/tutor.mjs` command takes `--subject=<id>`. Files live in
 `tutor/work/<id>/` (math: `tutor/work/`).
 
 1. Pull: `node scripts/tutor.mjs pull --subject=<id>`.
+   - If it prints `dayCount=0` and the subject is not math, the student hasn't
+     started this subject yet (they start it from the app). Skip it entirely.
+   - Otherwise always do the notes step below first, even if the plan is
+     skipped next.
    - If it prints `todayPlanExists=true`, today's plan was already made (the
-     student generated it in the app). Skip this subject; do not overwrite.
+     student generated it in the app). Skip the plan steps; do not overwrite.
    - If it prints `lastPlanUntouched=true`, the student hasn't worked on the
      last set at all yet (no answers, hints, solutions or messages). Leave it
-     for them: skip this subject, so a skipped day doesn't bury unfinished work.
-   - If it prints `dayCount=0` and the subject is not math, the student hasn't
-     started this subject yet (they start it from the app). Skip it.
+     for them: skip the plan steps, so a skipped day doesn't bury unfinished work.
+
+   Notes: the app's notes tab is the student's own collection of what they
+   have finished, to look back on before interviews. `context.json` has
+   `notes` (what's already filed). From `recentDays` and `talk`, file what is
+   new since then into `notes.json` next to `context.json`, an array of
+   `Note` (`tutor/schema.js`):
+   - `code` (sql, python): each problem the student solved with their own
+     code (a correct attempt, not after viewing the solution). `code` is their
+     last correct submission, verbatim; do not clean it up. `body`: the
+     pattern in two to four lines, and if the reference solution or your
+     review shows a better way, say it in one line. One note per pattern: if
+     the same pattern is already filed, replace it (same `id`) only when the
+     new code is clearly better.
+   - `concept` (every subject): an idea the student now understands, shown by
+     solving problems on it on their own or by working it out with you in
+     talk. A short reference card in your words: the idea, when to use it,
+     the usual trap, a tiny example. Not things they still get wrong.
+   - Nothing new: write `[]`. Then run
+     `node scripts/tutor.mjs notes <notes.json> --subject=<id>`.
 2. Read, fully:
    - `tutor/professor.js`: your standing instructions. `professorGuide(id)`
      shows which parts apply: math uses `MATH_GUIDE`; the other subjects use the
@@ -59,7 +80,7 @@ Every `scripts/tutor.mjs` command takes `--subject=<id>`. Files live in
 
 If one subject fails, report it and go on to the next.
 
-Finish with a short summary per subject: the move you chose and why, and
-today's problems (or why the subject was skipped).
+Finish with a short summary per subject: the notes you filed, the move you
+chose and why, and today's problems (or why the plan was skipped).
 
 Do not commit or push anything to git. `tutor/work/` is scratch space.

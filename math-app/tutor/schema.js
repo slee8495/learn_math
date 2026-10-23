@@ -95,3 +95,22 @@ export const CareerTutorOutput = TutorOutput.extend({
 });
 
 export const tutorOutputFor = (subject) => (subject === "math" ? TutorOutput : CareerTutorOutput);
+
+// ---- Notes ----
+// The student's own collection: code they finished and concepts they now
+// understand, kept per subject. The routine adds to it each night; a note
+// pushed again with the same id replaces the old one.
+
+export const NOTE_KINDS = ["code", "concept"];
+
+export const Note = z.object({
+  id: z.string().describe("Stable slug, e.g. 'window-rank-ties'. Reuse an existing note's id to replace it"),
+  kind: z.enum(NOTE_KINDS).describe("code = a solution the student wrote; concept = an idea they now understand"),
+  topicId: z.string().describe("Topic id from the subject's roadmap"),
+  title: Bi.describe("A few words naming the pattern or concept"),
+  body: Bi.describe("Short reference card, markdown + LaTeX: the key idea, when to use it, the trap to avoid"),
+  code: z.string().describe("kind=code: the student's own final correct code, verbatim. Empty for concepts"),
+  from: z.string().describe("Where it came from: 'YYYY-MM-DD <problem id>' or 'YYYY-MM-DD talk'"),
+});
+
+export const NotesPush = z.array(Note);
