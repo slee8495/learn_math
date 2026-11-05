@@ -32,16 +32,18 @@ Every `scripts/tutor.mjs` command takes `--subject=<id>`. Files live in
 
    Notes: the app's notes tab is the student's own collection of what they
    have finished, to look back on before interviews. `context.json` has
-   `notes` (what's already filed). From `recentDays` and `talk`, file what is
-   new since then into `notes.json` next to `context.json`, an array of
-   `Note` (`tutor/schema.js`):
-   - `code` (sql, python): each problem the student solved with their own
-     code (a correct attempt, not after viewing the solution). `code` is their
-     last correct submission, verbatim; do not clean it up. `body`: the
+   `notes` (what's already filed; `from` says which problem or talk each
+   came from). From `recentDays` and `talk`, file everything not filed yet
+   into `notes.json` next to `context.json`, an array of `Note`
+   (`tutor/schema.js`):
+   - `code` (sql, python): every problem with a correct code attempt that
+     no note's `from` names yet, including ones solved after viewing the
+     solution (the student wants all of their working code to study). `code`
+     is their last correct submission, verbatim; do not clean it up. If they
+     saw the solution first, say so in `body` in one line. `body`: the
      pattern in two to four lines, and if the reference solution or your
-     review shows a better way, say it in one line. One note per pattern: if
-     the same pattern is already filed, replace it (same `id`) only when the
-     new code is clearly better.
+     review shows a better way, say it in one line. One note per problem,
+     even when the pattern is already filed, so every solved problem is kept.
    - `concept` (every subject): an idea the student now understands, shown by
      solving problems on it on their own or by working it out with you in
      talk. A short reference card in your words: the idea, when to use it,
