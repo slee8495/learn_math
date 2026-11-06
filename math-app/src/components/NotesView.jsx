@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Md from "./Md.jsx";
+import CheatView from "./CheatView.jsx";
 import { topicById } from "../../tutor/subjects.js";
 import { useT } from "../lib/i18n.js";
 import { useSubject } from "../lib/subject.js";
@@ -115,6 +116,8 @@ export default function NotesView() {
   const { t, bi } = useT();
   const { api } = useSubject();
   const [notes, setNotes] = useState(null);
+  const [cheat, setCheat] = useState([]);
+  const [view, setView] = useState("cheat"); // cheat | notes
   const [error, setError] = useState(false);
   const [kind, setKind] = useState("");
   const [topic, setTopic] = useState("");
@@ -122,7 +125,10 @@ export default function NotesView() {
   const [editing, setEditing] = useState(null); // a note id, "new", or null
 
   useEffect(() => {
-    api.notes().then((d) => setNotes(d.notes), () => setError(true));
+    api.notes().then(
+      (d) => (setNotes(d.notes), setCheat(d.cheat || [])),
+      () => setError(true),
+    );
   }, [api]);
 
   if (error) return <p className="pt-16 text-neutral-600">{t("loadFailed")}</p>;
@@ -145,8 +151,29 @@ export default function NotesView() {
   const chip = (active) =>
     `shrink-0 rounded-full px-3.5 py-1.5 text-sm ${active ? "bg-neutral-900 text-white" : "border border-neutral-300 text-neutral-700"}`;
 
+  // The cheat sheet and the notes are two views of what's been learned.
+  const switcher = (
+    <div className="mb-5 flex gap-1 rounded-full bg-neutral-100 p-1 text-sm">
+      {["cheat", "notes"].map((v) => (
+        <button key={v} onClick={() => setView(v)} className={`flex-1 rounded-full py-1.5 ${view === v ? "bg-white font-semibold shadow-sm" : "text-neutral-500"}`}>
+          {t(v)}
+        </button>
+      ))}
+    </div>
+  );
+
+  if (view === "cheat") {
+    return (
+      <>
+        {switcher}
+        <CheatView lines={cheat} setLines={setCheat} />
+      </>
+    );
+  }
+
   return (
     <div className="pb-16">
+      {switcher}
       <div className="mb-4">
         {editing === "new" ? (
           <NoteEditor onSaved={saved} onCancel={() => setEditing(null)} />

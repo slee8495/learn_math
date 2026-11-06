@@ -5,6 +5,7 @@
 //   node scripts/tutor.mjs validate <file>      -> checks a TutorOutput JSON file
 //   node scripts/tutor.mjs push <file> [date]   -> stores it as the plan for date (default: context's today)
 //   node scripts/tutor.mjs notes <file>         -> adds a JSON array of Notes to the notes tab
+//   node scripts/tutor.mjs cheat <file>         -> adds or sharpens a JSON array of CheatLines
 //
 // Add --subject=<math|sql|python|stats> to work on that subject (default math;
 // other subjects use tutor/work/<subject>/). For sql and python problems,
@@ -16,8 +17,8 @@ import { execFileSync, spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { NotesPush, tutorOutputFor } from "../tutor/schema.js";
-import { SUBJECT_IDS } from "../tutor/subjects.js";
+import { CheatPush, NotesPush, tutorOutputFor } from "../tutor/schema.js";
+import { SUBJECT_IDS, subjectById } from "../tutor/subjects.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -208,7 +209,25 @@ if (cmd === "pull") {
   } else {
     console.log("Pushed:", JSON.stringify(call("POST", { subject, notes: result.data })));
   }
+} else if (cmd === "cheat" && file) {
+  const result = CheatPush.safeParse(JSON.parse(readFileSync(file, "utf8")));
+  if (!result.success) {
+    console.error("Invalid cheat lines:");
+    for (const issue of result.error.issues) console.error(`  ${issue.path.join(".")}: ${issue.message}`);
+    process.exit(1);
+  }
+  const topics = new Set(subjectById(subject).roadmap.stages.flatMap((st) => st.topics.map((t) => t.id)));
+  const bad = result.data.filter((l) => !topics.has(l.topicId) || /\n/.test(l.text.ko + l.text.en));
+  if (bad.length) {
+    for (const l of bad) console.error(`error: ${l.id}: ${topics.has(l.topicId) ? "text must be one line" : `unknown topicId ${l.topicId}`}`);
+    process.exit(1);
+  }
+  if (!result.data.length) {
+    console.log("No cheat lines to add.");
+  } else {
+    console.log("Pushed:", JSON.stringify(call("POST", { subject, cheat: result.data })));
+  }
 } else {
-  console.log("usage: node scripts/tutor.mjs pull | validate <file> | push <file> [date] | notes <file>  [--subject=math|sql|python|stats]");
+  console.log("usage: node scripts/tutor.mjs pull | validate <file> | push <file> [date] | notes <file> | cheat <file>  [--subject=math|sql|python|stats]");
   process.exit(1);
 }

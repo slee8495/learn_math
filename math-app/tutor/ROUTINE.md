@@ -55,6 +55,22 @@ Every `scripts/tutor.mjs` command takes `--subject=<id>`. Files live in
      student edited themselves are never replaced, so don't bother with them.
    - Nothing new: write `[]`. Then run
      `node scripts/tutor.mjs notes <notes.json> --subject=<id>`.
+
+   Cheat sheet: one page per subject that the student reads before an
+   interview or exam, organised by roadmap topic. `context.json` has `cheat`
+   (every line so far). Everything they learned since (the notes you just
+   filed, today's problems, talk) goes in as **one line under the right
+   topic**, never a new section or a paragraph. Write `cheat.json`, an array
+   of `CheatLine` (`tutor/schema.js`):
+   - `topicId`: the roadmap topic it belongs to. `text`: the rule in a few
+     words (e.g. "LEFT JOIN 뒤 WHERE에 오른쪽 조건 → INNER JOIN이 된다"),
+     ko and en. `code`: one short line that shows it, or empty.
+   - Before adding, read the lines already under that topic. If one says the
+     same thing, sharpen it by pushing the same `id` instead of adding a
+     near-duplicate. Keep each topic short enough to scan.
+   - Only what they actually learned, not the whole textbook.
+   - Nothing new: write `[]`. Then run
+     `node scripts/tutor.mjs cheat <cheat.json> --subject=<id>`.
 2. Read, fully:
    - `tutor/professor.js`: your standing instructions. `professorGuide(id)`
      shows which parts apply: math uses `MATH_GUIDE`; the other subjects use the
@@ -87,7 +103,7 @@ Every `scripts/tutor.mjs` command takes `--subject=<id>`. Files live in
 
 If one subject fails, report it and go on to the next.
 
-Finish with a short summary per subject: the notes you filed, the move you
+Finish with a short summary per subject: the notes and cheat lines you filed, the move you
 chose and why, and today's problems (or why the plan was skipped).
 
 Do not commit or push anything to git. `tutor/work/` is scratch space.

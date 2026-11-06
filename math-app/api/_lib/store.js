@@ -13,6 +13,7 @@ import { SUBJECT_IDS, subjectById } from "../../tutor/subjects.js";
 //   <p>journal          hash date -> Journal (the teacher's record)
 //   <p>talk             list of messages in the ongoing professor conversation (not tied to a problem)
 //   <p>talkimg:<id>     a photo the student sent there, as a data URL
+//   <p>cheat            hash id -> CheatLine: the subject's cheat sheet, one line per thing learned
 //   <p>notes            hash id -> Note: code and concepts the student has finished, kept by the routine
 export const redis = Redis.fromEnv();
 
@@ -191,6 +192,28 @@ export async function noteSolvedCode(subject, date, problem, code, feedback) {
       from: `${date} ${problem.id}`,
     },
   ]);
+}
+
+// The cheat sheet: every line, oldest first (the app groups them by topic).
+export async function getCheat(subject) {
+  const all = (await redis.hgetall(key(subject, "cheat"))) || {};
+  return Object.values(all).sort((a, b) => (a.addedOn < b.addedOn ? -1 : a.addedOn > b.addedOn ? 1 : a.id < b.id ? -1 : 1));
+}
+
+// Add or replace lines by id; a replaced line keeps its place (addedOn).
+export async function saveCheat(subject, lines) {
+  if (!lines.length) return 0;
+  const existing = (await redis.hgetall(key(subject, "cheat"))) || {};
+  const today = todayCA();
+  await redis.hset(
+    key(subject, "cheat"),
+    Object.fromEntries(lines.map((l) => [l.id, { ...l, addedOn: existing[l.id]?.addedOn || today, updatedOn: today }])),
+  );
+  return lines.length;
+}
+
+export async function deleteCheatLine(subject, id) {
+  await redis.hdel(key(subject, "cheat"), id);
 }
 
 // The most recent plan at or before today. Before the 5am routine runs, this is

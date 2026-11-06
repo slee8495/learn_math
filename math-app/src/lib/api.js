@@ -81,6 +81,8 @@ export function subjectApi(subject) {
     notes: () => json(`/api/today?${q}&notes=1`),
     saveNote: (note) => post("/api/notes")({ note }),
     deleteNote: (id) => post("/api/notes")({ delete: id }),
+    saveCheat: (lines) => post("/api/notes")({ cheat: lines }),
+    deleteCheat: (id) => post("/api/notes")({ deleteCheat: id }),
     makePlan: post("/api/plan"),
     check: post("/api/check"),
     event: post("/api/session"),

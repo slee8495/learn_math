@@ -114,3 +114,17 @@ export const Note = z.object({
 });
 
 export const NotesPush = z.array(Note);
+
+// ---- Cheat sheet ----
+// One page per subject, organised by roadmap topic: each thing learned is one
+// line under its topic, not a new page. A line pushed again with the same id
+// replaces the old one, so a line gets sharper instead of repeated.
+
+export const CheatLine = z.object({
+  id: z.string().describe("Stable slug, e.g. 'left-join-count-col'. Reuse an existing line's id to improve it"),
+  topicId: z.string().describe("The roadmap topic it belongs under"),
+  text: Bi.describe("One line: the rule or fact, in a few words. Markdown + LaTeX, no line breaks"),
+  code: z.string().describe("Optional one-line code or formula that shows it; empty if the text says it all"),
+});
+
+export const CheatPush = z.array(CheatLine);
