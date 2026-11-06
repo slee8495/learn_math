@@ -48,6 +48,11 @@ Every `scripts/tutor.mjs` command takes `--subject=<id>`. Files live in
      solving problems on it on their own or by working it out with you in
      talk. A short reference card in your words: the idea, when to use it,
      the usual trap, a tiny example. Not things they still get wrong.
+   - Code graded correct in the app, and notes the talk professor saved, are
+     filed the moment they happen (id `<date>-<problem id>`), with only the
+     grader's feedback or a short body. Rewrite those under the same `id`
+     with a proper title and body; keep `code` exactly as it is. Notes the
+     student edited themselves are never replaced, so don't bother with them.
    - Nothing new: write `[]`. Then run
      `node scripts/tutor.mjs notes <notes.json> --subject=<id>`.
 2. Read, fully:

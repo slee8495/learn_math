@@ -10,9 +10,11 @@ import {
   getState,
   getTalk,
   getTalkImage,
+  saveNotes,
   saveSession,
   saveTalkImage,
   subjectOf,
+  todayCA,
 } from "./_lib/store.js";
 import { subjectById } from "../tutor/subjects.js";
 
@@ -51,6 +53,7 @@ function buildSystem({ subject, lang, student, today }) {
 - When they send photos of their handwritten work, read every line carefully. Say which steps are right, point at the first line where it goes wrong and why, and name the misconception if there is one. Be concrete ("line 3: the 2 should be squared too"), not vague.
 - If they are stuck, find where, and give the smallest push that gets them moving. Ask one question at a time. If they ask for a full explanation or solution, give it clearly.
 - For today's assigned problems: when their work (a photo or what they type) reaches the correct final answer to one that isn't solved yet, tell them, then call record_solved so it counts as solved in the app. Write your whole reply first; the call comes last. Don't call it for a wrong or unfinished answer, or for a different problem.
+- The app has a notes tab: the student's collection of code they finished and concepts they understood, to study from. When they finish working code here (even after opening the solution or with your help) or clearly get a concept, call save_note right away and say it's in their notes. It's their study material, so never hold a note back because the solution was seen; just say so in its body. Same rule as above: reply first, the call last.
 - Don't reveal the final answer unless they ask for it directly or have already opened the solution.
 - If a photo is unreadable, say which part and ask for a clearer one.
 - What they ask here is recorded and read when their next lessons are planned.
@@ -85,6 +88,43 @@ function solveTool(plan, session) {
       },
     },
   ];
+}
+
+// Always offered: files code or a concept in the notes tab.
+function noteTool(subject, plan) {
+  const topics = subjectById(subject).roadmap.stages.flatMap((st) => st.topics.map((t) => t.id));
+  return {
+    name: "save_note",
+    description: "Save working code the student wrote, or a concept they now understand, to their notes tab.",
+    input_schema: {
+      type: "object",
+      properties: {
+        kind: { type: "string", enum: ["code", "concept"] },
+        topicId: { type: "string", enum: topics },
+        problemId: { type: "string", ...(plan && { enum: plan.problems.map((p) => p.id) }), description: "The assigned problem it belongs to, if any." },
+        title: { type: "string", description: "A few words naming the pattern or concept, in the reply language." },
+        body: { type: "string", description: "Short reference card in Markdown + LaTeX, in the reply language: the key idea, when to use it, the trap to avoid. Note if the solution was opened first." },
+        code: { type: "string", description: "kind=code: the student's own final working code, verbatim. Empty for concepts." },
+      },
+      required: ["kind", "topicId", "title", "body"],
+    },
+  };
+}
+
+async function saveTalkNotes(subject, planDate, calls) {
+  const today = todayCA();
+  await saveNotes(
+    subject,
+    calls.map((n, i) => ({
+      id: n.problemId && planDate ? `${planDate}-${n.problemId}` : `talk-${Date.now()}-${i}`,
+      kind: n.kind,
+      topicId: n.topicId,
+      title: { ko: n.title, en: n.title },
+      body: { ko: n.body, en: n.body },
+      code: n.kind === "code" ? n.code || "" : "",
+      from: n.problemId && planDate ? `${planDate} ${n.problemId}` : `${today} talk`,
+    })),
+  );
 }
 
 async function recordSolved(subject, planDate, calls) {
@@ -184,7 +224,7 @@ export default async function handler(req, res) {
     thread = await toApiMessages(subject, talk.messages);
     student = describeStudent(state, journals);
     today = describeToday(plan, session);
-    tools = solveTool(plan, session);
+    tools = [...solveTool(plan, session), noteTool(subject, plan)];
   } catch (err) {
     fail(res, err, "talk load");
     return;
@@ -194,6 +234,7 @@ export default async function handler(req, res) {
 
   let reply = "";
   let solved = [];
+  let notes = [];
   try {
     const stream = client.beta.messages.stream({
       model: MODEL,
@@ -201,7 +242,7 @@ export default async function handler(req, res) {
       output_config: { effort: "medium" },
       system: buildSystem({ subject, lang, student, today }),
       messages: thread,
-      ...(tools.length && { tools }),
+      tools,
       ...FALLBACK,
     });
     for await (const event of stream) {
@@ -211,7 +252,9 @@ export default async function handler(req, res) {
       }
     }
     const final = await stream.finalMessage();
-    solved = final.content.filter((b) => b.type === "tool_use" && b.name === "record_solved").map((b) => b.input);
+    const calls = (name) => final.content.filter((b) => b.type === "tool_use" && b.name === name).map((b) => b.input);
+    solved = calls("record_solved");
+    notes = calls("save_note");
   } catch (err) {
     console.error("talk stream error:", err);
     if (!reply) res.write(lang === "ko" ? "지금 연결이 안 돼요. 잠시 후 다시 시도해 주세요." : "I couldn't connect just now. Please try again.");
@@ -222,6 +265,7 @@ export default async function handler(req, res) {
   // Save before ending the response: Vercel may freeze the function right after.
   try {
     if (solved.length) await recordSolved(subject, planDate, solved);
+    if (notes.length) await saveTalkNotes(subject, planDate, notes);
     await appendTalk(subject, { id: randomUUID(), role: "assistant", text: reply, images: [], at: new Date().toISOString() });
   } catch (err) {
     console.error("talk save error:", err);

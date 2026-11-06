@@ -2,7 +2,7 @@ import { z } from "zod";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { allowMethods, checkPasscode, fail } from "./_lib/http.js";
 import { FALLBACK, MODEL, client, describeProblem, langName } from "./_lib/claude.js";
-import { getPlan, getSession, saveSession, subjectOf } from "./_lib/store.js";
+import { getPlan, getSession, noteSolvedCode, saveSession, subjectOf } from "./_lib/store.js";
 
 const Verdict = z.object({
   correct: z.boolean(),
@@ -121,6 +121,7 @@ export default async function handler(req, res) {
       },
     ];
     await saveSession(subject, date, session);
+    if (isCode && verdict.correct) await noteSolvedCode(subject, date, problem, recorded, verdict.feedback);
     res.status(200).json({ ...verdict, session });
   } catch (err) {
     fail(res, err, "check");

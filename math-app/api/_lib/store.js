@@ -148,16 +148,49 @@ export async function getNotes(subject) {
 }
 
 // Add or replace notes by id. savedOn is kept from the first save so an
-// improved note stays where it was in the list.
+// improved note stays where it was in the list. A note the student edited
+// themselves (byStudent) is never replaced by the professor.
 export async function saveNotes(subject, notes) {
-  if (!notes.length) return 0;
   const existing = (await redis.hgetall(key(subject, "notes"))) || {};
+  const keep = notes.filter((n) => !existing[n.id]?.byStudent);
+  if (!keep.length) return 0;
   const today = todayCA();
   await redis.hset(
     key(subject, "notes"),
-    Object.fromEntries(notes.map((n) => [n.id, { ...n, savedOn: existing[n.id]?.savedOn || today, updatedOn: today }])),
+    Object.fromEntries(keep.map((n) => [n.id, { ...n, savedOn: existing[n.id]?.savedOn || today, updatedOn: today }])),
   );
-  return notes.length;
+  return keep.length;
+}
+
+// The student's own edit (or new note) from the notes tab.
+export async function saveStudentNote(subject, note) {
+  const existing = await redis.hget(key(subject, "notes"), note.id);
+  const today = todayCA();
+  const saved = { ...note, byStudent: true, savedOn: existing?.savedOn || today, updatedOn: today };
+  await redis.hset(key(subject, "notes"), { [note.id]: saved });
+  return saved;
+}
+
+export async function deleteNote(subject, id) {
+  await redis.hdel(key(subject, "notes"), id);
+}
+
+// A code answer graded correct goes straight to the notes tab, whether or not
+// the solution was opened first; the routine adds the explanation later.
+export async function noteSolvedCode(subject, date, problem, code, feedback) {
+  const firstLine = (text) =>
+    (text || "").split("\n").find((l) => l.trim())?.replace(/[*_`#>]+/g, "").trim().slice(0, 120) || problem.id;
+  await saveNotes(subject, [
+    {
+      id: `${date}-${problem.id}`,
+      kind: "code",
+      topicId: problem.topicId,
+      title: { ko: firstLine(problem.prompt.ko), en: firstLine(problem.prompt.en) },
+      body: { ko: feedback || "", en: feedback || "" },
+      code,
+      from: `${date} ${problem.id}`,
+    },
+  ]);
 }
 
 // The most recent plan at or before today. Before the 5am routine runs, this is
