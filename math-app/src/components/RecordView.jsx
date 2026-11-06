@@ -1,6 +1,7 @@
 import Md from "./Md.jsx";
 import { useT } from "../lib/i18n.js";
 import { useSubject } from "../lib/subject.js";
+import { play, stop, useSpeaker } from "../lib/speak.js";
 
 function Level({ level }) {
   return (
@@ -12,10 +13,28 @@ function Level({ level }) {
   );
 }
 
-function Section({ title, children }) {
+// Reads one record aloud; tap again to stop.
+function Listen({ id, text }) {
+  const { t, lang } = useT();
+  const speaker = useSpeaker();
+  const mine = speaker.id === id;
+  return (
+    <button
+      onClick={() => (mine ? stop() : play(id, text, lang))}
+      className={`shrink-0 rounded-full border px-2.5 py-0.5 text-xs ${mine ? "border-neutral-900 font-semibold" : "border-neutral-300 text-neutral-500"}`}
+    >
+      {mine ? (speaker.status === "loading" ? t("listenLoading") : `■ ${t("listenStop")}`) : `▶ ${t("listen")}`}
+    </button>
+  );
+}
+
+function Section({ title, action, children }) {
   return (
     <section className="mb-10">
-      <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-400">{title}</h2>
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-neutral-400">{title}</h2>
+        {action}
+      </div>
       {children}
     </section>
   );
@@ -45,7 +64,7 @@ export default function RecordView({ state, journals }) {
       </Section>
 
       {state.profileNote && (
-        <Section title={t("profile")}>
+        <Section title={t("profile")} action={<Listen id="profile" text={bi(state.profileNote)} />}>
           <Md className="text-[15px] leading-relaxed text-neutral-700">{bi(state.profileNote)}</Md>
         </Section>
       )}
@@ -91,7 +110,17 @@ export default function RecordView({ state, journals }) {
         <div className="space-y-6">
           {journals.map((j) => (
             <article key={j.date}>
-              <p className="text-xs text-neutral-400">{j.date}</p>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs text-neutral-400">{j.date}</p>
+                <Listen
+                  id={`journal-${j.date}`}
+                  text={[
+                    bi(j.entry),
+                    j.strengths?.length ? `${t("strengths")}: ${j.strengths.map(bi).join(". ")}.` : "",
+                    j.struggles?.length ? `${t("struggles")}: ${j.struggles.map(bi).join(". ")}.` : "",
+                  ].join("\n\n")}
+                />
+              </div>
               <Md className="mt-1 text-[15px] leading-relaxed">{bi(j.entry)}</Md>
               {j.strengths?.length > 0 && (
                 <p className="mt-2 text-sm text-neutral-600">

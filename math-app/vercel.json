@@ -1,6 +1,7 @@
 {
   "functions": {
     "api/plan.js": { "maxDuration": 300 },
-    "api/talk.js": { "maxDuration": 120 }
+    "api/talk.js": { "maxDuration": 120 },
+    "api/speak.js": { "maxDuration": 60 }
   }
 }

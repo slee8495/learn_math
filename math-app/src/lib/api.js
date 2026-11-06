@@ -90,5 +90,11 @@ export function subjectApi(subject) {
 
 export const api = {
   library: () => json("/api/today?library=1"),
+  // One chunk of text read aloud, as MP3 bytes.
+  speak: async (text, lang) => {
+    const res = await request(`/api/speak?lang=${lang}&text=${encodeURIComponent(text)}`);
+    if (!res.ok) throw new Error("speak failed");
+    return res.arrayBuffer();
+  },
   transcribe: (body) => json("/api/transcribe", { method: "POST", body }),
 };
