@@ -29,9 +29,10 @@ targets:
         INFOPLIST_KEY_CFBundleDisplayName: duth
         INFOPLIST_KEY_UILaunchScreen_Generation: true
         INFOPLIST_KEY_UIStatusBarStyle: UIStatusBarStyleDarkContent
-        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
-        # iPhone only; with iPad, Apple requires all four orientations for multitasking.
-        TARGETED_DEVICE_FAMILY: "1"
+        # iPhone stays portrait; iPad turns all four ways (Apple requires it for multitasking).
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
+        TARGETED_DEVICE_FAMILY: "1,2"
         INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: false
         # The chat mic, photo uploads of handwritten work.
         INFOPLIST_KEY_NSMicrophoneUsageDescription: 질문을 말로 입력할 때 마이크를 사용해요.

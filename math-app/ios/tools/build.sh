@@ -14,13 +14,15 @@ rsync -a --delete --exclude '*.xcodeproj' "$SRC/" "$OUT/src/"
 xattr -cr "$OUT/src"
 cd "$OUT/src"
 xcodegen generate >/dev/null
-rm -rf "$OUT/Duth.xcarchive" "$OUT/export"
+# Each build archives to its own folder; old archives are kept (the control tower re-uses them).
+ARCHIVE="$OUT/Duth-$(date +%Y%m%d-%H%M%S).xcarchive"
+rm -rf "$OUT/export"
 echo "▸ archive…"
 xcodebuild -project Duth.xcodeproj -scheme Duth -configuration Release -destination generic/platform=iOS \
-  -archivePath "$OUT/Duth.xcarchive" -derivedDataPath "$OUT/dd" -allowProvisioningUpdates archive > "$OUT/archive.log" 2>&1 \
+  -archivePath "$ARCHIVE" -derivedDataPath "$OUT/dd" -allowProvisioningUpdates archive > "$OUT/archive.log" 2>&1 \
   || { tail -30 "$OUT/archive.log"; exit 1; }
 echo "▸ upload…"
-xcodebuild -exportArchive -archivePath "$OUT/Duth.xcarchive" \
+xcodebuild -exportArchive -archivePath "$ARCHIVE" \
   -exportOptionsPlist tools/ExportOptions.plist -exportPath "$OUT/export" \
   -allowProvisioningUpdates > "$OUT/export.log" 2>&1 \
   || { tail -30 "$OUT/export.log"; exit 1; }
