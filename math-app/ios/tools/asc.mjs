@@ -44,7 +44,7 @@ const groups = await api(`/v1/apps/${app.id}/betaGroups?limit=50`)
 const g = groups.data.find((x) => x.attributes.isInternalGroup) || groups.data[0]
 await api(`/v1/betaGroups/${g.id}/relationships/builds`, {
   method: 'POST', body: JSON.stringify({ data: [{ type: 'builds', id: b.id }] }),
-}).catch((e) => { if (!String(e).includes('409')) throw e })
+}).catch((e) => { if (!/409|422/.test(String(e))) throw e }) // 422: 내부 그룹이 모든 빌드를 자동으로 받음
 
 // **붙였다고 말하기 전에 확인한다.** POST가 204를 줘도 실제로 안 붙는 경우를 가정하고
 // 그룹의 빌드 목록을 다시 읽는다 — 9/18에 "배정 완료"를 믿고 한참 엉뚱한 데를 팠다.
