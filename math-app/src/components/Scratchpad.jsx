@@ -48,7 +48,8 @@ function drawStrokes(ctx, strokes, offsetX = 0, offsetY = 0) {
 // Handwriting scratchpad, one page per problem (storageKey), kept on the device.
 // One finger (or Apple Pencil) writes, two fingers scroll. The parent can grab
 // a cropped image of the work via ref.exportImage() to show the tutor.
-export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, attachLabel }) {
+// docked: drawn in place (beside the problem on wide screens) instead of in a sheet.
+export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, attachLabel, docked = false }) {
   const { t } = useT();
   const [mode, setMode] = useState("pen");
   const canvasRef = useRef(null);
@@ -85,8 +86,8 @@ export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, a
   }, [storageKey]);
 
   useEffect(() => {
-    if (open) resize();
-  }, [open]);
+    if (open || docked) resize();
+  }, [open, docked]);
 
   // Turning an iPad (or Split View) changes the width; refit the canvas so ink doesn't stretch.
   useEffect(() => {
@@ -216,25 +217,21 @@ export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, a
   const tool = (active) =>
     `rounded-full px-3 py-1.5 text-sm ${active ? "bg-neutral-900 text-white" : "border border-neutral-300"}`;
 
-  return (
-    <Sheet
-      open={open}
-      onClose={onClose}
-      title={t("scratch")}
-      actions={
-        onAttach && (
-          <button
-            onClick={() => {
-              const img = strokes.current.length ? exportCropped() : null;
-              if (img) onAttach(img);
-            }}
-            className="rounded-full border border-neutral-300 px-3 py-1.5 text-sm font-medium"
-          >
-            {attachLabel || t("attach")}
-          </button>
-        )
-      }
-    >
+  const attach =
+    onAttach && (
+      <button
+        onClick={() => {
+          const img = strokes.current.length ? exportCropped() : null;
+          if (img) onAttach(img);
+        }}
+        className="rounded-full border border-neutral-300 px-3 py-1.5 text-sm font-medium"
+      >
+        {attachLabel || t("attach")}
+      </button>
+    );
+
+  const page = (
+    <>
       <div className="flex items-center gap-2 border-b border-neutral-200 px-4 py-2">
         <button className={tool(mode === "pen")} onClick={() => setMode("pen")}>
           {t("pen")}
@@ -260,6 +257,24 @@ export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, a
           onPointerCancel={up}
         />
       </div>
+    </>
+  );
+
+  if (docked) {
+    return (
+      <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+        <div className="flex items-center justify-between gap-2 border-b border-neutral-200 px-4 py-2">
+          <p className="font-semibold">{t("scratch")}</p>
+          {attach}
+        </div>
+        {page}
+      </div>
+    );
+  }
+
+  return (
+    <Sheet open={open} onClose={onClose} title={t("scratch")} actions={attach}>
+      {page}
     </Sheet>
   );
 }
