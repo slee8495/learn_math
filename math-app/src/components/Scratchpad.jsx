@@ -88,6 +88,12 @@ export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, a
     if (open) resize();
   }, [open]);
 
+  // Turning an iPad (or Split View) changes the width; refit the canvas so ink doesn't stretch.
+  useEffect(() => {
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
+  }, []);
+
   // Crop to the written area on a white background, small enough to send.
   function exportCropped() {
     const all = strokes.current.flat();
