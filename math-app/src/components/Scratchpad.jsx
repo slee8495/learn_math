@@ -61,8 +61,8 @@ export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, a
   const ratio = useRef(1);
   const rect = useRef(null); // canvas position, read once per stroke instead of on every move
 
-  // desynchronized: draw straight to the screen, skipping a frame of compositor latency where supported
-  const context = () => canvasRef.current.getContext("2d", { desynchronized: true });
+  // (not desynchronized: Chrome on some GPUs then shows the blank page as black)
+  const context = () => canvasRef.current.getContext("2d");
 
   function redraw() {
     const canvas = canvasRef.current;
@@ -280,6 +280,7 @@ export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, a
             height: CANVAS_HEIGHT,
             touchAction: "none",
             display: "block",
+            background: "#fff",
             userSelect: "none",
             WebkitUserSelect: "none",
             WebkitTouchCallout: "none",
