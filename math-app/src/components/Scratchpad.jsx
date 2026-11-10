@@ -59,11 +59,15 @@ export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, a
   const pointers = useRef(new Map());
   const panY = useRef(null);
   const ratio = useRef(1);
+  const rect = useRef(null); // canvas position, read once per stroke instead of on every move
+
+  // desynchronized: draw straight to the screen, skipping a frame of compositor latency where supported
+  const context = () => canvasRef.current.getContext("2d", { desynchronized: true });
 
   function redraw() {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = context();
     ctx.setTransform(ratio.current, 0, 0, ratio.current, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawStrokes(ctx, strokes.current);
@@ -95,6 +99,20 @@ export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, a
     return () => window.removeEventListener("resize", resize);
   }, []);
 
+  // iPadOS reads Apple Pencil on a web page as Scribble / text selection first and
+  // holds the pointer events back, so the pen lags. Claiming the touches stops that.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const stop = (e) => e.preventDefault();
+    canvas.addEventListener("touchstart", stop, { passive: false });
+    canvas.addEventListener("touchmove", stop, { passive: false });
+    return () => {
+      canvas.removeEventListener("touchstart", stop);
+      canvas.removeEventListener("touchmove", stop);
+    };
+  }, [docked]);
+
   // Crop to the written area on a white background, small enough to send.
   function exportCropped() {
     const all = strokes.current.flat();
@@ -124,8 +142,8 @@ export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, a
   }));
 
   function pos(e) {
-    const rect = canvasRef.current.getBoundingClientRect();
-    return [Math.round((e.clientX - rect.left) * 10) / 10, Math.round((e.clientY - rect.top) * 10) / 10];
+    const r = rect.current || canvasRef.current.getBoundingClientRect();
+    return [Math.round((e.clientX - r.left) * 10) / 10, Math.round((e.clientY - r.top) * 10) / 10];
   }
 
   function eraseAt(p) {
@@ -151,6 +169,7 @@ export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, a
 
   function down(e) {
     canvasRef.current.setPointerCapture?.(e.pointerId);
+    rect.current = canvasRef.current.getBoundingClientRect();
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pointers.current.size >= 2) {
       // second finger: this is a scroll, drop the stroke the first finger began
@@ -171,29 +190,35 @@ export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, a
       const y = avgY();
       if (panY.current != null) scrollRef.current.scrollTop -= y - panY.current;
       panY.current = y;
+      rect.current = null;
       return;
     }
-    const p = pos(e);
     if (mode === "eraser") {
-      eraseAt(p);
+      eraseAt(pos(e));
       return;
     }
     const s = current.current;
     if (!s) return;
-    s.push(p);
-    const ctx = canvasRef.current.getContext("2d");
+    // The Pencil reports up to 240 points a second but moves arrive once a frame;
+    // the in-between points come as coalesced events.
+    const events = e.nativeEvent.getCoalescedEvents?.() || [];
+    const from = s.length - 1;
+    for (const ev of events.length ? events : [e]) s.push(pos(ev));
+    const ctx = context();
     ctx.setTransform(ratio.current, 0, 0, ratio.current, 0, 0);
     ctx.lineCap = "round";
+    ctx.lineJoin = "round";
     ctx.strokeStyle = "#111";
     ctx.lineWidth = PEN_WIDTH;
     ctx.beginPath();
-    ctx.moveTo(s[s.length - 2][0], s[s.length - 2][1]);
-    ctx.lineTo(p[0], p[1]);
+    ctx.moveTo(s[from][0], s[from][1]);
+    for (let i = from + 1; i < s.length; i++) ctx.lineTo(s[i][0], s[i][1]);
     ctx.stroke();
   }
 
   function up(e) {
     pointers.current.delete(e.pointerId);
+    rect.current = null;
     if (pointers.current.size === 0) panY.current = null;
     if (current.current && current.current.length > 1) {
       strokes.current.push(current.current);
@@ -250,7 +275,15 @@ export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, a
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
         <canvas
           ref={canvasRef}
-          style={{ width: "100%", height: CANVAS_HEIGHT, touchAction: "none", display: "block" }}
+          style={{
+            width: "100%",
+            height: CANVAS_HEIGHT,
+            touchAction: "none",
+            display: "block",
+            userSelect: "none",
+            WebkitUserSelect: "none",
+            WebkitTouchCallout: "none",
+          }}
           onPointerDown={down}
           onPointerMove={move}
           onPointerUp={up}
