@@ -7,10 +7,13 @@ export default function Sheet({ open, onClose, title, actions, narrow = false, c
     if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    const onKey = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
     };
-  }, [open]);
+  }, [open, onClose]);
 
   return (
     <div
@@ -26,12 +29,12 @@ export default function Sheet({ open, onClose, title, actions, narrow = false, c
         <p className="font-semibold">{title}</p>
         <div className="flex items-center gap-2">
           {actions}
-          <button onClick={onClose} className="rounded-full px-3 py-1.5 text-sm font-medium bg-neutral-900 text-white">
+          <button onClick={onClose} aria-label="Close" className="rounded-full px-3 py-1.5 text-sm font-medium bg-neutral-900 text-white">
             ✕
           </button>
         </div>
       </div>
-      <div className={`flex min-h-0 w-full flex-1 flex-col ${narrow ? "mx-auto max-w-xl" : ""}`}>{children}</div>
+      <div className={`flex min-h-0 w-full flex-1 flex-col ${narrow ? "mx-auto max-w-xl md:max-w-2xl" : ""}`}>{children}</div>
     </div>
   );
 }

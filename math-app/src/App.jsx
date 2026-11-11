@@ -151,7 +151,7 @@ function Library({ onOpen }) {
   }
 
   return (
-    <div className="mx-auto max-w-xl px-4" style={pagePad}>
+    <div className="mx-auto max-w-xl px-4 md:max-w-2xl md:px-8" style={pagePad}>
       <header className="mb-8 flex items-center justify-between">
         <p className="text-[15px] font-bold">duth</p>
         <LangToggle />
@@ -164,7 +164,7 @@ function Library({ onOpen }) {
           <p className="mt-1 text-[15px] text-neutral-500">{t("libraryNote")}</p>
           <div className="mt-6 divide-y divide-neutral-100 border-y border-neutral-100">
             {SUBJECTS.map((subject) => (
-              <button key={subject.id} onClick={() => onOpen(subject.id)} className="flex w-full items-center justify-between gap-3 py-4 text-left">
+              <button key={subject.id} onClick={() => onOpen(subject.id)} className="flex w-full items-center justify-between gap-3 py-4 text-left md:-mx-3 md:w-[calc(100%+1.5rem)] md:rounded-lg md:px-3 md:hover:bg-neutral-50">
                 <div className="min-w-0">
                   <p className="text-lg font-semibold">{bi(subject.name)}</p>
                   <p className="mt-0.5 truncate text-sm text-neutral-500">{status === "loading" ? " " : line(subject)}</p>
@@ -209,7 +209,8 @@ function Shell({ onBack }) {
   const viewingPast = data?.date && data.dates?.length && data.date !== data.dates.filter((d) => d <= data.today).at(-1);
 
   return (
-    <div className="mx-auto max-w-xl px-4" style={pagePad}>
+    // Today spreads to two columns on wide screens (problem | scratchpad); other tabs keep a reading width.
+    <div className={`mx-auto max-w-xl px-4 md:max-w-2xl md:px-8 ${tab === "today" ? "lg:max-w-6xl" : ""}`} style={pagePad}>
       <div className="mb-3 flex items-center justify-between">
         <button onClick={onBack} className="-ml-1 px-1 text-[15px] font-bold">
           ‹ {bi(info.name)}
@@ -217,7 +218,7 @@ function Shell({ onBack }) {
         <LangToggle />
       </div>
       <header className="mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-4 text-[15px]">
+        <div className="flex items-center gap-4 text-[15px] md:gap-6 md:text-base">
           {["today", "talk", "archive", "notes", "record"].map((key) => (
             <button
               key={key}
@@ -226,7 +227,7 @@ function Shell({ onBack }) {
                 if (key === "today" && tab === "talk" && data) load(data.date);
                 setTab(key);
                 if (key === "talk") setTalkOpened(true);
-              }} className={tab === key ? "font-bold" : "text-neutral-400"}>
+              }} className={`md:-my-1 md:py-1 ${tab === key ? "font-bold" : "text-neutral-400 md:hover:text-neutral-700"}`}>
               {key === "today" && data?.dayNum ? `${t("day")} ${data.dayNum}` : t(key)}
             </button>
           ))}

@@ -194,7 +194,7 @@ export default function TalkView({ active }) {
         className="fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200 bg-white/95 backdrop-blur"
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)" }}
       >
-        <div className="mx-auto max-w-xl px-4 pt-2">
+        <div className="mx-auto max-w-xl px-4 pt-2 md:max-w-2xl md:px-8">
           {photos.length > 0 && (
             <div className="mb-2 flex gap-2 overflow-x-auto">
               {photos.map((src, i) => (
