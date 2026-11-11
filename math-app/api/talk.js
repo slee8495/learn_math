@@ -277,14 +277,17 @@ export default async function handler(req, res) {
   let solved = [];
   let notes = [];
   let removed = [];
-  try {
+  const system = buildSystem({ subject, lang, student, today, notesList });
+  // One streamed turn; its text goes straight to the phone.
+  async function turn(messages, extra = {}) {
     const stream = client.beta.messages.stream({
       model: MODEL,
       max_tokens: 6000,
       output_config: { effort: "medium" },
-      system: buildSystem({ subject, lang, student, today, notesList }),
-      messages: thread,
+      system,
+      messages,
       tools,
+      ...extra,
       ...FALLBACK,
     });
     for await (const event of stream) {
@@ -293,13 +296,46 @@ export default async function handler(req, res) {
         res.write(event.delta.text);
       }
     }
-    const final = await stream.finalMessage();
-    const calls = (name) => final.content.filter((b) => b.type === "tool_use" && b.name === name).map((b) => b.input);
+    return stream.finalMessage();
+  }
+  const uses = (msg) => msg.content.filter((b) => b.type === "tool_use");
+  function takeCalls(msg) {
+    const calls = (name) => uses(msg).filter((b) => b.name === name).map((b) => b.input);
     solved = calls("record_solved");
     notes = calls("save_note");
     removed = calls("delete_notes").flatMap((c) => c.ids || []);
+  }
+  async function saveCalls() {
+    if (solved.length) await recordSolved(subject, planDate, solved);
+    // Deletes first, so a note kept via replaceId isn't removed right after.
+    const keepIds = new Set(notes.map((n) => n.replaceId).filter(Boolean));
+    for (const id of new Set(removed)) if (!keepIds.has(id)) await deleteNote(subject, id);
+    if (notes.length) await saveTalkNotes(subject, planDate, notes);
+  }
+  try {
+    const final = await turn(thread);
+    takeCalls(final);
+    // Sometimes the reply is only a tool call (a note saved, nothing said) or
+    // nothing at all, and the student sees silence. Then ask for the words:
+    // after a tool call, report it done and let them say so; otherwise retry once.
+    if (!reply.trim()) {
+      if (uses(final).length) {
+        const results = uses(final).map((b) => ({ type: "tool_result", tool_use_id: b.id, content: "done" }));
+        await turn([...thread, { role: "assistant", content: final.content }, { role: "user", content: results }], {
+          tool_choice: { type: "none" },
+        });
+      } else {
+        takeCalls(await turn(thread));
+      }
+    }
+    if (!reply.trim()) {
+      reply = lang === "ko" ? "답이 비어서 왔어요. 한 번 더 보내 주세요." : "My reply came back empty. Please send that again.";
+      res.write(reply);
+    }
   } catch (err) {
     console.error("talk stream error:", err);
+    // A tool call from a turn that did finish is still kept.
+    if (solved.length || notes.length || removed.length) await saveCalls().catch((e) => console.error("talk save error:", e));
     if (!reply) res.write(lang === "ko" ? "지금 연결이 안 돼요. 잠시 후 다시 시도해 주세요." : "I couldn't connect just now. Please try again.");
     res.end();
     return;
@@ -307,11 +343,7 @@ export default async function handler(req, res) {
 
   // Save before ending the response: Vercel may freeze the function right after.
   try {
-    if (solved.length) await recordSolved(subject, planDate, solved);
-    // Deletes first, so a note kept via replaceId isn't removed right after.
-    const keepIds = new Set(notes.map((n) => n.replaceId).filter(Boolean));
-    for (const id of new Set(removed)) if (!keepIds.has(id)) await deleteNote(subject, id);
-    if (notes.length) await saveTalkNotes(subject, planDate, notes);
+    await saveCalls();
     await appendTalk(subject, { id: randomUUID(), role: "assistant", text: reply, images: [], at: new Date().toISOString() });
   } catch (err) {
     console.error("talk save error:", err);
