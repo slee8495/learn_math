@@ -37,8 +37,15 @@ function drawStrokes(ctx, strokes, offsetX = 0, offsetY = 0) {
   ctx.strokeStyle = "#111";
   ctx.lineWidth = PEN_WIDTH;
   for (const s of strokes) {
-    if (s.length < 2) continue;
+    if (!s.length) continue;
     ctx.beginPath();
+    if (s.length === 1) {
+      // a dot (decimal point, the dot of an i)
+      ctx.arc(s[0][0] - offsetX, s[0][1] - offsetY, PEN_WIDTH, 0, Math.PI * 2);
+      ctx.fillStyle = "#111";
+      ctx.fill();
+      continue;
+    }
     ctx.moveTo(s[0][0] - offsetX, s[0][1] - offsetY);
     for (let i = 1; i < s.length; i++) ctx.lineTo(s[i][0] - offsetX, s[i][1] - offsetY);
     ctx.stroke();
@@ -60,6 +67,7 @@ export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, a
   const panY = useRef(null);
   const ratio = useRef(1);
   const rect = useRef(null); // canvas position, read once per stroke instead of on every move
+  const penUsed = useRef(false); // once the Pencil writes, fingers only scroll (and a resting palm can't draw)
 
   // (not desynchronized: Chrome on some GPUs then shows the blank page as black)
   const context = () => canvasRef.current.getContext("2d");
@@ -163,15 +171,21 @@ export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, a
   }
 
   function avgY() {
-    const ys = [...pointers.current.values()].map((p) => p.y);
+    const all = [...pointers.current.values()];
+    const fingers = all.filter((p) => p.scroll); // with the Pencil down, only fingers scroll
+    const ys = (fingers.length ? fingers : all).map((p) => p.y);
     return ys.reduce((a, b) => a + b, 0) / ys.length;
   }
 
   function down(e) {
+    if (e.pointerType === "pen") penUsed.current = true;
+    // With the Pencil, a finger or palm never writes or cancels the stroke: it scrolls.
+    const fingerScroll = penUsed.current && e.pointerType === "touch";
+    if (fingerScroll && current.current) return;
     canvasRef.current.setPointerCapture?.(e.pointerId);
     rect.current = canvasRef.current.getBoundingClientRect();
-    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    if (pointers.current.size >= 2) {
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY, scroll: fingerScroll });
+    if (fingerScroll || (e.pointerType !== "pen" && pointers.current.size >= 2)) {
       // second finger: this is a scroll, drop the stroke the first finger began
       current.current = null;
       redraw();
@@ -180,13 +194,16 @@ export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, a
     }
     const p = pos(e);
     if (mode === "eraser") eraseAt(p);
-    else current.current = [p];
+    else {
+      current.current = [p];
+      drawStrokes(context(), [current.current]); // shows a tap as a dot right away
+    }
   }
 
   function move(e) {
     if (!pointers.current.has(e.pointerId)) return;
-    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    if (pointers.current.size >= 2) {
+    pointers.current.set(e.pointerId, { ...pointers.current.get(e.pointerId), x: e.clientX, y: e.clientY });
+    if (pointers.current.get(e.pointerId).scroll || (e.pointerType !== "pen" && pointers.current.size >= 2)) {
       const y = avgY();
       if (panY.current != null) scrollRef.current.scrollTop -= y - panY.current;
       panY.current = y;
@@ -220,7 +237,7 @@ export default function Scratchpad({ open, onClose, storageKey, ref, onAttach, a
     pointers.current.delete(e.pointerId);
     rect.current = null;
     if (pointers.current.size === 0) panY.current = null;
-    if (current.current && current.current.length > 1) {
+    if (current.current?.length) {
       strokes.current.push(current.current);
       saveStrokes(storageKey, strokes.current);
     }

@@ -218,13 +218,15 @@ export default function TalkView({ active }) {
             >
               📷 {t("photo")}
             </button>
-            <button
-              onClick={() => setScratchOpen(true)}
-              disabled={photos.length >= MAX_PHOTOS}
-              className="rounded-full border border-neutral-300 px-3 py-1.5 disabled:opacity-30"
-            >
-              ✎ {t("scratch")}
-            </button>
+            {!info.code && (
+              <button
+                onClick={() => setScratchOpen(true)}
+                disabled={photos.length >= MAX_PHOTOS}
+                className="rounded-full border border-neutral-300 px-3 py-1.5 disabled:opacity-30"
+              >
+                ✎ {t("scratch")}
+              </button>
+            )}
             <button
               onClick={toggleRecording}
               className={`ml-auto rounded-full px-3 py-1.5 ${recording ? "bg-red-600 text-white" : "border border-neutral-300"}`}
@@ -272,6 +274,7 @@ export default function TalkView({ active }) {
         />
       </div>
 
+      {!info.code && (
       <Scratchpad
         open={scratchOpen}
         onClose={() => setScratchOpen(false)}
@@ -281,6 +284,7 @@ export default function TalkView({ active }) {
           setScratchOpen(false);
         }}
       />
+      )}
 
       {viewer && (
         <div onClick={() => setViewer(null)} className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-2">

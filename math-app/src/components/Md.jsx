@@ -12,7 +12,7 @@ export default function Md({ children, className = "", inline = false }) {
   return (
     <Tag className={`md ${className}`}>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkMath]}
+        remarkPlugins={[[remarkGfm, { singleTilde: false }], remarkMath]}
         rehypePlugins={[[rehypeKatex, { throwOnError: false }]]}
         components={inline ? inlineParts : undefined}
       >
