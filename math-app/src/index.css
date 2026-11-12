@@ -77,15 +77,26 @@ textarea:focus-visible {
   background: none;
   font-size: inherit;
 }
+/* Data tables (problem inputs and results): a real grid, scrolls sideways on a phone. */
 .md table {
   display: block;
+  width: max-content;
+  max-width: 100%;
   overflow-x: auto;
-  margin: 0 0 0.6em;
+  margin: 0 0 0.8em;
+  border-collapse: collapse;
   font-size: 13px;
+  line-height: 1.4;
 }
 .md th,
 .md td {
-  padding: 2px 8px;
-  border-bottom: 1px solid #e5e5e5;
+  padding: 4px 10px;
+  border: 1px solid #e5e5e5;
   text-align: left;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.md th {
+  background: #f4f4f5;
+  font-weight: 600;
 }
