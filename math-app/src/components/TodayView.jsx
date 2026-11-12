@@ -28,7 +28,7 @@ const roundOf = (p) => p.round || 1;
 
 export default function TodayView({ date, initialPid, plan, session, onSession, onMore }) {
   const { t, bi } = useT();
-  const { local } = useSubject();
+  const { local, info } = useSubject();
   // Only one round is shown at a time: the latest, or the one an archive link points into.
   const start = plan.problems.find((p) => p.id === initialPid);
   const round = start ? roundOf(start) : plan.round || 1;
@@ -39,12 +39,16 @@ export default function TodayView({ date, initialPid, plan, session, onSession, 
   // Wide screens keep the scratchpad open in a column beside the problem.
   const wide = useWide();
   const scratchRef = useRef(null);
+  // SQL/Python have no scratchpad; on wide screens their code editor takes its column instead.
+  const [codeSlot, setCodeSlot] = useState(null);
   const problemRef = useRef(null);
 
   const problem = problems.find((p) => p.id === activeId) || problems[0];
   const done = isDone(session, problem.id);
   const next = done ? suggestNext(problems, session, problem.id) : null;
   const allDone = problems.every((p) => isDone(session, p.id));
+  const codeSide = wide && !!info.code && !!problem.code && ["sql", "python"].includes(problem.answerType);
+  const twoColumns = info.code ? codeSide : true;
 
   async function makeMore() {
     setMore("making");
@@ -77,7 +81,9 @@ export default function TodayView({ date, initialPid, plan, session, onSession, 
   );
 
   return (
-    <div className="pb-28 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-10 lg:pb-16">
+    <div
+      className={`${info.code ? "pb-16" : "pb-28 lg:pb-16"} ${twoColumns ? "lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-10" : ""}`}
+    >
       <div>
         <div className="mb-5">
           <p className="text-xs text-neutral-400">{t(`move_${plan.decision.move}`)}</p>
@@ -111,6 +117,7 @@ export default function TodayView({ date, initialPid, plan, session, onSession, 
           onSession={onSession}
           scratchpad={scratchRef}
           onOpenScratch={() => setScratchOpen(true)}
+          codeSlot={codeSide ? codeSlot : null}
         />
 
         {done && (
@@ -139,7 +146,9 @@ export default function TodayView({ date, initialPid, plan, session, onSession, 
         )}
       </div>
 
-      {wide ? (
+      {info.code ? (
+        codeSide && <div ref={setCodeSlot} className="sticky top-4 max-h-[calc(100dvh-2rem)] overflow-y-auto [&>div]:mt-0" />
+      ) : wide ? (
         <div className="sticky top-4 h-[calc(100dvh-2rem)]">{scratchpad}</div>
       ) : (
         <>

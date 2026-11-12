@@ -1,5 +1,6 @@
 import { useEffect, useImperativeHandle, useState } from "react";
 import Md from "./Md.jsx";
+import { createPortal } from "react-dom";
 import CodeAnswer from "./CodeAnswer.jsx";
 import { matchesLocally } from "../lib/answer.js";
 import { useT } from "../lib/i18n.js";
@@ -45,7 +46,8 @@ function Timer({ elapsed, minutes }) {
 // One problem: statement, answer box with instant grading, hints and solution.
 // The answer can also be the handwritten scratchpad: ref.checkImage(dataUrl).
 // SQL/Python problems are answered with code instead (CodeAnswer).
-export default function ProblemView({ date, problem, session, onSession, scratchpad, onOpenScratch, ref }) {
+// codeSlot: a DOM node to render the code editor into instead of under the statement.
+export default function ProblemView({ date, problem, session, onSession, scratchpad, onOpenScratch, codeSlot, ref }) {
   const { t, bi, lang } = useT();
   const { id: subject, api, local } = useSubject();
   const [answer, setAnswer] = useState("");
@@ -131,7 +133,12 @@ export default function ProblemView({ date, problem, session, onSession, scratch
       <Md className="text-[17px] leading-relaxed">{bi(problem.prompt)}</Md>
 
       {isCode ? (
-        <CodeAnswer problem={problem} draftKey={local(`code_${date}_${problem.id}`)} disabled={checking} onSubmit={submitCode} />
+        (() => {
+          const editor = (
+            <CodeAnswer problem={problem} draftKey={local(`code_${date}_${problem.id}`)} disabled={checking} onSubmit={submitCode} />
+          );
+          return codeSlot ? createPortal(editor, codeSlot) : editor;
+        })()
       ) : problem.answerType === "choice" && problem.choices.length > 0 ? (
         <div className="mt-5 space-y-2">
           {problem.choices.map((c) => (
