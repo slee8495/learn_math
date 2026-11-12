@@ -10,6 +10,7 @@ import {
   getState,
   getTalk,
   getTalkImage,
+  saveCheat,
   saveNotes,
   saveSession,
   saveTalkImage,
@@ -21,6 +22,7 @@ import { subjectById } from "../tutor/subjects.js";
 const HISTORY = 40; // messages of the thread the professor sees each turn
 const IMAGE_TURNS = 3; // the newest user messages whose photos are sent as images
 const MAX_IMAGES = 4; // per message
+const TOOL_ROUNDS = 4; // tool calls answered before the reply has to end
 
 function describeToday(plan, session) {
   if (!plan) return "";
@@ -52,8 +54,10 @@ function buildSystem({ subject, lang, student, today }) {
 - They may ask anything: a concept, a problem from a book, today's assigned problem, how to study. Answer as their teacher who knows them.
 - When they send photos of their handwritten work, read every line carefully. Say which steps are right, point at the first line where it goes wrong and why, and name the misconception if there is one. Be concrete ("line 3: the 2 should be squared too"), not vague.
 - If they are stuck, find where, and give the smallest push that gets them moving. Ask one question at a time. If they ask for a full explanation or solution, give it clearly.
-- For today's assigned problems: when their work (a photo or what they type) reaches the correct final answer to one that isn't solved yet, tell them, then call record_solved so it counts as solved in the app. Write your whole reply first; the call comes last. Don't call it for a wrong or unfinished answer, or for a different problem.
-- The app has a notes tab: the student's collection of code they finished and concepts they understood, to study from. When they finish working code here (even after opening the solution or with your help) or clearly get a concept, call save_note right away and say it's in their notes. It's their study material, so never hold a note back because the solution was seen; just say so in its body. Same rule as above: reply first, the call last.
+- For today's assigned problems: when their work (a photo or what they type) reaches the correct final answer to one that isn't solved yet, call record_solved so it counts as solved in the app, and tell them. Don't call it for a wrong or unfinished answer, or for a different problem.
+- The app has a notes tab: the student's collection of code they finished and concepts they understood, to study from. When they finish working code here (even after opening the solution or with your help) or clearly get a concept, call save_note right away and say it's in their notes. It's their study material, so never hold a note back because the solution was seen; just say so in its body.
+- The app also has a cheat sheet: one short line per rule or formula, under its topic. When they ask for something on it, or a rule is worth a line, call save_cheat.
+- Only say something was saved or recorded after the tool's result says so. After a call, finish your reply; never end on a call alone.
 - Don't reveal the final answer unless they ask for it directly or have already opened the solution.
 - If a photo is unreadable, say which part and ask for a clearer one.
 - What they ask here is recorded and read when their next lessons are planned.
@@ -109,6 +113,56 @@ function noteTool(subject, plan) {
       required: ["kind", "topicId", "title", "body"],
     },
   };
+}
+
+// Always offered: adds or sharpens lines of the cheat sheet.
+function cheatTool(subject) {
+  const topics = subjectById(subject).roadmap.stages.flatMap((st) => st.topics.map((t) => t.id));
+  return {
+    name: "save_cheat",
+    description: "Add lines to the student's cheat sheet, one short rule or formula per line under its roadmap topic.",
+    input_schema: {
+      type: "object",
+      properties: {
+        lines: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string", description: "Stable slug, e.g. 'arith-series-sum'." },
+              topicId: { type: "string", enum: topics },
+              text: { type: "string", description: "One line in the reply language: the rule or fact in a few words. Markdown + LaTeX, no line breaks." },
+              code: { type: "string", description: "Optional one-line code or formula that shows it; empty if the text says it all." },
+            },
+            required: ["id", "topicId", "text"],
+          },
+        },
+      },
+      required: ["lines"],
+    },
+  };
+}
+
+async function saveTalkCheat(subject, calls) {
+  const lines = calls.flatMap((c) => c.lines || []);
+  await saveCheat(
+    subject,
+    lines.map((l) => ({ id: l.id, topicId: l.topicId, text: { ko: l.text, en: l.text }, code: l.code || "" })),
+  );
+}
+
+// Carries out one tool call and says what happened, for the professor to read back.
+async function runTool(subject, planDate, call) {
+  try {
+    if (call.name === "record_solved") await recordSolved(subject, planDate, [call.input]);
+    else if (call.name === "save_note") await saveTalkNotes(subject, planDate, [call.input]);
+    else if (call.name === "save_cheat") await saveTalkCheat(subject, [call.input]);
+    else return { content: "unknown tool", is_error: true };
+    return { content: "saved" };
+  } catch (err) {
+    console.error(`talk ${call.name} error:`, err);
+    return { content: "saving failed", is_error: true };
+  }
 }
 
 async function saveTalkNotes(subject, planDate, calls) {
@@ -224,7 +278,7 @@ export default async function handler(req, res) {
     thread = await toApiMessages(subject, talk.messages);
     student = describeStudent(state, journals);
     today = describeToday(plan, session);
-    tools = [...solveTool(plan, session), noteTool(subject, plan)];
+    tools = [...solveTool(plan, session), noteTool(subject, plan), cheatTool(subject)];
   } catch (err) {
     fail(res, err, "talk load");
     return;
@@ -232,40 +286,50 @@ export default async function handler(req, res) {
 
   res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-cache" });
 
+  // A tool call ends a turn; its result goes back so the professor can finish
+  // the reply (and only claims a save that happened).
   let reply = "";
-  let solved = [];
-  let notes = [];
+  const system = buildSystem({ subject, lang, student, today });
   try {
-    const stream = client.beta.messages.stream({
-      model: MODEL,
-      max_tokens: 6000,
-      output_config: { effort: "medium" },
-      system: buildSystem({ subject, lang, student, today }),
-      messages: thread,
-      tools,
-      ...FALLBACK,
-    });
-    for await (const event of stream) {
-      if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-        reply += event.delta.text;
-        res.write(event.delta.text);
+    for (let round = 0; round < TOOL_ROUNDS; round++) {
+      const stream = client.beta.messages.stream({
+        model: MODEL,
+        max_tokens: 6000,
+        output_config: { effort: "medium" },
+        system,
+        messages: thread,
+        tools,
+        ...FALLBACK,
+      });
+      let gap = reply && !reply.endsWith("\n") ? "\n\n" : "";
+      for await (const event of stream) {
+        if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+          const text = gap + event.delta.text;
+          gap = "";
+          reply += text;
+          res.write(text);
+        }
       }
+      const final = await stream.finalMessage();
+      const calls = final.content.filter((b) => b.type === "tool_use");
+      if (final.stop_reason !== "tool_use" || !calls.length) break;
+      // one at a time: two record_solved calls share the session
+      const results = [];
+      for (const c of calls) results.push({ type: "tool_result", tool_use_id: c.id, ...(await runTool(subject, planDate, c)) });
+      thread = [...thread, { role: "assistant", content: final.content }, { role: "user", content: results }];
     }
-    const final = await stream.finalMessage();
-    const calls = (name) => final.content.filter((b) => b.type === "tool_use" && b.name === name).map((b) => b.input);
-    solved = calls("record_solved");
-    notes = calls("save_note");
   } catch (err) {
     console.error("talk stream error:", err);
-    if (!reply) res.write(lang === "ko" ? "지금 연결이 안 돼요. 잠시 후 다시 시도해 주세요." : "I couldn't connect just now. Please try again.");
-    res.end();
-    return;
+    // what was already said is still kept in the thread below
+    if (!reply) {
+      res.write(lang === "ko" ? "지금 연결이 안 돼요. 잠시 후 다시 시도해 주세요." : "I couldn't connect just now. Please try again.");
+      res.end();
+      return;
+    }
   }
 
   // Save before ending the response: Vercel may freeze the function right after.
   try {
-    if (solved.length) await recordSolved(subject, planDate, solved);
-    if (notes.length) await saveTalkNotes(subject, planDate, notes);
     await appendTalk(subject, { id: randomUUID(), role: "assistant", text: reply, images: [], at: new Date().toISOString() });
   } catch (err) {
     console.error("talk save error:", err);
