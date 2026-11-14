@@ -3,6 +3,7 @@ import { allowMethods, checkPasscode, fail } from "./_lib/http.js";
 import { FALLBACK, MODEL, client, describeStudent, langName, topicName } from "./_lib/claude.js";
 import {
   appendTalk,
+  getCheat,
   getCurrentPlanDate,
   deleteNote,
   getJournals,
@@ -12,7 +13,10 @@ import {
   getState,
   getTalk,
   getTalkImage,
+  getTerms,
+  saveCheat,
   saveNotes,
+  saveTerms,
   saveSession,
   saveTalkImage,
   subjectOf,
@@ -39,6 +43,24 @@ function describeNotes(notes) {
   return `The student's notes tab right now (${notes.length} notes, newest first${notes.length > NOTES_SHOWN ? `, first ${NOTES_SHOWN} shown` : ""}):\n${lines.join("\n")}`;
 }
 
+// The cheat sheet and English terms, so the professor adds only what's new
+// and sharpens an existing line (same id) instead of repeating it.
+function describeSheet(cheat, terms, glossary) {
+  const short = (t) => (t || "").replace(/\s+/g, " ").trim().slice(0, 100);
+  const out = [
+    cheat.length
+      ? `The student's cheat sheet (${cheat.length} lines):\n${cheat.map((l) => `- [${l.id}] ${l.topicId}: ${short(l.text?.ko || l.text?.en)}`).join("\n")}`
+      : "The student's cheat sheet is empty.",
+  ];
+  if (glossary)
+    out.push(
+      terms.length
+        ? `Their English terms tab (${terms.length}):\n${terms.map((l) => `- [${l.id}] ${l.en} = ${l.ko}`).join("\n")}`
+        : "Their English terms tab is empty.",
+    );
+  return out.join("\n\n");
+}
+
 function describeToday(plan, session) {
   if (!plan) return "";
   const lines = plan.problems.map((p) => {
@@ -61,8 +83,8 @@ const CAREER_TALK = `- You are a teacher, not a ghostwriter: don't write the cod
 - When they ask how something differs between engines (SQLite here, Postgres/Snowflake/BigQuery at work and in interviews), say so plainly.
 - Their background: PLM data analytics manager at Hyundai Motor America with an MSBA, aiming at senior data scientist / analytics roles and data roles at investment firms. Examples from automotive parts, trading and e-commerce land best.`;
 
-function buildSystem({ subject, lang, student, today, notesList }) {
-  const { role, aim } = subjectById(subject);
+function buildSystem({ subject, lang, student, today, notesList, sheet }) {
+  const { role, aim, glossary } = subjectById(subject);
   return [
     `You are this student's personal ${role}. This is your ongoing conversation with them, outside any single problem: office hours that continue across days. The shared goal is ${aim}.`,
     `How to help:
@@ -73,7 +95,9 @@ function buildSystem({ subject, lang, student, today, notesList }) {
 - The app has a notes tab: the student's collection of code they finished and concepts they understood, to study from. When they finish working code here (even after opening the solution or with your help) or clearly get a concept, call save_note right away and say it's in their notes. It's their study material, so never hold a note back because the solution was seen; just say so in its body. Same rule as above: reply first, the call last.
 - You can see the whole notes tab (listed below, by id) and keep it tidy. Before saving, check it: if the same code or concept is already there, pass its id as replaceId to improve that note instead of adding a second one.
 - When they ask you to clean up, merge, retitle or delete notes, do it yourself: for duplicates keep the best one (improve it with save_note + replaceId if useful) and remove the rest with delete_notes. Say briefly what you kept and removed, by title. Delete only what they asked for or clear duplicates of a note you keep. A note marked "edited by the student" can be deleted when they ask but not replaced; save a new one instead.
-- Never say you saved, changed or deleted a note unless you make that call in this same reply.
+- The app also has a cheat sheet: one short line per rule or formula, under its roadmap topic, read before an exam or interview. When they learn a rule worth keeping, add it with save_cheat (one line each; reuse an existing id to sharpen a line instead of repeating it).${glossary ? `
+- They study in Korean but must know every term in English for work and interviews, so the cheat sheet has an English terms tab. Whenever a technical term comes up as you go (a new concept, a term in a problem, one they ask about), write it as "한국어 (English)" the first time and add it with save_terms, English as used in papers and interviews. Skip terms already in the tab (listed below). Don't announce each one; a short "영어 용어에 넣었어요" is enough.` : ""}
+- Never say you saved, changed or deleted a note, a cheat line or a term unless you make that call in this same reply.
 - Don't reveal the final answer unless they ask for it directly or have already opened the solution.
 - If a photo is unreadable, say which part and ask for a clearer one.
 - What they ask here is recorded and read when their next lessons are planned.
@@ -83,6 +107,7 @@ function buildSystem({ subject, lang, student, today, notesList }) {
     student,
     today,
     notesList,
+    sheet,
   ]
     .filter(Boolean)
     .join("\n\n");
@@ -147,6 +172,85 @@ function deleteTool(ids) {
       },
     },
   ];
+}
+
+const topicIds = (subject) => subjectById(subject).roadmap.stages.flatMap((st) => st.topics.map((t) => t.id));
+
+// Always offered: adds or sharpens cheat sheet lines.
+function cheatTool(subject) {
+  return {
+    name: "save_cheat",
+    description: "Add or sharpen lines of the student's cheat sheet: one short rule or formula per line, under its roadmap topic.",
+    input_schema: {
+      type: "object",
+      properties: {
+        lines: {
+          type: "array",
+          minItems: 1,
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string", description: "Stable slug, e.g. 'arith-series-sum'. An existing line's id (listed in the system prompt) replaces that line." },
+              topicId: { type: "string", enum: topicIds(subject) },
+              text: { type: "string", description: "One line in the reply language: the rule or fact in a few words. Markdown + LaTeX, no line breaks." },
+              code: { type: "string", description: "Optional one-line code or formula that shows it; empty if the text says it all." },
+            },
+            required: ["id", "topicId", "text"],
+          },
+        },
+      },
+      required: ["lines"],
+    },
+  };
+}
+
+// Math and stats: adds English terms as they come up.
+function termsTool(subject) {
+  if (!subjectById(subject).glossary) return [];
+  return [
+    {
+      name: "save_terms",
+      description: "Add technical terms to the student's English terms tab (Korean and English), as they come up in the lesson.",
+      input_schema: {
+        type: "object",
+        properties: {
+          terms: {
+            type: "array",
+            minItems: 1,
+            items: {
+              type: "object",
+              properties: {
+                id: { type: "string", description: "Slug of the English term, e.g. 'standard-error'. An existing id replaces that term." },
+                topicId: { type: "string", enum: topicIds(subject) },
+                en: { type: "string", description: "The English term as used in papers and interviews, e.g. 'standard error'." },
+                ko: { type: "string", description: "The Korean term, e.g. '표준오차'." },
+                meaning: { type: "string", description: "A few words of meaning in Korean, LaTeX allowed, one line." },
+              },
+              required: ["id", "topicId", "en", "ko", "meaning"],
+            },
+          },
+        },
+        required: ["terms"],
+      },
+    },
+  ];
+}
+
+const oneLine = (s) => String(s || "").replace(/\s+/g, " ").trim();
+
+async function saveTalkSheet(subject, cheatCalls, termCalls) {
+  const lines = cheatCalls.flatMap((c) => c.lines || []).filter((l) => l.id && oneLine(l.text));
+  if (lines.length)
+    await saveCheat(
+      subject,
+      lines.map((l) => ({ id: l.id, topicId: l.topicId, text: { ko: oneLine(l.text), en: oneLine(l.text) }, code: oneLine(l.code) })),
+    );
+  const terms = termCalls.flatMap((c) => c.terms || []).filter((t) => t.id && oneLine(t.en));
+  if (terms.length)
+    await saveTerms(
+      subject,
+      terms.map((t) => ({ id: t.id, topicId: t.topicId, en: oneLine(t.en), ko: oneLine(t.ko), meaning: oneLine(t.meaning) })),
+    );
 }
 
 async function saveTalkNotes(subject, planDate, calls) {
@@ -244,7 +348,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  let thread, student, today, notesList, tools, planDate;
+  let thread, student, today, notesList, sheet, tools, planDate;
   try {
     // Store the question (and its photos) first so nothing is lost if the reply fails.
     const imageIds = photos.map(() => randomUUID());
@@ -252,20 +356,23 @@ export default async function handler(req, res) {
     await appendTalk(subject, { id: randomUUID(), role: "user", text: text.trim(), images: imageIds, at: new Date().toISOString() });
 
     planDate = await getCurrentPlanDate(subject);
-    const [talk, state, journals, plan, session, notes] = await Promise.all([
+    const [talk, state, journals, plan, session, notes, cheat, terms] = await Promise.all([
       getTalk(subject, { limit: HISTORY }),
       getState(subject),
       getJournals(subject),
       planDate ? getPlan(subject, planDate) : null,
       planDate ? getSession(subject, planDate) : null,
       getNotes(subject),
+      getCheat(subject),
+      getTerms(subject),
     ]);
     thread = await toApiMessages(subject, talk.messages);
     student = describeStudent(state, journals);
     today = describeToday(plan, session);
     notesList = describeNotes(notes);
+    sheet = describeSheet(cheat, terms, subjectById(subject).glossary);
     const ids = notes.slice(0, NOTES_SHOWN).map((n) => n.id);
-    tools = [...solveTool(plan, session), noteTool(subject, plan, ids), ...deleteTool(ids)];
+    tools = [...solveTool(plan, session), noteTool(subject, plan, ids), ...deleteTool(ids), cheatTool(subject), ...termsTool(subject)];
   } catch (err) {
     fail(res, err, "talk load");
     return;
@@ -277,7 +384,9 @@ export default async function handler(req, res) {
   let solved = [];
   let notes = [];
   let removed = [];
-  const system = buildSystem({ subject, lang, student, today, notesList });
+  let cheatCalls = [];
+  let termCalls = [];
+  const system = buildSystem({ subject, lang, student, today, notesList, sheet });
   // One streamed turn; its text goes straight to the phone.
   async function turn(messages, extra = {}) {
     const stream = client.beta.messages.stream({
@@ -304,6 +413,8 @@ export default async function handler(req, res) {
     solved = calls("record_solved");
     notes = calls("save_note");
     removed = calls("delete_notes").flatMap((c) => c.ids || []);
+    cheatCalls = calls("save_cheat");
+    termCalls = calls("save_terms");
   }
   async function saveCalls() {
     if (solved.length) await recordSolved(subject, planDate, solved);
@@ -311,6 +422,7 @@ export default async function handler(req, res) {
     const keepIds = new Set(notes.map((n) => n.replaceId).filter(Boolean));
     for (const id of new Set(removed)) if (!keepIds.has(id)) await deleteNote(subject, id);
     if (notes.length) await saveTalkNotes(subject, planDate, notes);
+    if (cheatCalls.length || termCalls.length) await saveTalkSheet(subject, cheatCalls, termCalls);
   }
   try {
     const final = await turn(thread);
@@ -335,7 +447,7 @@ export default async function handler(req, res) {
   } catch (err) {
     console.error("talk stream error:", err);
     // A tool call from a turn that did finish is still kept.
-    if (solved.length || notes.length || removed.length) await saveCalls().catch((e) => console.error("talk save error:", e));
+    if (solved.length || notes.length || removed.length || cheatCalls.length || termCalls.length) await saveCalls().catch((e) => console.error("talk save error:", e));
     if (!reply) res.write(lang === "ko" ? "지금 연결이 안 돼요. 잠시 후 다시 시도해 주세요." : "I couldn't connect just now. Please try again.");
     res.end();
     return;

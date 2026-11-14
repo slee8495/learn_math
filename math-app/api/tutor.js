@@ -1,6 +1,7 @@
 import { allowMethods, fail } from "./_lib/http.js";
-import { applyTutorOutput, buildTutorContext, getCheat, getNotes, getPlan, lastPlanTouched, saveCheat, saveNotes, subjectOf } from "./_lib/store.js";
-import { CheatPush, NotesPush } from "../tutor/schema.js";
+import { applyTutorOutput, buildTutorContext, getCheat, getNotes, getPlan, getTerms, lastPlanTouched, saveCheat, saveNotes, saveTerms, subjectOf } from "./_lib/store.js";
+import { subjectById } from "../tutor/subjects.js";
+import { CheatPush, NotesPush, TermsPush } from "../tutor/schema.js";
 
 // The daily routine's door into the app's data. The routine (a Claude Code
 // session on the Max plan, see tutor/ROUTINE.md) GETs the student's context,
@@ -8,7 +9,8 @@ import { CheatPush, NotesPush } from "../tutor/schema.js";
 // TUTOR_TOKEN; disabled entirely until that env var is set. The subject
 // (?subject= on GET, body.subject on POST) defaults to math. A POST with
 // { notes } instead of { date, output } adds to the student's notes tab, and
-// { cheat } adds or sharpens lines of the cheat sheet.
+// { cheat } adds or sharpens lines of the cheat sheet, { terms } English terms
+// (math and stats).
 export default async function handler(req, res) {
   if (!allowMethods(req, res, ["GET", "POST"])) return;
   const token = process.env.TUTOR_TOKEN;
@@ -20,11 +22,12 @@ export default async function handler(req, res) {
     if (req.method === "GET") {
       const subject = subjectOf(req.query.subject);
       const context = await buildTutorContext(subject);
-      const [todayPlan, touched, notes, cheat] = await Promise.all([
+      const [todayPlan, touched, notes, cheat, terms] = await Promise.all([
         getPlan(subject, context.today),
         lastPlanTouched(subject),
         getNotes(subject),
         getCheat(subject),
+        getTerms(subject),
       ]);
       res.status(200).json({
         ...context,
@@ -33,6 +36,7 @@ export default async function handler(req, res) {
         // what's already in the notes tab, so the routine adds only what's new
         notes: notes.map((n) => ({ id: n.id, kind: n.kind, topicId: n.topicId, title: n.title.en, from: n.from })),
         cheat: cheat.map((l) => ({ id: l.id, topicId: l.topicId, text: l.text.en, code: l.code })),
+        ...(subjectById(subject).glossary && { terms: terms.map((l) => ({ id: l.id, topicId: l.topicId, en: l.en, ko: l.ko })) }),
       });
       return;
     }
@@ -40,6 +44,10 @@ export default async function handler(req, res) {
     const subject = subjectOf(req.body?.subject);
     if (req.body?.cheat) {
       res.status(200).json({ subject, saved: await saveCheat(subject, CheatPush.parse(req.body.cheat)) });
+      return;
+    }
+    if (req.body?.terms) {
+      res.status(200).json({ subject, saved: await saveTerms(subject, TermsPush.parse(req.body.terms)) });
       return;
     }
     if (notes) {

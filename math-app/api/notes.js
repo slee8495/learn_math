@@ -1,13 +1,15 @@
 import { randomUUID } from "node:crypto";
 import { allowMethods, checkPasscode, fail } from "./_lib/http.js";
-import { deleteCheatLine, deleteNote, saveCheat, saveStudentNote, subjectOf } from "./_lib/store.js";
-import { CheatPush, Note } from "../tutor/schema.js";
+import { deleteCheatLine, deleteNote, deleteTerm, saveCheat, saveStudentNote, saveTerms, subjectOf } from "./_lib/store.js";
+import { CheatPush, Note, TermsPush } from "../tutor/schema.js";
 
 // The student's own changes to the notes tab (reading is GET /api/today?notes=1).
 //   POST { subject, note }            -> adds it (no id) or replaces it, as the student's
 //   POST { subject, delete: <id> }    -> removes it
 //   POST { subject, cheat: [line] }   -> adds or replaces cheat sheet lines
 //   POST { subject, deleteCheat: <id> } -> removes a cheat sheet line
+//   POST { subject, terms: [term] }   -> adds or replaces English terms (math, stats)
+//   POST { subject, deleteTerm: <id> } -> removes a term
 export default async function handler(req, res) {
   if (!allowMethods(req, res, ["POST"]) || !checkPasscode(req, res)) return;
   const subject = subjectOf(req.body?.subject);
@@ -16,6 +18,17 @@ export default async function handler(req, res) {
       const lines = CheatPush.parse(req.body.cheat.map((l) => ({ ...l, id: l.id || `mine-${randomUUID().slice(0, 8)}` })));
       await saveCheat(subject, lines);
       res.status(200).json({ lines });
+      return;
+    }
+    if (req.body?.terms) {
+      const terms = TermsPush.parse(req.body.terms.map((l) => ({ ...l, id: l.id || `mine-${randomUUID().slice(0, 8)}` })));
+      await saveTerms(subject, terms);
+      res.status(200).json({ terms });
+      return;
+    }
+    if (req.body?.deleteTerm) {
+      await deleteTerm(subject, String(req.body.deleteTerm));
+      res.status(200).json({ deleted: req.body.deleteTerm });
       return;
     }
     if (req.body?.deleteCheat) {

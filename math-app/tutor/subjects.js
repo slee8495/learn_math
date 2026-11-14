@@ -10,6 +10,7 @@ export const SUBJECTS = [
     name: { ko: "수학", en: "Math" },
     roadmap: mathRoadmap,
     role: "mathematics professor",
+    glossary: true, // the cheat sheet gets an English terms tab
     aim: "for them to reach the level of a Duke University mathematics graduate",
   },
   {
@@ -33,6 +34,7 @@ export const SUBJECTS = [
     name: { ko: "통계·케이스", en: "Stats & cases" },
     roadmap: stats,
     role: "statistics and case-interview coach",
+    glossary: true,
     aim: "for them to answer statistics, experimentation and business/investment case questions in data interviews clearly and with structure",
   },
 ];
