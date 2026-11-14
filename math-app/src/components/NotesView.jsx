@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Md from "./Md.jsx";
 import CheatView from "./CheatView.jsx";
+import TermsView from "./TermsView.jsx";
 import { topicById } from "../../tutor/subjects.js";
 import { useT } from "../lib/i18n.js";
 import { useSubject } from "../lib/subject.js";
@@ -114,10 +115,11 @@ function NoteEditor({ note, onSaved, onDeleted, onCancel }) {
 // edited, deleted or written from scratch.
 export default function NotesView() {
   const { t, bi } = useT();
-  const { api } = useSubject();
+  const { api, info } = useSubject();
   const [notes, setNotes] = useState(null);
   const [cheat, setCheat] = useState([]);
-  const [view, setView] = useState("cheat"); // cheat | notes
+  const [terms, setTerms] = useState([]);
+  const [view, setView] = useState("cheat"); // cheat | terms (math, stats) | notes
   const [error, setError] = useState(false);
   const [kind, setKind] = useState("");
   const [topic, setTopic] = useState("");
@@ -126,7 +128,7 @@ export default function NotesView() {
 
   useEffect(() => {
     api.notes().then(
-      (d) => (setNotes(d.notes), setCheat(d.cheat || [])),
+      (d) => (setNotes(d.notes), setCheat(d.cheat || []), setTerms(d.terms || [])),
       () => setError(true),
     );
   }, [api]);
@@ -151,16 +153,25 @@ export default function NotesView() {
   const chip = (active) =>
     `shrink-0 rounded-full px-3.5 py-1.5 text-sm ${active ? "bg-neutral-900 text-white" : "border border-neutral-300 text-neutral-700"}`;
 
-  // The cheat sheet and the notes are two views of what's been learned.
+  // The cheat sheet, the English terms (math, stats) and the notes are views of what's been learned.
   const switcher = (
     <div className="mb-5 flex gap-1 rounded-full bg-neutral-100 p-1 text-sm">
-      {["cheat", "notes"].map((v) => (
+      {(info.glossary ? ["cheat", "terms", "notes"] : ["cheat", "notes"]).map((v) => (
         <button key={v} onClick={() => setView(v)} className={`flex-1 rounded-full py-1.5 ${view === v ? "bg-white font-semibold shadow-sm" : "text-neutral-500"}`}>
           {t(v)}
         </button>
       ))}
     </div>
   );
+
+  if (view === "terms" && info.glossary) {
+    return (
+      <>
+        {switcher}
+        <TermsView terms={terms} setTerms={setTerms} />
+      </>
+    );
+  }
 
   if (view === "cheat") {
     return (

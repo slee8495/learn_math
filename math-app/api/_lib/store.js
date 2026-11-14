@@ -14,6 +14,7 @@ import { SUBJECT_IDS, subjectById } from "../../tutor/subjects.js";
 //   <p>talk             list of messages in the ongoing professor conversation (not tied to a problem)
 //   <p>talkimg:<id>     a photo the student sent there, as a data URL
 //   <p>cheat            hash id -> CheatLine: the subject's cheat sheet, one line per thing learned
+//   <p>terms            hash id -> Term: English terms learned (math and stats only)
 //   <p>notes            hash id -> Note: code and concepts the student has finished, kept by the routine
 export const redis = Redis.fromEnv();
 
@@ -194,27 +195,33 @@ export async function noteSolvedCode(subject, date, problem, code, feedback) {
   ]);
 }
 
-// The cheat sheet: every line, oldest first (the app groups them by topic).
-export async function getCheat(subject) {
-  const all = (await redis.hgetall(key(subject, "cheat"))) || {};
+// The cheat sheet and the English terms are both hashes of id -> line, kept
+// oldest first (the app groups them by topic).
+async function getLines(subject, name) {
+  const all = (await redis.hgetall(key(subject, name))) || {};
   return Object.values(all).sort((a, b) => (a.addedOn < b.addedOn ? -1 : a.addedOn > b.addedOn ? 1 : a.id < b.id ? -1 : 1));
 }
 
 // Add or replace lines by id; a replaced line keeps its place (addedOn).
-export async function saveCheat(subject, lines) {
+async function saveLines(subject, name, lines) {
   if (!lines.length) return 0;
-  const existing = (await redis.hgetall(key(subject, "cheat"))) || {};
+  const existing = (await redis.hgetall(key(subject, name))) || {};
   const today = todayCA();
   await redis.hset(
-    key(subject, "cheat"),
+    key(subject, name),
     Object.fromEntries(lines.map((l) => [l.id, { ...l, addedOn: existing[l.id]?.addedOn || today, updatedOn: today }])),
   );
   return lines.length;
 }
 
-export async function deleteCheatLine(subject, id) {
-  await redis.hdel(key(subject, "cheat"), id);
-}
+export const getCheat = (subject) => getLines(subject, "cheat");
+export const saveCheat = (subject, lines) => saveLines(subject, "cheat", lines);
+export const deleteCheatLine = (subject, id) => redis.hdel(key(subject, "cheat"), id);
+
+// Only subjects with a glossary keep terms; others always have none.
+export const getTerms = (subject) => (subjectById(subject).glossary ? getLines(subject, "terms") : Promise.resolve([]));
+export const saveTerms = (subject, terms) => (subjectById(subject).glossary ? saveLines(subject, "terms", terms) : Promise.resolve(0));
+export const deleteTerm = (subject, id) => redis.hdel(key(subject, "terms"), id);
 
 // The most recent plan at or before today. Before the 5am routine runs, this is
 // still yesterday's plan, so the app always has something to work on.

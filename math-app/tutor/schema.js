@@ -128,3 +128,18 @@ export const CheatLine = z.object({
 });
 
 export const CheatPush = z.array(CheatLine);
+
+// ---- English terms (math and stats) ----
+// The student studies in Korean but works and interviews in English, so these
+// subjects keep a glossary: every term met in lessons, English first. Same
+// rule as the cheat sheet: pushing an existing id replaces that term.
+
+export const Term = z.object({
+  id: z.string().describe("Stable slug of the English term, e.g. 'standard-error'. Reuse an existing id to improve it"),
+  topicId: z.string().describe("The roadmap topic it belongs under"),
+  en: z.string().min(1).describe("The English term as used in papers and interviews, e.g. 'standard error'"),
+  ko: z.string().describe("The Korean term, e.g. '표준오차'"),
+  meaning: z.string().describe("A few words of meaning in Korean (Markdown + LaTeX allowed), e.g. '표본평균의 표준편차, $\\sigma/\\sqrt{n}$'. One line"),
+});
+
+export const TermsPush = z.array(Term);

@@ -2,6 +2,7 @@ import { allowMethods, checkPasscode, fail } from "./_lib/http.js";
 import {
   getArchive,
   getCheat,
+  getTerms,
   getCurrentPlanDate,
   getJournals,
   getLibrary,
@@ -31,8 +32,8 @@ export default async function handler(req, res) {
       return;
     }
     if (req.query.notes) {
-      const [notes, cheat] = await Promise.all([getNotes(subject), getCheat(subject)]);
-      res.status(200).json({ notes, cheat });
+      const [notes, cheat, terms] = await Promise.all([getNotes(subject), getCheat(subject), getTerms(subject)]);
+      res.status(200).json({ notes, cheat, terms });
       return;
     }
     const date = req.query.date || (await getCurrentPlanDate(subject));

@@ -71,6 +71,19 @@ Every `scripts/tutor.mjs` command takes `--subject=<id>`. Files live in
    - Only what they actually learned, not the whole textbook.
    - Nothing new: write `[]`. Then run
      `node scripts/tutor.mjs cheat <cheat.json> --subject=<id>`.
+
+   English terms (**math and stats only**): the student studies in Korean
+   but must know every term in English for work and interviews. `context.json`
+   has `terms` (every term so far). Add each term that came up since (in
+   today's problems, the notes, the cheat lines, talk) and isn't there yet.
+   Write `terms.json`, an array of `Term` (`tutor/schema.js`):
+   - `en`: the English term as used in papers and interviews ("standard
+     error", "null hypothesis", "eigenvalue"); `ko`: the Korean term;
+     `meaning`: a few words in Korean, LaTeX ok; `topicId` as above;
+     `id`: slug of the English term.
+   - Same term already there: skip it, or push the same `id` to sharpen it.
+   - Nothing new: write `[]`. Then run
+     `node scripts/tutor.mjs terms <terms.json> --subject=<id>`.
 2. Read, fully:
    - `tutor/professor.js`: your standing instructions. `professorGuide(id)`
      shows which parts apply: math uses `MATH_GUIDE`; the other subjects use the
@@ -103,7 +116,7 @@ Every `scripts/tutor.mjs` command takes `--subject=<id>`. Files live in
 
 If one subject fails, report it and go on to the next.
 
-Finish with a short summary per subject: the notes and cheat lines you filed, the move you
+Finish with a short summary per subject: the notes, cheat lines and terms you filed, the move you
 chose and why, and today's problems (or why the plan was skipped).
 
 Do not commit or push anything to git. `tutor/work/` is scratch space.

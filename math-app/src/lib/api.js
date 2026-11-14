@@ -83,6 +83,8 @@ export function subjectApi(subject) {
     deleteNote: (id) => post("/api/notes")({ delete: id }),
     saveCheat: (lines) => post("/api/notes")({ cheat: lines }),
     deleteCheat: (id) => post("/api/notes")({ deleteCheat: id }),
+    saveTerms: (terms) => post("/api/notes")({ terms }),
+    deleteTerm: (id) => post("/api/notes")({ deleteTerm: id }),
     makePlan: post("/api/plan"),
     check: post("/api/check"),
     event: post("/api/session"),
