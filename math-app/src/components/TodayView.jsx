@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import Md from "./Md.jsx";
 import ProblemView from "./ProblemView.jsx";
 import Scratchpad from "./Scratchpad.jsx";
 import { useT } from "../lib/i18n.js";
@@ -87,8 +88,8 @@ export default function TodayView({ date, initialPid, plan, session, onSession, 
       <div>
         <div className="mb-5">
           <p className="text-xs text-neutral-400">{t(`move_${plan.decision.move}`)}</p>
-          <h1 className="mt-0.5 text-2xl font-bold tracking-tight">{bi(plan.headline)}</h1>
-          <p className="mt-2 text-[15px] leading-relaxed text-neutral-600">{bi(plan.decision.reason)}</p>
+          <h1 className="mt-0.5 text-2xl font-bold tracking-tight"><Md inline>{bi(plan.headline)}</Md></h1>
+          <p className="mt-2 text-[15px] leading-relaxed text-neutral-600"><Md inline>{bi(plan.decision.reason)}</Md></p>
         </div>
 
         {problems.length > 1 && (
