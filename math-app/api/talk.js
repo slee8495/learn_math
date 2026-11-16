@@ -98,6 +98,8 @@ function buildSystem({ subject, lang, student, today, notesList, sheet }) {
 - The app also has a cheat sheet: one short line per rule or formula, under its roadmap topic, read before an exam or interview. When they learn a rule worth keeping, add it with save_cheat (one line each; reuse an existing id to sharpen a line instead of repeating it).${glossary ? `
 - They study in Korean but must know every term in English for work and interviews, so the cheat sheet has an English terms tab. Whenever a technical term comes up as you go (a new concept, a term in a problem, one they ask about), write it as "한국어 (English)" the first time and add it with save_terms, English as used in papers and interviews. Skip terms already in the tab (listed below). Don't announce each one; a short "영어 용어에 넣었어요" is enough.` : ""}
 - Never say you saved, changed or deleted a note, a cheat line or a term unless you make that call in this same reply.
+- After each of your past replies the app adds an "[app log: ...]" line listing what was really saved by that reply's calls. That log and the notes, cheat sheet and terms listed below are the truth about what is saved; your own past words are not. Never write an "[app log" line yourself.
+- Don't apologize for or re-litigate past saves. If something the student asked to keep is already in the lists below, say it's there. If it's missing, save it now and say so in one short line. Never promise to save "in this reply" without making the call.
 - Don't reveal the final answer unless they ask for it directly or have already opened the solution.
 - If a photo is unreadable, say which part and ask for a clearer one.
 - What they ask here is recorded and read when their next lessons are planned.
@@ -281,6 +283,36 @@ async function recordSolved(subject, planDate, calls) {
   await saveSession(subject, planDate, session);
 }
 
+// What a reply's tool calls really did, kept on the stored message so later
+// turns (and the student) can see it instead of trusting the reply's words.
+function savedSummary({ solved, notes, removed, cheatCalls, termCalls }) {
+  const saved = {};
+  if (solved.length) saved.solved = solved.map((c) => c.problemId);
+  if (notes.length) saved.notes = notes.map((n) => oneLine(n.title));
+  if (removed.length) saved.deleted = [...new Set(removed)].length;
+  const cheat = cheatCalls.flatMap((c) => c.lines || []).filter((l) => l.id && oneLine(l.text));
+  if (cheat.length) saved.cheat = cheat.map((l) => oneLine(l.text).slice(0, 80));
+  const terms = termCalls.flatMap((c) => c.terms || []).filter((t) => t.id && oneLine(t.en));
+  if (terms.length) saved.terms = terms.map((t) => oneLine(t.en));
+  return Object.keys(saved).length ? saved : null;
+}
+
+function appLog(saved) {
+  const parts = [];
+  if (saved.solved?.length) parts.push(`marked solved: ${saved.solved.join(", ")}`);
+  if (saved.notes?.length) parts.push(`note saved: ${saved.notes.map((t) => `"${t}"`).join(", ")}`);
+  if (saved.deleted) parts.push(`${saved.deleted} note(s) deleted`);
+  if (saved.cheat?.length) parts.push(`cheat sheet: ${saved.cheat.map((t) => `"${t}"`).join(", ")}`);
+  if (saved.terms?.length) parts.push(`terms: ${saved.terms.join(", ")}`);
+  return `[app log: ${parts.join("; ")}]`;
+}
+
+// Strip any app-log line the model imitated, so it never reaches the student.
+const dropFakeLog = (text) => text.replace(/\n*\[app log:[^\]]*\]\s*$/i, "");
+
+// Sent after the reply text so the app can show what was saved.
+const SAVED_MARK = "\u001e";
+
 function imageBlock(dataUrl) {
   const [, mediaType, data] = dataUrl.match(/^data:(image\/[\w+.-]+);base64,(.*)$/) || [];
   return mediaType ? { type: "image", source: { type: "base64", media_type: mediaType, data } } : null;
@@ -301,6 +333,7 @@ async function toApiMessages(subject, thread) {
       content.push({ type: "text", text: `[sent ${m.images.length} photo(s) earlier]` });
     }
     if (m.text) content.push({ type: "text", text: m.text });
+    if (m.role === "assistant" && m.saved) content.push({ type: "text", text: appLog(m.saved) });
     if (!content.length) continue;
     const prev = out[out.length - 1];
     if (prev?.role === m.role) prev.content.push(...content);
@@ -447,8 +480,12 @@ export default async function handler(req, res) {
   } catch (err) {
     console.error("talk stream error:", err);
     // A tool call from a turn that did finish is still kept.
-    if (solved.length || notes.length || removed.length || cheatCalls.length || termCalls.length) await saveCalls().catch((e) => console.error("talk save error:", e));
     if (!reply) res.write(lang === "ko" ? "지금 연결이 안 돼요. 잠시 후 다시 시도해 주세요." : "I couldn't connect just now. Please try again.");
+    if (solved.length || notes.length || removed.length || cheatCalls.length || termCalls.length) {
+      await saveCalls().catch((e) => console.error("talk save error:", e));
+      const saved = savedSummary({ solved, notes, removed, cheatCalls, termCalls });
+      if (saved) res.write(SAVED_MARK + JSON.stringify(saved));
+    }
     res.end();
     return;
   }
@@ -456,7 +493,9 @@ export default async function handler(req, res) {
   // Save before ending the response: Vercel may freeze the function right after.
   try {
     await saveCalls();
-    await appendTalk(subject, { id: randomUUID(), role: "assistant", text: reply, images: [], at: new Date().toISOString() });
+    const saved = savedSummary({ solved, notes, removed, cheatCalls, termCalls });
+    if (saved) res.write(SAVED_MARK + JSON.stringify(saved));
+    await appendTalk(subject, { id: randomUUID(), role: "assistant", text: dropFakeLog(reply), images: [], at: new Date().toISOString(), ...(saved && { saved }) });
   } catch (err) {
     console.error("talk save error:", err);
   }
