@@ -71,7 +71,7 @@ export default function ArchiveView({ onOpen }) {
           <section key={d.date}>
             <p className="mb-2 text-xs text-neutral-400">
               {t("day")} {d.dayNum} · {d.date}
-              {d.headline && <> · {bi(d.headline)}</>}
+              {d.headline && <> · <Md inline>{bi(d.headline)}</Md></>}
             </p>
             <div className="divide-y divide-neutral-100 border-y border-neutral-100">
               {d.problems.map((p) => {
