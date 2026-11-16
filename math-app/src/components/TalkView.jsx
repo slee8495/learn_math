@@ -33,6 +33,40 @@ const dayKey = (at) => new Date(at).toLocaleDateString("en-CA"); // local YYYY-M
 // problem. Photos of handwritten work can be sent for checking. The thread lives
 // on the server and is read when the next days are planned. The screen opens on
 // today only; earlier days are a tap away (the professor still sees them).
+// The reply stream ends with "\u001e" + JSON of what was really saved.
+const LOG_LINE = /\n*\[app log:[^\]]*\]\s*$/i;
+function splitSaved(raw) {
+  const [text, tail] = raw.split("\u001e");
+  let saved;
+  try {
+    saved = tail ? JSON.parse(tail) : undefined;
+  } catch {
+    saved = undefined; // trailer still arriving
+  }
+  return [text.replace(LOG_LINE, ""), saved && { saved }];
+}
+
+// What the professor's calls actually saved, shown under the reply.
+function SavedChips({ saved, t }) {
+  const items = [
+    ...(saved.notes || []).map((x) => `${t("savedNote")} · ${x}`),
+    ...(saved.cheat || []).map((x) => `${t("savedCheat")} · ${x}`),
+    ...(saved.terms?.length ? [`${t("savedTerms")} · ${saved.terms.join(", ")}`] : []),
+    ...(saved.deleted ? [`${t("savedDeleted")} · ${saved.deleted}`] : []),
+    ...(saved.solved?.length ? [`${t("savedSolved")} · ${saved.solved.join(", ")}`] : []),
+  ];
+  if (!items.length) return null;
+  return (
+    <div className="mt-2 flex flex-wrap gap-1.5">
+      {items.map((x, i) => (
+        <span key={i} className="max-w-full truncate rounded-full bg-emerald-50 px-2.5 py-1 text-xs text-emerald-800">
+          ✓ <Md inline>{x}</Md>
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export default function TalkView({ active }) {
   const { t, lang } = useT();
   const { info, api, local } = useSubject();
@@ -131,7 +165,7 @@ export default function TalkView({ active }) {
     try {
       await api.sendTalk({ lang, text, images: photos }, (partial) => {
         const nearBottom = window.innerHeight + window.scrollY > document.documentElement.scrollHeight - 160;
-        setMessages([...thread, replyMsg(partial)]);
+        setMessages([...thread, replyMsg(...splitSaved(partial))]);
         if (nearBottom) requestAnimationFrame(scrollToBottom);
       });
     } catch {
@@ -183,6 +217,7 @@ export default function TalkView({ active }) {
               ) : (
                 <div className={`max-w-[92%] text-[15px] leading-relaxed ${m.error ? "text-red-600" : ""}`}>
                   {m.text ? <Md>{m.text}</Md> : <span className="text-neutral-400">…</span>}
+                  {m.saved && <SavedChips saved={m.saved} t={t} />}
                 </div>
               )}
             </div>

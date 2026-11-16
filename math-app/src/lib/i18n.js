@@ -96,6 +96,11 @@ const STRINGS = {
   photo: { ko: "사진", en: "Photo" },
   photoMsg: { ko: "제 풀이 봐주세요.", en: "Please check my work." },
   talkPlaceholder: { ko: "무엇이든 물어보세요", en: "Ask me anything" },
+  savedNote: { ko: "노트에 저장됨", en: "Saved to notes" },
+  savedCheat: { ko: "치트시트에 저장됨", en: "Added to cheat sheet" },
+  savedTerms: { ko: "영어 용어에 저장됨", en: "Added to terms" },
+  savedDeleted: { ko: "노트 삭제됨", en: "Notes deleted" },
+  savedSolved: { ko: "푼 문제로 기록됨", en: "Marked solved" },
   talkEmpty: {
     ko: "언제든 편하게 물어보세요. 푼 흔적을 사진으로 올리면 어디서 막혔는지, 맞게 풀었는지 같이 봐요. 여기서 나눈 이야기도 다음 수업 준비에 반영돼요.",
     en: "Ask me anything, anytime. Send a photo of your work and we'll find where you got stuck or check that it's right. What we talk about here shapes your next lessons.",
