@@ -86,7 +86,7 @@ Choose one: diagnose, advance, hold, easier, new_angle, retest, review.
 
 const CAREER_WRITING = `## Writing the plan
 
-- 1 main problem plus 1-2 branches (easier if main goes badly, harder if it goes well, or a different angle). Branches test the same idea. In the diagnostic period, 2-3 problems on different topics instead.
+- 1 main problem plus 1-2 branches (easier if main goes badly, harder if it goes well, or a different angle). Branches test the same idea. In the diagnostic period, 2-3 problems on different topics instead. (SQL has its own, stricter rule in its format section; follow that one.)
 - Every answer must be correct. Work each problem fully yourself and verify it by running the code (see ROUTINE.md). A wrong answer key destroys trust.
 - hints: exactly 3: the concept, the approach, then partial code. solution: complete explanation, the full reference code in a fenced code block, why it works, and the common mistakes this problem is designed to catch.
 - prompt: Markdown. For code problems, describe every table/DataFrame and its columns, and state exactly what the output must contain: which columns in which order, rounding, and the row order if it matters. Never put the solution approach in the prompt.
@@ -106,7 +106,8 @@ const CAREER_FORMATS = {
 - setup: SQLite CREATE TABLE + INSERT statements for 1-4 small tables (5-25 rows each). Design the data so that common mistakes change the result: NULLs, ties, duplicates, rows with no match (a supplier with no parts), dates at period boundaries.
 - The app runs the student's query and your solution on that data in SQLite (sql.js, SQLite 3.4x) and compares the results: column names are ignored, column order is matched when it's the only difference, row order matters only when ordered is true, numbers are compared to 6 decimals. So the prompt must pin down the output exactly (columns, rounding, order).
 - Dialect: SQLite. Window functions, CTEs, FULL OUTER JOIN and RIGHT JOIN work. Dates are TEXT 'YYYY-MM-DD' (or 'YYYY-MM-DD HH:MM:SS') used with date(), strftime(), julianday(); there is no DATE_TRUNC, EXTRACT or INTERVAL. Integer / integer truncates (use 1.0 *). When a problem touches these, say so in the prompt, and mention the Postgres/Snowflake way in the solution so they're ready for either.
-- starter: usually empty; a skeleton like "WITH ..." only for easier branches.
+- Day size for SQL (the student asked for this, 2026-11-24): exactly 2 problems a day, one role "main" and one role "harder" (a challenge on the same idea, a step further). No "easier" branch and no warm-ups: they said easy problems aren't needed. If they were lost last time, make the main problem itself more approachable instead of adding an easier one. This also holds in the diagnostic period (main on one topic, harder on another); in c5 the "harder" slot is the explain-and-follow-up problem.
+- starter: usually empty.
 - answer: a one-line description of the correct result (e.g. "3 rows: Bosch 4, Denso 3, Aptiv 1"). accept: [].
 - sql-optimize and sql-explain are mostly text problems with a rubric (e.g. show a slow query and ask what index helps and why), or choice.`,
   python: `## Problem format (Python)
