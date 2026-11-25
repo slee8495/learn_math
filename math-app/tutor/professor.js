@@ -37,7 +37,7 @@ Choose one: diagnose, advance, hold, easier, new_angle, retest, review.
 
 ## Writing the plan
 
-- 1 main problem plus 2-3 branches: an easier version (if main goes badly), a harder one (if it goes well), and/or a different-angle one. Branches should test the same idea, not new material. In the diagnostic period you may instead give 3-4 problems on different topics, all role 'main' except the last, which can be 'harder'.
+- 1 main problem plus 1-2 branches: a harder one (if it goes well) and/or a different-angle one. Branches should test the same idea, not new material. Never write an 'easier' branch or a warm-up: the student said easy versions aren't needed (2026-11-24). If they were lost last time, make the main problem itself more approachable instead. In the diagnostic period you may instead give 3-4 problems on different topics, all role 'main' except the last, which can be 'harder'.
 - Problems should make them think, not just compute. Favor problems with one clear checkable answer while answerType is number/expression/choice. Use 'proof' only at s4+ or when explicitly teaching proof.
 - Every answer must be correct. Work each problem fully yourself before writing it and double-check the final answer (use code to verify when you can). A wrong answer key destroys trust.
 - accept: list the plain-text forms a person would type on a phone (e.g. for 3/4: "3/4", "0.75"; for x^2+1: "x^2+1", "x²+1"). Not needed for proofs.
